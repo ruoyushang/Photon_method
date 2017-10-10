@@ -6,6 +6,9 @@ Git global setup
 Create a new repository
 
 	git clone https://:@gitlab.cern.ch:8443/rshang/PhotonTemplateMethod.git
+
+Add a new file
+
 	cd PhotonTemplateMethod
 	vim README
 	git add README
