@@ -1304,6 +1304,12 @@ void GetReweightingHistogram(string ch, int isData, double lumi, string photon_t
 		hist_2j30_htrw_correction->Divide(hist_2j30_photon_ht);
 		for (int entry=0;entry<tPhoton->GetEntries();entry++) {
 			tPhoton->GetEntry(entry);
+			if (jet_n==0) continue;
+			if (jet_n==1) continue;
+			if (bjet_n!=0) continue;
+			if (lep_pT->at(0)<leading_lep_pt_cut) continue;
+			if (lep_pT->at(1)<second_lep_pt_cut) continue;
+			if (HT<200.) continue;
 			//std::cout << "totalWeight = " << totalWeight << std::endl;
 			//std::cout << "gamma_pt = " << gamma_pt << std::endl;
 			//std::cout << "lep_pT->at(0) = " << lep_pT->at(0) << std::endl;
@@ -1311,19 +1317,6 @@ void GetReweightingHistogram(string ch, int isData, double lumi, string photon_t
 			//std::cout << "HT = " << HT << std::endl;
 			//std::cout << "jet_n = " << jet_n << std::endl;
 			//std::cout << "bjet_n = " << bjet_n << std::endl;
-			if (jet_n==0) continue;
-			if (jet_n==1) continue;
-			if (bjet_n!=0) continue;
-			if (lep_pT->at(0)<leading_lep_pt_cut) continue;
-			if (lep_pT->at(1)<second_lep_pt_cut) continue;
-			if (HT<200.) continue;
-			std::cout << "totalWeight = " << totalWeight << std::endl;
-			std::cout << "gamma_pt = " << gamma_pt << std::endl;
-			std::cout << "lep_pT->at(0) = " << lep_pT->at(0) << std::endl;
-			std::cout << "lep_pT->at(1) = " << lep_pT->at(1) << std::endl;
-			std::cout << "HT = " << HT << std::endl;
-			std::cout << "jet_n = " << jet_n << std::endl;
-			std::cout << "bjet_n = " << bjet_n << std::endl;
 			//if (DPhi_METJetLeading<0.4) continue;
 			//if (DPhi_METJetSecond<0.4) continue;
 			hist_ht200_photon_njet->Fill(jet_n,totalWeight);
@@ -1334,7 +1327,6 @@ void GetReweightingHistogram(string ch, int isData, double lumi, string photon_t
 			hist_ht200_photon_etsm->Fill(pow(gamma_pt_smear*gamma_pt_smear+mll*mll,0.5),totalWeight);
 			hist_ht200_photon_ht->Fill(HT,totalWeight);
 		}
-		std::cout << hist_ht200_ptrw_correction->GetBinContent(5) << std::endl;
 		hist_ht200_njetrw_correction->Divide(hist_ht200_photon_njet);
 		hist_ht200_nbjetrw_correction->Divide(hist_ht200_photon_nbjet);
 		hist_ht200_ptrw_correction->Divide(hist_ht200_photon_pt);
@@ -1342,7 +1334,6 @@ void GetReweightingHistogram(string ch, int isData, double lumi, string photon_t
 		hist_ht200_etrw_correction->Divide(hist_ht200_photon_et);
 		hist_ht200_etsmrw_correction->Divide(hist_ht200_photon_etsm);
 		hist_ht200_htrw_correction->Divide(hist_ht200_photon_ht);
-		std::cout << hist_ht200_ptrw_correction->GetBinContent(5) << std::endl;
 		for (int entry=0;entry<tPhoton->GetEntries();entry++) {
 			tPhoton->GetEntry(entry);
 			if (jet_n==0) continue;

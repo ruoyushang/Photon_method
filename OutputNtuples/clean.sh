@@ -1,0 +1,9 @@
+#rm Vg/*.root
+#rm data/*.root
+#rm gdata/*.root
+#rm gmc/*.root
+rm tt/*.root
+rm vv/*.root
+rm zjets/*.root
+rm zjets_221/*.root
+#rm bphys/*.root

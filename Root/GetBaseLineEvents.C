@@ -144,8 +144,8 @@ void GetBaseLineEvents(string sampleID, string outputName, string pathToNtuples,
 
 		totalWeight = 1;
 		//if (!isData) totalWeight = (sampleWeight*eventWeight*lep_weight->at(0)*lep_weight->at(1)*emtrigweight*eetrigweight*mmtrigweight)/_nGenEvents;
-		//if (!isData) totalWeight = (sampleWeight*eventWeight*lep_weight->at(0)*lep_weight->at(1)*trig_sf)/_nGenEvents;
-		if (!isData) totalWeight = (sampleWeight*eventWeight)/_nGenEvents;
+		if (!isData) totalWeight = (sampleWeight*eventWeight*lep_weight->at(0)*lep_weight->at(1)*trig_sf)/_nGenEvents;
+		//if (!isData) totalWeight = (sampleWeight*eventWeight)/_nGenEvents;
 
 		hist_cutflow_raw->Fill(0.);
 		hist_cutflow_weight->Fill(0.,totalWeight);
@@ -198,8 +198,8 @@ void GetBaseLineEvents(string sampleID, string outputName, string pathToNtuples,
 			// here we compute truth Z pT and adjust MC weights
 
 			//totalWeight = (sampleWeight*eventWeight*lep_weight->at(0)*lep_weight->at(1)*emtrigweight*eetrigweight*mmtrigweight)/_nGenEvents;
-			//totalWeight = (sampleWeight*eventWeight*lep_weight->at(0)*lep_weight->at(1)*trig_sf)/_nGenEvents;
-			totalWeight = (sampleWeight*eventWeight)/_nGenEvents;
+			totalWeight = (sampleWeight*eventWeight*lep_weight->at(0)*lep_weight->at(1)*trig_sf)/_nGenEvents;
+			//totalWeight = (sampleWeight*eventWeight)/_nGenEvents;
 			if (totalWeight!=totalWeight) totalWeight = 0.;
 			if (sampleID.find("361381")!=std::string::npos) totalWeight = totalWeight*1.1;
 			if (sampleID.find("361382")!=std::string::npos) totalWeight = totalWeight*1.1;
