@@ -30,3 +30,6 @@ Existing Git repository
 	git remote add origin https://:@gitlab.cern.ch:8443/rshang/PhotonTemplateMethod.git
 	git push -u origin --all
 	git push -u origin --tags
+
+Git simple guide: http://rogerdudler.github.io/git-guide/
+
