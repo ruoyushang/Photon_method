@@ -7,16 +7,16 @@
 
 double lumi = 36100;
 
-std::string outputPath = "../../OutputNtuples/";
-std::string smearingPath = "../../OutputNtuples/";
+std::string outputPath = "../OutputNtuples/";
+std::string smearingPath = "../OutputNtuples/";
 
 string photon_tag = "";
 
-int event_interval = 1;
-//int event_interval = 100;
+//int event_interval = 1;
+int event_interval = 100;
 
-int smearing_method = 0; // No smearing
-//int smearing_method = 1; // MC smearing
+//int smearing_method = 0; // No smearing
+int smearing_method = 1; // MC smearing
 //int smearing_method = 2; // Data smearing
 //int smearing_method = 3; // Truth smearing
 
