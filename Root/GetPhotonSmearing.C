@@ -500,6 +500,9 @@ void GetPhotonSmearing(string ch, int isData, string year) {
 		dphi_smear = hist_low_dphi->FindBin(DPhi_METPhoton_smear)-1;
 		if (dphi_smear>dphi_bin[bin_size]) dphi_smear = bin_size-1;
 
+		if (gamma_pt>50. && jet_n==1) g_metl_smear[smpt]->Fill(METl_smear,totalWeight);
+		if (gamma_pt>50. && jet_n>=2) g_metl_smear_2j[smpt]->Fill(METl_smear,totalWeight);
+
 		// translate photon pT to dilepton sum pT, and compute HTincl for photon events
 		double photon_2LPt = 0;
 		//if (pt_smear>=0) if (lep_sumpt[pt_smear]->Integral()>0) photon_2LPt = lep_sumpt[pt_smear]->GetRandom();
