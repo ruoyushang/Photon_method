@@ -88,3 +88,7 @@ A tutorial of the photon method:
 
 	In Root/BasicSetting.C, smearing_method = 1 means the deconvolution is done using MC 1-jets events.
 	You can change smearing_method to 2 if you want to derive the smearing function from data 1-jet events, or to 0 if you don't want smearing. 
+
+
+If you have further questions, please send an email to ruo-yu.shang@cern.ch
+
