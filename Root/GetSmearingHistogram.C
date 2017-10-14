@@ -33,6 +33,7 @@ void GetSmearingHistogram(string ch, double lumi, string photon_tag) {
 		g_metl[bin] = new TH1D(TString("g_metl_")+TString::Itoa(bin,10),"",40000,-30000,10000);
 	}
 	if (smearing_method == 2) {  // data-driven smearing function
+		std::cout << "Get smearing function from data." << std::endl;
 		cout << "Opening file           : " << TString(smearingPath)+"data/data_"+TString(ch)+".root"  << endl;
 		TFile fZ( TString(smearingPath)+"data/data_"+TString(ch)+".root" );
 		TTree*  tZ              = (TTree*)fZ.Get("BaselineTree");
@@ -53,10 +54,10 @@ void GetSmearingHistogram(string ch, double lumi, string photon_tag) {
 		tZ->SetBranchAddress("METl" ,&METl);
 		for (int entry=0;entry<tZ->GetEntries();entry++) {
 			tZ->GetEntry(entry);
+			if (Z_pt<50.) continue;
 			int pt = hist_low_pt->FindBin(Z_pt)-1;
 			if (jet_n!=1) continue;
 			if (bjet_n!=0) continue;
-			if (Z_pt<37.) continue;
 			z_metl[pt]->Fill(METl,totalWeight);
 			if (mll<90 || mll>92) continue;
 			z_jetmetl[pt]->Fill(METl,totalWeight);
@@ -82,10 +83,10 @@ void GetSmearingHistogram(string ch, double lumi, string photon_tag) {
 		ttt->SetBranchAddress("METl" ,&METl);
 		for (int entry=0;entry<ttt->GetEntries();entry++) {
 			ttt->GetEntry(entry);
+			if (Z_pt<50.) continue;
 			int pt = hist_low_pt->FindBin(Z_pt)-1;
 			if (jet_n!=1) continue;
 			if (bjet_n!=0) continue;
-			if (Z_pt<37.) continue;
 			z_metl[pt]->Fill(METl,-1.*lumi*totalWeight);
 			if (mll<90 || mll>92) continue;
 			z_jetmetl[pt]->Fill(METl,-1.*lumi*totalWeight);
@@ -111,10 +112,10 @@ void GetSmearingHistogram(string ch, double lumi, string photon_tag) {
 		tvv->SetBranchAddress("METl" ,&METl);
 		for (int entry=0;entry<tvv->GetEntries();entry++) {
 			tvv->GetEntry(entry);
+			if (Z_pt<50.) continue;
 			int pt = hist_low_pt->FindBin(Z_pt)-1;
 			if (jet_n!=1) continue;
 			if (bjet_n!=0) continue;
-			if (Z_pt<37.) continue;
 			z_metl[pt]->Fill(METl,-1.*lumi*totalWeight);
 			if (mll<90 || mll>92) continue;
 			z_jetmetl[pt]->Fill(METl,-1.*lumi*totalWeight);
@@ -137,15 +138,17 @@ void GetSmearingHistogram(string ch, double lumi, string photon_tag) {
 		tPhoton->SetBranchAddress("METl_raw" ,&METl);
 		for (int entry=0;entry<tPhoton->GetEntries();entry++) {
 			tPhoton->GetEntry(entry);
+			if (gamma_pt<50.) continue;
 			int pt = hist_low_pt->FindBin(gamma_pt)-1;
 			if (jet_n!=1) continue;
 			if (bjet_n!=0) continue;
-			if (gamma_pt<37.) continue;
 			g_metl[pt]->Fill(METl,totalWeight);
 		}
 		fPhoton.Close();
 	}
 	else {
+		std::cout << "Get smearing function from MC." << std::endl;
+		cout << "Opening file           : " << TString(smearingPath)+"zjets/zjets_"+TString(ch)+".root"  << endl;
 		TFile fZ( TString(smearingPath)+"zjets/zjets_"+TString(ch)+".root" );
 		TTree*  tZ              = (TTree*)fZ.Get("BaselineTree");
 		tZ->SetBranchStatus("*", 0);
@@ -171,9 +174,9 @@ void GetSmearingHistogram(string ch, double lumi, string photon_tag) {
 		tZ->SetBranchAddress("EventNumber" ,&EventNumber);
 		for (int entry=0;entry<tZ->GetEntries();entry++) {
 			tZ->GetEntry(entry);
+			if (Z_pt<50.) continue;
 			int pt = hist_low_pt->FindBin(Z_pt)-1;
 			if (jet_n==0) continue;
-			if (Z_pt<37.) continue;
 			if (jet_n>=2) z_metl_2j[pt]->Fill(METl,totalWeight);
 			if (jet_n!=1) continue;
 			if (EventNumber==62237 && RunNumber==361405) std::cout << "kick out large weight Ev 62237." << std::endl;
@@ -209,10 +212,10 @@ void GetSmearingHistogram(string ch, double lumi, string photon_tag) {
 		tPhoton->SetBranchAddress("METl_raw" ,&METl);
 		for (int entry=0;entry<tPhoton->GetEntries();entry++) {
 			tPhoton->GetEntry(entry);
+			if (gamma_pt<50.) continue;
 			int pt = hist_low_pt->FindBin(gamma_pt)-1;
 			if (jet_n==0) continue;
 			if (jet_n!=1) continue;
-			if (gamma_pt<37.) continue;
 			g_metl[pt]->Fill(METl,totalWeight);
 			g_dpt[pt]->Fill(truthGamma_pt-gamma_pt,totalWeight);
 		}
