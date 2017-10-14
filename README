@@ -39,6 +39,9 @@ A tutorial of the photon method:
 				# and create OutputNtuples/gmc/gmc_ee_McSmear.root and OutputNtuples/gmc/gmc_mm_McSmear.root 
 	sh run_gmc_rw.sh	# this script will derive reweighting factors from gmc_raw.root, zjets_ee.root, and zjets_mm.root
 
+	The resolution smearing is done in Root/GetPhotonSmearing.C 
+	The reweighting is done in Root/GetPhotonReweighting.C 
+
 	Up to here, the photon ntuple is corrected with smearing and reweighting.
 	The two lepton distributions and MT2 are also added to OutputNtuples/gmc/gmc_ee_McSmear.root and OutputNtuples/gmc/gmc_mm_McSmear.root
 
@@ -61,3 +64,27 @@ A tutorial of the photon method:
 	and the reweighitng factor:
 		TCut weight_g = "totalWeight*36.1*1000*ptrw_bveto";	# totalWeight includes xsec, eventWeight, trigger weight, etc.
 									# ptrw_bveto is the reweighting factor derived from a b-veto region	
+
+	sanity check the smearing function:
+	root -l drawSmearingHistogram.C
+	you will see a plot of MET parallel distributions (projection of MET in the Z or photon direction):
+		-- blue: Z+jets
+		-- green: photon+jets before smearing
+		-- red: photon+jets after smearing
+		-- pink: smearing function used to correct photon resolution
+	these plots are made in 1-jet region (where smearing function is derived),
+	so you should see a good agreement between blue and red curves by design.
+	In drawSmearingHistogram.C, TString index = "10" gives you the distribution in 500 < Z pT < 700 GeV range.
+	Change the number to see other pT ranges.
+	
+
+	If the 1-jet region closure is bad in a pT range, it is often due to the poor statistics in that range.
+	We need good statistics to make a shape of MET parallel for deconvolution.
+	If there is one range does not have enough stat, then you should go to Root/BasicSetting.C and change the binning of sm_pt_bin 
+	to make sure you have enough statistics in the relavent pT range. 
+	
+	In Root/BasicSetting.C, you can also see the variable event_interval = 10, this means this tutorial only runs 10% events in the samples.
+	To run full stat job, change event_interval to 1.
+
+	In Root/BasicSetting.C, smearing_method = 1 means the deconvolution is done using MC 1-jets events.
+	You can change smearing_method to 2 if you want to derive the smearing function from data 1-jet events, or to 0 if you don't want smearing. 
