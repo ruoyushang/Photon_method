@@ -1,35 +1,63 @@
-Git global setup
+Setup:
+	setupATLAS
+	lsetup git
 
-	git config --global user.name "Ruo-Yu Shang"
-	git config --global user.email "ruo-yu.shang@cern.ch"
-
-Create a new repository
-
+Check out the code:
 	git clone https://:@gitlab.cern.ch:8443/rshang/PhotonTemplateMethod.git
 
-Add a new file
+A tutorial of the photon method:
 
-	cd PhotonTemplateMethod
-	vim README
-	git add README
-	git commit -m "add README"
-	git push -u origin master
+	cd ScriptMaker
+	python makeRunScript.py # this will generate scripts that run small single jobs in Scripts/	
 
-Existing folder
+	Now we need to compile the photon code
+	cd ../Scripts
+	sh run_361419_zmm.sh # this is a small job that runs over a Sherpa Z+jets sample (DSID361419) and compiles Root/GetBaseLineEvents.C 
+	sh run_361062_gmc.sh # this is a small job that runs over a Sherpa photon+jets sample (DSID361062) and compiles Root/GetPhotonEvents.C
 
-	cd existing_folder
-	git init
-	git remote add origin https://:@gitlab.cern.ch:8443/rshang/PhotonTemplateMethod.git
-	git add .
-	git commit -m "Initial commit"
-	git push -u origin master
+	Root/GetBaseLineEvents.C and Root/GetPhotonEvents.C take inputs from QuickAna ntuples
+	and check the trigger requirements and analysis selections.
+	The input directory of this tutorial is /eos/atlas/atlascerngroupdisk/phys-susy/strong2L/v02-04/MC/
+	To take inputs from your customized ntuples, you will need to change the variable names in
+	Root/InputVariables.C, Root/GetBaseLineEvents.C and Root/GetPhotonEvents.C
 
-Existing Git repository
+	After we compile the code, now we can run
+	sh local_z.sh
+	sh local_gmc.sh
+	Then we will see many ntuples are produced in
+	OutputNtuples/gmc/ and OutputNtuples/zjets/
 
-	cd existing_repo
-	git remote add origin https://:@gitlab.cern.ch:8443/rshang/PhotonTemplateMethod.git
-	git push -u origin --all
-	git push -u origin --tags
+	We need to merge the ntuples of individual DSID into inclusive files:
+	cd ../OutputNtuples
+	sh hadd.sh
+	this will create OutputNtuples/gmc/gmc_raw.root, OutputNtuples/zjets/zjets_ee.root and  OutputNtuples/zjets/zjets_mm.root 
 
-Git simple guide: http://rogerdudler.github.io/git-guide/
+	After merging the files, go back to Scripts/
+	cd ../Scripts
+	sh run_gmc_sm.sh	# this script will derive smearing function from 1-jet events in gmc_raw.root, zjets_ee.root, and zjets_mm.root
+				# and smear the photon resolution 
+				# and create OutputNtuples/gmc/gmc_ee_McSmear.root and OutputNtuples/gmc/gmc_mm_McSmear.root 
+	sh run_gmc_rw.sh	# this script will derive reweighting factors from gmc_raw.root, zjets_ee.root, and zjets_mm.root
 
+	Up to here, the photon ntuple is corrected with smearing and reweighting.
+	The two lepton distributions and MT2 are also added to OutputNtuples/gmc/gmc_ee_McSmear.root and OutputNtuples/gmc/gmc_mm_McSmear.root
+
+	To have a quick look at the output:
+	cd ../OutputNtuples
+	root -l quickDraw.C 
+	and you will see the photon MET distribution (red) is compared with the Z+jets MET distribution (blue)
+
+	in quickDraw.C, you can see:
+
+	The selection in the plot:
+		TCut mycut = "";
+		mycut += "bjet_n==0";  # the photon prediction is not restricted to b-veto region, you can remove this cut and see the difference
+		mycut += "lep_pT[0]>20 && lep_pT[1]>20";
+		mycut += "abs(lep_eta[0])<2.5 && abs(lep_eta[1])<2.5";
+		mycut += "jet_n>=2";
+		mycut += "Z_pt>50"; 	# the phtoon method does not provide low pT estimation, 
+					# low pT (<50GeV) region will be covered by Upsilon template method.
+
+	and the reweighitng factor:
+		TCut weight_g = "totalWeight*36.1*1000*ptrw_bveto";	# totalWeight includes xsec, eventWeight, trigger weight, etc.
+									# ptrw_bveto is the reweighting factor derived from a b-veto region	
