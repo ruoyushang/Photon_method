@@ -329,19 +329,19 @@ void AddBranches(TTree* BaselineTree, bool isData) {
 	BaselineTree->Branch("EventNumber",&EventNumber,"EventNumber/Long64_t");
 	BaselineTree->Branch("RunNumber",&RunNumber,"RunNumber/Int_t");
 	BaselineTree->Branch("totalWeight",&totalWeight,"totalWeight/D");
-	//if (!isData) {
-	//	BaselineTree->Branch("Z_truthPt",&Z_truthPt,"Z_truthPt/D");
-	//	BaselineTree->Branch("Z_truthEta",&Z_truthEta,"Z_truthEta/D");
-	//	BaselineTree->Branch("Z_truthPhi",&Z_truthPhi,"Z_truthPhi/D");
-	//	BaselineTree->Branch("lep0_truthPt",&lep0_truthPt,"lep0_truthPt/D");
-	//	BaselineTree->Branch("lep0_truthEta",&lep0_truthEta,"lep0_truthEta/D");
-	//	BaselineTree->Branch("lep0_truthPhi",&lep0_truthPhi,"lep0_truthPhi/D");
-	//	BaselineTree->Branch("lep0_truthGammaPt",&lep0_truthGammaPt,"lep0_truthGammaPt/D");
-	//	BaselineTree->Branch("lep1_truthPt",&lep1_truthPt,"lep1_truthPt/D");
-	//	BaselineTree->Branch("lep1_truthEta",&lep1_truthEta,"lep1_truthEta/D");
-	//	BaselineTree->Branch("lep1_truthPhi",&lep1_truthPhi,"lep1_truthPhi/D");
-	//	BaselineTree->Branch("lep1_truthGammaPt",&lep1_truthGammaPt,"lep1_truthGammaPt/D");
-	//}
+	if (!isData) {
+		BaselineTree->Branch("Z_truthPt",&Z_truthPt,"Z_truthPt/D");
+		BaselineTree->Branch("Z_truthEta",&Z_truthEta,"Z_truthEta/D");
+		BaselineTree->Branch("Z_truthPhi",&Z_truthPhi,"Z_truthPhi/D");
+		//BaselineTree->Branch("lep0_truthPt",&lep0_truthPt,"lep0_truthPt/D");
+		//BaselineTree->Branch("lep0_truthEta",&lep0_truthEta,"lep0_truthEta/D");
+		//BaselineTree->Branch("lep0_truthPhi",&lep0_truthPhi,"lep0_truthPhi/D");
+		//BaselineTree->Branch("lep0_truthGammaPt",&lep0_truthGammaPt,"lep0_truthGammaPt/D");
+		//BaselineTree->Branch("lep1_truthPt",&lep1_truthPt,"lep1_truthPt/D");
+		//BaselineTree->Branch("lep1_truthEta",&lep1_truthEta,"lep1_truthEta/D");
+		//BaselineTree->Branch("lep1_truthPhi",&lep1_truthPhi,"lep1_truthPhi/D");
+		//BaselineTree->Branch("lep1_truthGammaPt",&lep1_truthGammaPt,"lep1_truthGammaPt/D");
+	}
 	//BaselineTree->Branch("FS_ee_weight",&FS_ee_weight,"FS_ee_weight/D");
 	//BaselineTree->Branch("FS_mm_weight",&FS_mm_weight,"FS_mm_weight/D");
 
