@@ -12,6 +12,7 @@ Int_t bjet_n;
 double HT = 0.;
 double truthGamma_pt = 0.;
 double truthGamma_phi = 0.;
+double truthGamma_eta = 0.;
 double gamma_pt = 0.;
 double gamma_eta = 0.;
 double gamma_phi = 0.;

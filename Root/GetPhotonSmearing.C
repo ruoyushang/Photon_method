@@ -289,8 +289,9 @@ void GetPhotonSmearing(string ch, int isData, string year) {
 	T->SetBranchAddress("HT"              ,&HT               );
 	T->SetBranchAddress("jet_n"           ,&jet_n            );
 	T->SetBranchAddress("bjet_n"           ,&bjet_n            );
-	//if (isData!=1) T->SetBranchAddress("truthGamma_pt", &truthGamma_pt);
-	//if (isData!=1) T->SetBranchAddress("truthGamma_phi", &truthGamma_phi);
+	if (isData!=1) T->SetBranchAddress("truthGamma_pt", &truthGamma_pt);
+	if (isData!=1) T->SetBranchAddress("truthGamma_phi", &truthGamma_phi);
+	if (isData!=1) T->SetBranchAddress("truthGamma_eta", &truthGamma_eta);
 	T->SetBranchAddress("gamma_pt", &gamma_pt);
 	T->SetBranchAddress("gamma_eta", &gamma_eta);
 	T->SetBranchAddress("gamma_phi", &gamma_phi);
@@ -321,6 +322,9 @@ void GetPhotonSmearing(string ch, int isData, string year) {
 	TBranch *b_gamma_pt_smear = BaselineTree->Branch("Z_pt",&gamma_pt_smear,"Z_pt/D");
 	TBranch *b_gamma_phi_smear = BaselineTree->Branch("Z_phi",&gamma_phi_smear,"Z_phi/D");
 	TBranch *b_gamma_eta_smear = BaselineTree->Branch("Z_eta",&gamma_eta,"Z_eta/D");
+	TBranch *b_truthGamma_pt = BaselineTree->Branch("Z_truthPt",&truthGamma_pt,"Z_truthPt/D");
+	TBranch *b_truthGamma_eta = BaselineTree->Branch("Z_truthEta",&truthGamma_eta,"Z_truthEta/D");
+	TBranch *b_truthGamma_phi = BaselineTree->Branch("Z_truthPhi",&truthGamma_phi,"Z_truthPhi/D");
 	TBranch *b_MET_smear = BaselineTree->Branch("MET",&MET_smear,"MET/D");
 	TBranch *b_METl_smear = BaselineTree->Branch("METl",&METl_smear,"METl/D");
 	TBranch *b_METt_smear = BaselineTree->Branch("METt",&METt_smear,"METt/D");
