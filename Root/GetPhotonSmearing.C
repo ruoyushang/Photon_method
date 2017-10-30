@@ -153,7 +153,7 @@ void GetPhotonSmearing(string ch, int isData, string year) {
 
 	GetSmearingHistogram(ch,lumi, photon_tag);
 
-	if (smearing_method != 0) {  // if you want to use the deconvolution method to smear photon events. To enable this method, set "bool useDeconvolution = true" in BasicSetting.C
+	if (smearing_method >= 0) {  // if you want to use the deconvolution method to smear photon events. To enable this method, set "bool useDeconvolution = true" in BasicSetting.C
 		for (int bin=0;bin<bin_size;bin++) {
 			int rebin = 1;
 			rebin = RebinHistogram(z_metl[bin],0);
