@@ -170,7 +170,7 @@ for i in range(0,len(data_mm_files_2016)):
 	local_data_File.write("sh run_%s_data_mm_2016.sh\n"%(data_mm_files_2016[i]))
 	outputFile.write("source /cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase/user/atlasLocalSetup.sh\n")
 	outputFile.write("lsetup ROOT\n")
-	outputFile.write("root -l -b -q 'GetBaseLineEvents.C+(%s,%s,%s,%s,%s)' &\n" %('"'+data_mm_files_2016[i]+'"','"data"','"'+data_mm_path_2016+'"','"mm"','true'))
+	outputFile.write("root -l -b -q 'GetBaseLineEvents.C+(%s,%s,%s,%s,%s)' \n" %('"'+data_mm_files_2016[i]+'"','"data"','"'+data_mm_path_2016+'"','"mm"','true'))
 
 for i in range(0,len(data_ee_files_2016)):
 	outputFile = open(script_dir+'/run_%s_data_ee_2016.sh'%(data_ee_files_2016[i]), 'w')
@@ -178,7 +178,7 @@ for i in range(0,len(data_ee_files_2016)):
 	local_data_File.write("sh run_%s_data_ee_2016.sh\n"%(data_ee_files_2016[i]))
 	outputFile.write("source /cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase/user/atlasLocalSetup.sh\n")
 	outputFile.write("lsetup ROOT\n")
-	outputFile.write("root -l -b -q 'GetBaseLineEvents.C+(%s,%s,%s,%s,%s)' &\n" %('"'+data_ee_files_2016[i]+'"','"data"','"'+data_ee_path_2016+'"','"ee"','true'))
+	outputFile.write("root -l -b -q 'GetBaseLineEvents.C+(%s,%s,%s,%s,%s)' \n" %('"'+data_ee_files_2016[i]+'"','"data"','"'+data_ee_path_2016+'"','"ee"','true'))
 
 
 for i in range(0,len(zmm_files)):
@@ -187,7 +187,7 @@ for i in range(0,len(zmm_files)):
 	local_z_File.write("sh run_%s_zmm.sh\n"%(zmm_files[i]))
 	outputFile.write("source /cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase/user/atlasLocalSetup.sh\n")
 	outputFile.write("lsetup ROOT\n")
-	outputFile.write("root -l -b -q 'GetBaseLineEvents.C+(%s,%s,%s,%s,%s)' &\n" %('"'+zmm_files[i]+'"','"zjets"','"'+zmm_path+'"','"mm"','false'))
+	outputFile.write("root -l -b -q 'GetBaseLineEvents.C+(%s,%s,%s,%s,%s)' \n" %('"'+zmm_files[i]+'"','"zjets"','"'+zmm_path+'"','"mm"','false'))
 
 for i in range(0,len(zee_files)):
 	outputFile = open(script_dir+'/run_%s_zee.sh'%(zee_files[i]), 'w')
@@ -195,7 +195,7 @@ for i in range(0,len(zee_files)):
 	local_z_File.write("sh run_%s_zee.sh\n"%(zee_files[i]))
 	outputFile.write("source /cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase/user/atlasLocalSetup.sh\n")
 	outputFile.write("lsetup ROOT\n")
-	outputFile.write("root -l -b -q 'GetBaseLineEvents.C+(%s,%s,%s,%s,%s)' &\n" %('"'+zee_files[i]+'"','"zjets"','"'+zee_path+'"','"ee"','false'))
+	outputFile.write("root -l -b -q 'GetBaseLineEvents.C+(%s,%s,%s,%s,%s)' \n" %('"'+zee_files[i]+'"','"zjets"','"'+zee_path+'"','"ee"','false'))
 
 for i in range(0,len(z221mm_files)):
 	outputFile = open(script_dir+'/run_%s_z221mm.sh'%(z221mm_files[i]), 'w')
@@ -203,7 +203,7 @@ for i in range(0,len(z221mm_files)):
 	local_z221_File.write("sh run_%s_z221mm.sh\n"%(z221mm_files[i]))
 	outputFile.write("source /cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase/user/atlasLocalSetup.sh\n")
 	outputFile.write("lsetup ROOT\n")
-	outputFile.write("root -l -b -q 'GetBaseLineEvents.C+(%s,%s,%s,%s,%s)' &\n" %('"'+z221mm_files[i]+'"','"zjets_221"','"'+z221mm_path+'"','"mm"','false'))
+	outputFile.write("root -l -b -q 'GetBaseLineEvents.C+(%s,%s,%s,%s,%s)' \n" %('"'+z221mm_files[i]+'"','"zjets_221"','"'+z221mm_path+'"','"mm"','false'))
 
 for i in range(0,len(z221ee_files)):
 	outputFile = open(script_dir+'/run_%s_z221ee.sh'%(z221ee_files[i]), 'w')
@@ -211,7 +211,7 @@ for i in range(0,len(z221ee_files)):
 	local_z221_File.write("sh run_%s_z221ee.sh\n"%(z221ee_files[i]))
 	outputFile.write("source /cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase/user/atlasLocalSetup.sh\n")
 	outputFile.write("lsetup ROOT\n")
-	outputFile.write("root -l -b -q 'GetBaseLineEvents.C+(%s,%s,%s,%s,%s)' &\n" %('"'+z221ee_files[i]+'"','"zjets_221"','"'+z221ee_path+'"','"ee"','false'))
+	outputFile.write("root -l -b -q 'GetBaseLineEvents.C+(%s,%s,%s,%s,%s)' \n" %('"'+z221ee_files[i]+'"','"zjets_221"','"'+z221ee_path+'"','"ee"','false'))
 
 
 for i in range(0,len(ttmm_files)):
@@ -220,7 +220,7 @@ for i in range(0,len(ttmm_files)):
 	local_tt_File.write("sh run_%s_ttmm.sh\n"%(ttmm_files[i]))
 	outputFile.write("source /cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase/user/atlasLocalSetup.sh\n")
 	outputFile.write("lsetup ROOT\n")
-	outputFile.write("root -l -b -q 'GetBaseLineEvents.C+(%s,%s,%s,%s,%s)' &\n" %('"'+ttmm_files[i]+'"','"tt"','"'+ttmm_path+'"','"mm"','false'))
+	outputFile.write("root -l -b -q 'GetBaseLineEvents.C+(%s,%s,%s,%s,%s)' \n" %('"'+ttmm_files[i]+'"','"tt"','"'+ttmm_path+'"','"mm"','false'))
 
 for i in range(0,len(ttee_files)):
 	outputFile = open(script_dir+'/run_%s_ttee.sh'%(ttee_files[i]), 'w')
@@ -228,7 +228,7 @@ for i in range(0,len(ttee_files)):
 	local_tt_File.write("sh run_%s_ttee.sh\n"%(ttee_files[i]))
 	outputFile.write("source /cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase/user/atlasLocalSetup.sh\n")
 	outputFile.write("lsetup ROOT\n")
-	outputFile.write("root -l -b -q 'GetBaseLineEvents.C+(%s,%s,%s,%s,%s)' &\n" %('"'+ttee_files[i]+'"','"tt"','"'+ttee_path+'"','"ee"','false'))
+	outputFile.write("root -l -b -q 'GetBaseLineEvents.C+(%s,%s,%s,%s,%s)' \n" %('"'+ttee_files[i]+'"','"tt"','"'+ttee_path+'"','"ee"','false'))
 
 for i in range(0,len(vvmm_files)):
 	outputFile = open(script_dir+'/run_%s_vvmm.sh'%(vvmm_files[i]), 'w')
@@ -236,7 +236,7 @@ for i in range(0,len(vvmm_files)):
 	local_vv_File.write("sh run_%s_vvmm.sh\n"%(vvmm_files[i]))
 	outputFile.write("source /cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase/user/atlasLocalSetup.sh\n")
 	outputFile.write("lsetup ROOT\n")
-	outputFile.write("root -l -b -q 'GetBaseLineEvents.C+(%s,%s,%s,%s,%s)' &\n" %('"'+vvmm_files[i]+'"','"vv"','"'+vvmm_path+'"','"mm"','false'))
+	outputFile.write("root -l -b -q 'GetBaseLineEvents.C+(%s,%s,%s,%s,%s)' \n" %('"'+vvmm_files[i]+'"','"vv"','"'+vvmm_path+'"','"mm"','false'))
 
 for i in range(0,len(vvee_files)):
 	outputFile = open(script_dir+'/run_%s_vvee.sh'%(vvee_files[i]), 'w')
@@ -244,7 +244,7 @@ for i in range(0,len(vvee_files)):
 	local_vv_File.write("sh run_%s_vvee.sh\n"%(vvee_files[i]))
 	outputFile.write("source /cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase/user/atlasLocalSetup.sh\n")
 	outputFile.write("lsetup ROOT\n")
-	outputFile.write("root -l -b -q 'GetBaseLineEvents.C+(%s,%s,%s,%s,%s)' &\n" %('"'+vvee_files[i]+'"','"vv"','"'+vvee_path+'"','"ee"','false'))
+	outputFile.write("root -l -b -q 'GetBaseLineEvents.C+(%s,%s,%s,%s,%s)' \n" %('"'+vvee_files[i]+'"','"vv"','"'+vvee_path+'"','"ee"','false'))
 
 for i in range(0,len(susy_mm_files)):
 	outputFile = open(script_dir+'/run_%s_susy_mm.sh'%(susy_mm_files[i]), 'w')
@@ -252,7 +252,7 @@ for i in range(0,len(susy_mm_files)):
 	local_susy_File.write("sh run_%s_susy_mm.sh\n"%(susy_mm_files[i]))
 	outputFile.write("source /cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase/user/atlasLocalSetup.sh\n")
 	outputFile.write("lsetup ROOT\n")
-	outputFile.write("root -l -b -q 'GetBaseLineEvents.C+(%s,%s,%s,%s,%s)' &\n" %('"'+susy_mm_files[i]+'"','"susy"','"'+susy_mm_path+'"','"mm"','false'))
+	outputFile.write("root -l -b -q 'GetBaseLineEvents.C+(%s,%s,%s,%s,%s)' \n" %('"'+susy_mm_files[i]+'"','"susy"','"'+susy_mm_path+'"','"mm"','false'))
 
 for i in range(0,len(susy_ee_files)):
 	outputFile = open(script_dir+'/run_%s_susy_ee.sh'%(susy_ee_files[i]), 'w')
@@ -260,7 +260,7 @@ for i in range(0,len(susy_ee_files)):
 	local_susy_File.write("sh run_%s_susy_ee.sh\n"%(susy_ee_files[i]))
 	outputFile.write("source /cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase/user/atlasLocalSetup.sh\n")
 	outputFile.write("lsetup ROOT\n")
-	outputFile.write("root -l -b -q 'GetBaseLineEvents.C+(%s,%s,%s,%s,%s)' &\n" %('"'+susy_ee_files[i]+'"','"susy"','"'+susy_ee_path+'"','"ee"','false'))
+	outputFile.write("root -l -b -q 'GetBaseLineEvents.C+(%s,%s,%s,%s,%s)' \n" %('"'+susy_ee_files[i]+'"','"susy"','"'+susy_ee_path+'"','"ee"','false'))
 
 for i in range(0,len(gdata_files_2016)):
 	outputFile = open(script_dir+'/run_%s_gdata16.sh'%(gdata_files_2016[i]), 'w')
@@ -268,7 +268,7 @@ for i in range(0,len(gdata_files_2016)):
 	local_gdata_File.write("sh run_%s_gdata16.sh\n"%(gdata_files_2016[i]))
 	outputFile.write("source /cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase/user/atlasLocalSetup.sh\n")
 	outputFile.write("lsetup ROOT\n")
-	outputFile.write("root -l -b -q 'GetPhotonEvents.C+(%s,%s,%s,%s)' &\n" %('"'+gdata_files_2016[i]+'"','"gdata"','"'+gdata_path_2016+'"','1'))
+	outputFile.write("root -l -b -q 'GetPhotonEvents.C+(%s,%s,%s,%s)' \n" %('"'+gdata_files_2016[i]+'"','"gdata"','"'+gdata_path_2016+'"','1'))
 
 #for i in range(0,len(gdata_files_2015)):
 #	outputFile = open(script_dir+'/run_%s_gdata15.sh'%(gdata_files_2015[i]), 'w')
@@ -276,7 +276,7 @@ for i in range(0,len(gdata_files_2016)):
 #	local_gdata_File.write("sh run_%s_gdata15.sh\n"%(gdata_files_2015[i]))
 #	outputFile.write("source /cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase/user/atlasLocalSetup.sh\n")
 #	outputFile.write("lsetup ROOT\n")
-#	outputFile.write("root -l -b -q 'GetPhotonEvents.C+(%s,%s,%s,%s)' &\n" %('"'+gdata_files_2015[i]+'"','"gdata"','"'+gdata_path_2015+'"','1'))
+#	outputFile.write("root -l -b -q 'GetPhotonEvents.C+(%s,%s,%s,%s)' \n" %('"'+gdata_files_2015[i]+'"','"gdata"','"'+gdata_path_2015+'"','1'))
 
 for i in range(0,len(gmc_files)):
 	outputFile = open(script_dir+'/run_%s_gmc.sh'%(gmc_files[i]), 'w')
@@ -284,7 +284,7 @@ for i in range(0,len(gmc_files)):
 	local_gmc_File.write("sh run_%s_gmc.sh\n"%(gmc_files[i]))
 	outputFile.write("source /cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase/user/atlasLocalSetup.sh\n")
 	outputFile.write("lsetup ROOT\n")
-	outputFile.write("root -l -b -q 'GetPhotonEvents.C+(%s,%s,%s,%s)' &\n" %('"'+gmc_files[i]+'"','"gmc"','"'+gmc_path+'"','0'))
+	outputFile.write("root -l -b -q 'GetPhotonEvents.C+(%s,%s,%s,%s)' \n" %('"'+gmc_files[i]+'"','"gmc"','"'+gmc_path+'"','0'))
 
 for i in range(0,len(Vg_files)):
 	outputFile = open(script_dir+'/run_%s_Vg.sh'%(Vg_files[i]), 'w')
@@ -292,7 +292,7 @@ for i in range(0,len(Vg_files)):
 	local_Vg_File.write("sh run_%s_Vg.sh\n"%(Vg_files[i]))
 	outputFile.write("source /cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase/user/atlasLocalSetup.sh\n")
 	outputFile.write("lsetup ROOT\n")
-	outputFile.write("root -l -b -q 'GetPhotonEvents.C+(%s,%s,%s,%s)' &\n" %('"'+Vg_files[i]+'"','"Vg"','"'+Vg_path+'"','2'))
+	outputFile.write("root -l -b -q 'GetPhotonEvents.C+(%s,%s,%s,%s)' \n" %('"'+Vg_files[i]+'"','"Vg"','"'+Vg_path+'"','2'))
 
 for i in range(0,len(bphys_files)):
 	outputFile = open(script_dir+'/run_%s_bphys.sh'%(bphys_files[i]), 'w')
@@ -300,7 +300,7 @@ for i in range(0,len(bphys_files)):
 	local_z_File.write("sh run_%s_bphys.sh\n"%(bphys_files[i]))
 	outputFile.write("source /cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase/user/atlasLocalSetup.sh\n")
 	outputFile.write("lsetup ROOT\n")
-	outputFile.write("root -l -b -q 'GetBPhysicsEvents.C+(%s,%s,%s,%s)' &\n" %('"'+bphys_files[i]+'"','"bphys"','"'+bphys_path+'"','1'))
+	outputFile.write("root -l -b -q 'GetBPhysicsEvents.C+(%s,%s,%s,%s)' \n" %('"'+bphys_files[i]+'"','"bphys"','"'+bphys_path+'"','1'))
 
 
 outputFile = open(script_dir+'/run_gmc_sm.sh', 'w')
