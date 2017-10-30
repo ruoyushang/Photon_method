@@ -300,12 +300,12 @@ void GetPhotonEvents(string sampleID, string outputName, string pathToNtuples, i
 	BaselineTree.Branch("lep_eta_raw","std::vector<double>",&lep_eta);
 	double totalWeight = 0.;
 	BaselineTree.Branch("totalWeight",&totalWeight,"totalWeight/D");
-	//if (isData!=1) {
-	//	BaselineTree.Branch("truthGamma_pt",&truthGamma_pt,"truthGamma_pt/D");
-	//	BaselineTree.Branch("truthGamma_eta",&truthGamma_eta,"truthGamma_eta/D");
-	//	BaselineTree.Branch("truthGamma_phi",&truthGamma_phi,"truthGamma_phi/D");
+	if (isData!=1) {
+		BaselineTree.Branch("truthGamma_pt",&truthGamma_pt,"truthGamma_pt/D");
+		BaselineTree.Branch("truthGamma_eta",&truthGamma_eta,"truthGamma_eta/D");
+		BaselineTree.Branch("truthGamma_phi",&truthGamma_phi,"truthGamma_phi/D");
 	//	BaselineTree.Branch("gamma_dR",&gamma_dR,"gamma_dR/D");
-	//}
+	}
 
 	TH1D* hist_low_njet = new TH1D("hist_low_njet","",bin_size,njet_bin);
 	hist_low_njet->SetStats(0);
