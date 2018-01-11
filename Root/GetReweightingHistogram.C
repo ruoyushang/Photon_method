@@ -236,7 +236,7 @@ std::vector<double>* jet_pT = new std::vector<double>(10);
 
 void GetReweightingHistogram(string ch, int isData, double lumi, string photon_tag) {
 
-	TFile fZ( TString(outputPath)+"zjets/zjets_"+TString(ch)+".root" );
+	TFile fZ( TString(smearingPath)+"zjets/zjets_"+TString(ch)+".root" );
 	TTree*  tZ              = (TTree*)fZ.Get("BaselineTree");
 	tZ->SetBranchStatus("*", 0);
 	tZ->SetBranchStatus("totalWeight", 1);
@@ -388,8 +388,8 @@ void GetReweightingHistogram(string ch, int isData, double lumi, string photon_t
 	fZ.Close();
 
 	if (isData==1) {
-		cout << "Opening file           : " << TString(outputPath)+"data/data_"+TString(ch)+".root"  << endl;
-		TFile fZ( TString(outputPath)+"data/data_"+TString(ch)+".root" );
+		cout << "Opening file           : " << TString(smearingPath)+"data/data_"+TString(ch)+".root"  << endl;
+		TFile fZ( TString(smearingPath)+"data/data_"+TString(ch)+".root" );
 		TTree*  tZ              = (TTree*)fZ.Get("BaselineTree");
 		tZ->SetBranchStatus("*", 0);
 		tZ->SetBranchStatus("totalWeight", 1);
@@ -553,8 +553,8 @@ void GetReweightingHistogram(string ch, int isData, double lumi, string photon_t
 		hist_srhigh_etsmrw_correction->Add(hist_srhigh_z_et);
 		hist_srhigh_htrw_correction->Add(hist_srhigh_z_ht);
 		fZ.Close();
-		cout << "Opening file           : " << TString(outputPath)+"tt/tt"+TString(ch)+".root"        << endl;
-		TFile ftt( TString(outputPath)+"tt/tt"+TString(ch)+".root" );
+		cout << "Opening file           : " << TString(smearingPath)+"tt/tt"+TString(ch)+".root"        << endl;
+		TFile ftt( TString(smearingPath)+"tt/tt"+TString(ch)+".root" );
 		TTree*  ttt              = (TTree*)ftt.Get("BaselineTree");
 		ttt->SetBranchStatus("*", 0);
 		ttt->SetBranchStatus("totalWeight", 1);
@@ -718,8 +718,8 @@ void GetReweightingHistogram(string ch, int isData, double lumi, string photon_t
 		hist_srhigh_etsmrw_correction->Add(hist_srhigh_tt_et,-1.*lumi);
 		hist_srhigh_htrw_correction->Add(hist_srhigh_tt_ht,-1.*lumi);
 		ftt.Close();
-		cout << "Opening file           : " << TString(outputPath)+"vv/vv"+TString(ch)+".root"       << endl;
-		TFile fvv( TString(outputPath)+"vv/vv"+TString(ch)+".root" );
+		cout << "Opening file           : " << TString(smearingPath)+"vv/vv"+TString(ch)+".root"       << endl;
+		TFile fvv( TString(smearingPath)+"vv/vv"+TString(ch)+".root" );
 		TTree*  tvv              = (TTree*)fvv.Get("BaselineTree");
 		tvv->SetBranchStatus("*", 0);
 		tvv->SetBranchStatus("totalWeight", 1);
@@ -1063,7 +1063,7 @@ void GetReweightingHistogram(string ch, int isData, double lumi, string photon_t
 		fPhoton.Close();
 	}
 	else {
-		TFile fZ( TString(outputPath)+"zjets/zjets_"+TString(ch)+".root" );
+		TFile fZ( TString(smearingPath)+"zjets/zjets_"+TString(ch)+".root" );
 		TTree*  tZ              = (TTree*)fZ.Get("BaselineTree");
 		tZ->SetBranchStatus("*", 0);
 		tZ->SetBranchStatus("totalWeight", 1);
