@@ -25,7 +25,7 @@
 #include "MT2_ROOT.h"
 #include "TRandom.h"
 
-//TString tag = TString("MonoJet");
+TString tag;
 //TString tag = TString("MET0");
 //TString tag = TString("MET50");
 //TString tag = TString("MET100");
@@ -33,13 +33,14 @@
 //TString tag = TString("MET200");
 //TString tag = TString("GoodJet");
 //TString tag = TString("BadMuon");
-TString tag = TString("CompressWino");
+//TString tag = TString("CompressWino");
 //TString tag = TString("LowWino");
 //TString tag = TString("LowPtLep");
 //TString tag = TString("RJ2CA_Compress");
 //TString tag = TString("RJ2CA_Low");
 //TString tag = TString("RJ2CA_All");
 
+TRandom myRandom;
 TTree* inputTree;
 Long64_t EventNumber;
 Int_t RunNumber;
@@ -153,27 +154,6 @@ double GetMT2LorentzTransform(TLorentzVector boost_4vec, TLorentzVector lep0_4ve
 	return MT2_new;
 
 }
-bool MonoJetSelection(double unit) {
-	if (jet_n!=1) return false;
-	if (bjet_n>0) return false;
-	if (lep_pT->at(0)<25.*unit) return false;
-	if (lep_pT->at(1)<25.*unit) return false;
-	if (mll/unit<12) return false;
-	if (Z_pt/unit<50) return false;
-	//if (MET/unit<50) return false;
-	return true;
-}
-bool Strong2LSelection(double unit) {
-	if (jet_n<2) return false;
-	if (bjet_n>0) return false;
-	if (lep_pT->at(0)<25.*unit) return false;
-	if (lep_pT->at(1)<25.*unit) return false;
-	if (jet_pT->at(0)<30.*unit) return false;
-	if (jet_pT->at(1)<30.*unit) return false;
-	if (mll/unit<12) return false;
-	if (Z_pt/unit<50) return false;
-	return true;
-}
 double JetEtMissDPhi(double unit, int j) {
 	if (j>=jet_pT->size()) return 1e10;
 	TLorentzVector met_4vec;
@@ -183,6 +163,117 @@ double JetEtMissDPhi(double unit, int j) {
 	jet_4vec.SetPtEtaPhiM(jet_pT->at(j),jet_eta->at(j),jet_phi->at(j),0);
 	DPhiMETJet = abs(jet_4vec.DeltaPhi(met_4vec));
 	return DPhiMETJet;
+}
+bool MonoJetSelection(double unit) {
+	if (jet_n!=1) return false;
+	if (bjet_n>0) return false;
+	if (lep_pT->at(0)<25.*unit) return false;
+	if (lep_pT->at(1)<25.*unit) return false;
+	if (abs(lep_eta->at(0))>2.5) return false;
+	if (abs(lep_eta->at(1))>2.5) return false;
+	if (mll/unit<12) return false;
+	if (Z_pt/unit<50) return false;
+	if (HT/unit<100) return false;
+	//if (HT/unit<200) return false;
+	double DPhiMETJet1st = JetEtMissDPhi(unit,0);
+	if (DPhiMETJet1st<0.4) return false;
+	return true;
+}
+bool LowMllExcess2JetSelection(double unit) {
+	if (jet_n!=2) return false;
+	if (bjet_n>0) return false;
+	if (lep_pT->at(0)<25.*unit) return false;
+	if (lep_pT->at(1)<25.*unit) return false;
+	if (abs(lep_eta->at(0))>2.5) return false;
+	if (abs(lep_eta->at(1))>2.5) return false;
+	if (mll/unit<12) return false;
+	if (Z_pt/unit<50) return false;
+	if (jet_pT->at(0)/unit<100) return false;
+	double DPhiMETJet1st = JetEtMissDPhi(unit,0);
+	if (DPhiMETJet1st<0.4) return false;
+	return true;
+}
+bool LowMllExcess3JetSelection(double unit) {
+	if (jet_n!=3) return false;
+	if (bjet_n>0) return false;
+	if (lep_pT->at(0)<25.*unit) return false;
+	if (lep_pT->at(1)<25.*unit) return false;
+	if (abs(lep_eta->at(0))>2.5) return false;
+	if (abs(lep_eta->at(1))>2.5) return false;
+	if (mll/unit<12) return false;
+	if (Z_pt/unit<50) return false;
+	if (jet_pT->at(0)/unit<100) return false;
+	double DPhiMETJet1st = JetEtMissDPhi(unit,0);
+	if (DPhiMETJet1st<0.4) return false;
+	return true;
+}
+bool LowMllExcess4JetSelection(double unit) {
+	if (jet_n!=4) return false;
+	if (bjet_n>0) return false;
+	if (lep_pT->at(0)<25.*unit) return false;
+	if (lep_pT->at(1)<25.*unit) return false;
+	if (abs(lep_eta->at(0))>2.5) return false;
+	if (abs(lep_eta->at(1))>2.5) return false;
+	if (mll/unit<12) return false;
+	if (Z_pt/unit<50) return false;
+	if (jet_pT->at(0)/unit<100) return false;
+	double DPhiMETJet1st = JetEtMissDPhi(unit,0);
+	if (DPhiMETJet1st<0.4) return false;
+	return true;
+}
+bool LowMllExcess5JetSelection(double unit) {
+	if (jet_n!=5) return false;
+	if (bjet_n>0) return false;
+	if (lep_pT->at(0)<25.*unit) return false;
+	if (lep_pT->at(1)<25.*unit) return false;
+	if (abs(lep_eta->at(0))>2.5) return false;
+	if (abs(lep_eta->at(1))>2.5) return false;
+	if (mll/unit<12) return false;
+	if (Z_pt/unit<50) return false;
+	if (jet_pT->at(0)/unit<100) return false;
+	double DPhiMETJet1st = JetEtMissDPhi(unit,0);
+	if (DPhiMETJet1st<0.4) return false;
+	return true;
+}
+bool LowMllExcessBJetSelection(double unit) {
+	if (jet_n!=1) return false;
+	if (bjet_n!=1) return false;
+	if (lep_pT->at(0)<25.*unit) return false;
+	if (lep_pT->at(1)<25.*unit) return false;
+	if (abs(lep_eta->at(0))>2.5) return false;
+	if (abs(lep_eta->at(1))>2.5) return false;
+	if (mll/unit<12) return false;
+	if (Z_pt/unit<50) return false;
+	if (jet_pT->at(0)/unit<100) return false;
+	double DPhiMETJet1st = JetEtMissDPhi(unit,0);
+	if (DPhiMETJet1st<0.4) return false;
+	return true;
+}
+bool Strong2LSelection(double unit) {
+	if (jet_n<2) return false;
+	if (bjet_n>0) return false;
+	if (lep_pT->at(0)<25.*unit) return false;
+	if (lep_pT->at(1)<25.*unit) return false;
+	if (abs(lep_eta->at(0))>2.5) return false;
+	if (abs(lep_eta->at(1))>2.5) return false;
+	if (jet_pT->at(0)<30.*unit) return false;
+	if (jet_pT->at(1)<30.*unit) return false;
+	if (mll/unit<12) return false;
+	if (Z_pt/unit<50) return false;
+	if (HT/unit<200) return false;
+	return true;
+}
+bool LowPtZSelection(double unit) {
+	if (jet_n<2) return false;
+	if (bjet_n>0) return false;
+	if (lep_pT->at(0)<25.*unit) return false;
+	if (lep_pT->at(1)<25.*unit) return false;
+	if (abs(lep_eta->at(0))>2.5) return false;
+	if (abs(lep_eta->at(1))>2.5) return false;
+	if (jet_pT->at(0)<30.*unit) return false;
+	if (jet_pT->at(1)<30.*unit) return false;
+	if (mll/unit<12) return false;
+	return true;
 }
 double JetEtMissSig(double unit, int j) {
 	if (j>=jet_pT->size()) return 1e10;
@@ -214,6 +305,8 @@ double MTWino(double unit, int j1, int j2) {
 	TLorentzVector lept2_4vec;
 	lept2_4vec.SetPtEtaPhiM(lep_pT->at(1),lep_eta->at(1),lep_phi->at(1),0);
 	TLorentzVector z_4vec = lept1_4vec+lept2_4vec;
+	//w_4vec.SetPtEtaPhiM(w_4vec.Pt(),w_4vec.Eta(),w_4vec.Phi(),0.);
+	//z_4vec.SetPtEtaPhiM(z_4vec.Pt(),z_4vec.Eta(),z_4vec.Phi(),0.);
 	double mt = ComputeMT2(z_4vec, w_4vec, met_4vec, 0, 0).Compute();
 	return mt/unit;
 }
@@ -319,7 +412,7 @@ double MTWinoUsing80GeVPair(double unit) {
 	jets = FindJetPairCloseTo80GeV(unit);
 	return MTWino(unit, jets.first, jets.second);
 }
-double MTWinoMax(double unit, int j1, int j2) {
+double MTWinoMax(double unit, int j1, int j2, double inv_mass) {
 	if (j1>=jet_pT->size()) return 1e10;
 	if (j2>=jet_pT->size()) return 1e10;
 	TLorentzVector met_4vec;
@@ -335,26 +428,48 @@ double MTWinoMax(double unit, int j1, int j2) {
 	TLorentzVector lept2_4vec;
 	lept2_4vec.SetPtEtaPhiM(lep_pT->at(1),lep_eta->at(1),lep_phi->at(1),0);
 	TLorentzVector z_4vec = lept1_4vec+lept2_4vec;
-	TRandom myRandom;
+	w_4vec.SetPtEtaPhiM(w_4vec.Pt(),w_4vec.Eta(),w_4vec.Phi(),0.);
+	z_4vec.SetPtEtaPhiM(z_4vec.Pt(),z_4vec.Eta(),z_4vec.Phi(),0.);
 	double boost_pt;
-	double boost_eta;
 	double boost_phi;
 	TLorentzVector boost_4vec;
-	double MTWino_max = MTWinoUsing80GeVPair(unit)*unit;
-	for (int i=0;i<10;i++) {
-		boost_pt = myRandom.Rndm()*100;
-		boost_eta = myRandom.Rndm()*8.0*TMath::Pi()-4.0*TMath::Pi();
-		boost_phi = myRandom.Rndm()*2.*TMath::Pi()+met_4vec.Phi();
-		boost_4vec.SetPtEtaPhiM(boost_pt,0,boost_phi,1.);
-		met_4vec.SetPtEtaPhiM(met_4vec.Pt(),-(w_4vec+z_4vec).Eta(),met_4vec.Phi(),(w_4vec+z_4vec).M());
-		MTWino_max = max(MTWino_max,GetMT2LorentzTransform(boost_4vec, z_4vec, w_4vec, met_4vec));
+	if (inv_mass==0.) inv_mass = (w_4vec+z_4vec).M();
+	//double inv_mass = (w_4vec+z_4vec).M();
+	double beta_limit = 100.;
+	double boost_pt_final = 0;
+	double boost_phi_final = 0;
+	double MT2_this = 0;
+	double MT2_max = 0;
+	for (int i=0;i<100;i++) {
+		boost_phi = myRandom.Rndm()*2.*TMath::Pi()-TMath::Pi()+met_4vec.Phi();
+		boost_4vec.SetPtEtaPhiM(beta_limit/2.,0.,boost_phi,1.);
+		met_4vec.SetPtEtaPhiM(met_4vec.Pt(),-(w_4vec+z_4vec).Eta(),met_4vec.Phi(),inv_mass);
+		MT2_this = GetMT2LorentzTransform(boost_4vec, w_4vec, z_4vec, met_4vec);
+		if (MT2_max<MT2_this) {
+			MT2_max = MT2_this;
+			boost_phi_final = boost_phi;
+		}
 	}
-	return MTWino_max/unit;
+	for (int i=0;i<100;i++) {
+		boost_pt = myRandom.Rndm()*beta_limit;
+		boost_4vec.SetPtEtaPhiM(boost_pt,0.,boost_phi_final,1.);
+		met_4vec.SetPtEtaPhiM(met_4vec.Pt(),-(w_4vec+z_4vec).Eta(),met_4vec.Phi(),inv_mass);
+		MT2_this = GetMT2LorentzTransform(boost_4vec, w_4vec, z_4vec, met_4vec);
+		if (MT2_max<MT2_this) {
+			MT2_max = MT2_this;
+			boost_pt_final = boost_pt;
+		}
+	}
+	return MT2_max/unit;
 }
-double MTWinoMaxUsing80GeVPair(double unit) {
+double MTWinoMaxUsing80GeVPair(double unit, int n_itr) {
 	std::pair<int, int> jets;
 	jets = FindJetPairCloseTo80GeV(unit);
-	return MTWinoMax(unit, jets.first, jets.second);
+	double result = MTWinoMax(unit, jets.first, jets.second,0.);
+	if (n_itr>=1) max(result,MTWinoMax(unit, jets.first, jets.second,result));
+	if (n_itr>=2) max(result,MTWinoMax(unit, jets.first, jets.second,result));
+	if (n_itr>=3) max(result,MTWinoMax(unit, jets.first, jets.second,result));
+	return result;
 }
 double JetInvMassUsing80GeVPair(double unit) {
 	std::pair<int, int> jets;
@@ -692,14 +807,20 @@ bool LowWino(double unit) {
 	if (lep_pT->at(0)<25.*unit) return false;
 	if (lep_pT->at(1)<25.*unit) return false;
 	if (jet_pT->at(0)<50.*unit) return false;
+	//if (jet_pT->at(0)<30.*unit) return false;
+	//if (jet_pT->at(1)<30.*unit) return false;
 	if (mll/unit<81) return false;
 	if (mll/unit>101) return false;
 	if (MET/unit<150) return false;
+	//if (MET/unit<125) return false;
 	double mjj_80 = JetInvMassUsing80GeVPair(unit);
 	if (mjj_80<70) return false;
 	if (mjj_80>100) return false;
-	if (JetInvMassMin(unit)>100) return false;
-	if (JetInvMassMax(unit)<70) return false;
+	//if (JetInvMassMin(unit)>100) return false;
+	//if (JetInvMassMax(unit)<70) return false;
+	double DPhiMETJet1st = JetEtMissDPhi(unit,0);
+	if (DPhiMETJet1st<0.4) return false;
+	if (MTWinoMaxUsing80GeVPair(unit,0)>60.) return false;
 	return true;
 }
 bool LowPtLep(double unit) {
@@ -722,10 +843,10 @@ void Strong2L(TString pathToNtuple, TString pathToOutput, TString TreeName, bool
 	Z_truthEta = 0;
 	Z_truthPhi = 0;
 	if (DoReweighting) {
-		inputTree->SetBranchStatus("ptrw_bveto"			,1);
-		inputTree->SetBranchAddress("ptrw_bveto"		,&ptrw);
-		//inputTree->SetBranchStatus("ptrw_ht200"			,1);
-		//inputTree->SetBranchAddress("ptrw_ht200"		,&ptrw);
+		inputTree->SetBranchStatus("ptsmrw_bveto"			,1);
+		inputTree->SetBranchAddress("ptsmrw_bveto"		,&ptrw);
+		//inputTree->SetBranchStatus("ptsmrw_ht200"			,1);
+		//inputTree->SetBranchAddress("ptsmrw_ht200"		,&ptrw);
 		//inputTree->SetBranchStatus("ptrw_ht400"			,1);
 		//inputTree->SetBranchAddress("ptrw_ht400"		,&ptrw);
 		//inputTree->SetBranchStatus("ptrw_ht1200"		,1);
@@ -741,28 +862,36 @@ void Strong2L(TString pathToNtuple, TString pathToOutput, TString TreeName, bool
 	TFile   outputFile(pathToOutput,"recreate");
 
 	TH1D Hist_MET = TH1D(TString("Hist_MET"),"",15,0,300);
-	TH1D Hist_mll = TH1D(TString("Hist_mll"),"",20,41,141);
+	TH1D Hist_METl = TH1D(TString("Hist_METl"),"",30,-300,300);
+	TH1D Hist_METt = TH1D(TString("Hist_METt"),"",30,-300,300);
+	TH1D Hist_ZPt = TH1D(TString("Hist_ZPt"),"",30,0,1500);
+	TH1D Hist_ZPt2 = TH1D(TString("Hist_ZPt2"),"",20,0,200);
+	TH1D Hist_mll = TH1D(TString("Hist_mll"),"",28,21,161);
+	TH1D Hist_mll2 = TH1D(TString("Hist_mll2"),"",12,61,121);
 	TH1D Hist_mjj80 = TH1D(TString("Hist_mjj80"),"",20,0,200);
 	TH1D Hist_mjjmin = TH1D(TString("Hist_mjjmin"),"",20,0,200);
 	TH1D Hist_mjjmax = TH1D(TString("Hist_mjjmax"),"",20,0,200);
 	TH1D Hist_MT2 = TH1D(TString("Hist_MT2"),"",20,0,200);
-	TH1D Hist_MTWino_80 = TH1D(TString("Hist_MTWino_80"),"",20,50,750);
+	TH1D Hist_MTWino_80 = TH1D(TString("Hist_MTWino_80"),"",16,50,850);
 	TH1D Hist_MTWino_80_fine = TH1D(TString("Hist_MTWino_80_fine"),"",10,50,250);
-	TH1D Hist_MTWinoMax_80 = TH1D(TString("Hist_MTWinoMax_80"),"",20,50,750);
-	TH1D Hist_MTWinoMax_80_fine = TH1D(TString("Hist_MTWinoMax_80_fine"),"",10,50,250);
+	TH1D Hist_MTWinoMax_80 = TH1D(TString("Hist_MTWinoMax_80"),"",16,0,800);
+	TH1D Hist_MTWinoMax_80_fine = TH1D(TString("Hist_MTWinoMax_80_fine"),"",10,0,200);
 	TH1D Hist_RatioMETJet1st = TH1D(TString("Hist_RatioMETJet1st"),"",16,0,40);
 	TH1D Hist_RatioMETJet2nd = TH1D(TString("Hist_RatioMETJet2nd"),"",16,0,40);
 	TH1D Hist_RatioMETJet3rd = TH1D(TString("Hist_RatioMETJet3rd"),"",16,0,40);
 	TH1D Hist_RatioMETPhoton = TH1D(TString("Hist_RatioMETPhoton"),"",20,0,5);
 	TH1D Hist_RatioMETW = TH1D(TString("Hist_RatioMETW"),"",20,0,5);
-	//TH1D Hist_HighPtResolution = TH1D(TString("Hist_HighPtResolution"),"",32,-200,200);
-	//TH1D Hist_LowPtResolution = TH1D(TString("Hist_LowPtResolution"),"",32,-200,200);
 	TH1D Hist_DPhiMETPhoton = TH1D(TString("Hist_DPhiMETPhoton"),"",16,0,3.2);
 	TH1D Hist_DPhiMETJet1st = TH1D(TString("Hist_DPhiMETJet1st"),"",16,0,3.2);
 	TH1D Hist_DPhiMETJet2nd = TH1D(TString("Hist_DPhiMETJet2nd"),"",16,0,3.2);
-	TH1D Hist_Jet1stPt = TH1D(TString("Hist_Jet1stPt"),"",20,0,500);
+	TH1D Hist_njet = TH1D(TString("Hist_njet"),"",15,0,15);
+	TH1D Hist_HT = TH1D(TString("Hist_HT"),"",40,0,2000);
+	TH1D Hist_Lep1stPt = TH1D(TString("Hist_Lep1stPt"),"",20,0,1000);
+	TH1D Hist_Lep2ndPt = TH1D(TString("Hist_Lep2ndPt"),"",20,0,1000);
+	TH1D Hist_Jet1stPt = TH1D(TString("Hist_Jet1stPt"),"",40,0,2000);
+	TH1D Hist_Jet2ndPt = TH1D(TString("Hist_Jet2ndPt"),"",20,0,1000);
 	TH1D Hist_Jet3rdPt = TH1D(TString("Hist_Jet3rdPt"),"",20,0,200);
-	TH1D Hist_JetIsrPt = TH1D(TString("Hist_JetIsrPt"),"",20,0,500);
+	TH1D Hist_JetIsrPt = TH1D(TString("Hist_JetIsrPt"),"",20,0,1000);
 	TH1D Hist_RatioMETJetIsr = TH1D(TString("Hist_RatioMETJetIsr"),"",20,0,2);
 	TProfile Prof_ZPtResolution = TProfile(TString("Prof_ZPtResolution"),"",7,0,1400,0,500);
 	TProfile Prof_JetPtResolution = TProfile(TString("Prof_JetPtResolution"),"",7,0,1400,0,500);
@@ -777,19 +906,30 @@ void Strong2L(TString pathToNtuple, TString pathToOutput, TString TreeName, bool
 	for (Long64_t i=0;i<nentries;i+=step) {
 		if (fmod(i,1e5)==0) std::cout << pathToNtuple << " " << i << "/" << nentries << " events processed." << std::endl;
 		inputTree->GetEntry(i);
-		if (tag == TString("MonoJet")) {if (!MonoJetSelection(unit)) continue;}
-		else if (tag == TString("CompressWino")) {if (!CompressWino(unit)) continue;}
-		else if (tag == TString("LowWino")) {if (!LowWino(unit)) continue;}
-		else if (tag == TString("LowPtLep")) {if (!LowPtLep(unit)) continue;}
-		else if (tag == TString("RJ2CA_Compress")) {if (!RJ2CA_Compress(unit)) continue;}
-		else if (tag == TString("RJ2CA_Low")) {if (!RJ2CA_Low(unit)) continue;}
-		else if (tag == TString("RJ2CA_All")) {if (!RJ2CA_Low(unit) && !RJ2CA_Compress(unit)) continue;}
-		else {if (!Strong2LSelection(unit)) continue;}
-		if (tag == TString("BadMuon")) if (!BadMuon(unit)) continue;
-		if (tag == TString("MET50")) if (MET/unit<50.) continue;
-		if (tag == TString("MET100")) if (MET/unit<100.) continue;
-		if (tag == TString("MET150")) if (MET/unit<150.) continue;
-		if (tag == TString("MET200")) if (MET/unit<200.) continue;
+		if (tag.Contains("MonoJet")) {if (!MonoJetSelection(unit)) continue;}
+		else if (tag.Contains("LowMllExcess2Jet")) {if (!LowMllExcess2JetSelection(unit)) continue;}
+		else if (tag.Contains("LowMllExcess3Jet")) {if (!LowMllExcess3JetSelection(unit)) continue;}
+		else if (tag.Contains("LowMllExcess4Jet")) {if (!LowMllExcess4JetSelection(unit)) continue;}
+		else if (tag.Contains("LowMllExcess5Jet")) {if (!LowMllExcess5JetSelection(unit)) continue;}
+		else if (tag.Contains("LowMllExcessBJet")) {if (!LowMllExcessBJetSelection(unit)) continue;}
+		else if (tag.Contains("CompressWino")) {if (!CompressWino(unit)) continue;}
+		else if (tag.Contains("LowWino")) {if (!LowWino(unit)) continue;}
+		else if (tag.Contains("LowPtLep")) {if (!LowPtLep(unit)) continue;}
+		else if (tag.Contains("RJ2CA_Compress")) {if (!RJ2CA_Compress(unit)) continue;}
+		else if (tag.Contains("RJ2CA_Low")) {if (!RJ2CA_Low(unit)) continue;}
+		else if (tag.Contains("RJ2CA_All")) {if (!RJ2CA_Low(unit) && !RJ2CA_Compress(unit)) continue;}
+		else if (tag.Contains("TwoJets")) {if (!Strong2LSelection(unit)) continue;}
+		else if (tag.Contains("LowPtZ")) {if (!LowPtZSelection(unit)) continue;}
+		if (tag.Contains("BadMuon")) if (!BadMuon(unit)) continue;
+		if (tag.Contains("OnZ")) if (mll/unit<61.||mll/unit>121.) continue;
+		if (tag.Contains("MET50")) if (MET/unit<50.) continue;
+		if (tag.Contains("MET80")) if (MET/unit<80.) continue;
+		if (tag.Contains("MET100")) if (MET/unit<100.) continue;
+		if (tag.Contains("MET120")) if (MET/unit<120.) continue;
+		if (tag.Contains("MET140")) if (MET/unit<140.) continue;
+		if (tag.Contains("MET160")) if (MET/unit<160.) continue;
+		if (tag.Contains("MET150")) if (MET/unit<150.) continue;
+		if (tag.Contains("MET200")) if (MET/unit<200.) continue;
 
 		double DPhiMETJet1st = JetEtMissDPhi(unit,0);
 		double DPhiMETJet2nd = JetEtMissDPhi(unit,1);
@@ -806,31 +946,40 @@ void Strong2L(TString pathToNtuple, TString pathToOutput, TString TreeName, bool
 		double RISR = MET/isr_4vec.Pt();
 
 		Hist_MET.Fill(MET/unit,totalWeight*ptrw*scale);
+		Hist_METl.Fill(METl/unit,totalWeight*ptrw*scale);
+		Hist_METt.Fill(METt/unit,totalWeight*ptrw*scale);
+		Hist_ZPt.Fill(Z_pt/unit,totalWeight*ptrw*scale);
+		Hist_ZPt2.Fill(Z_pt/unit,totalWeight*ptrw*scale);
 		Hist_mll.Fill(mll/unit,totalWeight*ptrw*scale);
-		Hist_mjj80.Fill(JetInvMassUsing80GeVPair(unit),totalWeight*ptrw*scale);
-		Hist_mjjmin.Fill(JetInvMassMin(unit),totalWeight*ptrw*scale);
-		Hist_mjjmax.Fill(JetInvMassMax(unit),totalWeight*ptrw*scale);
+		Hist_mll2.Fill(mll/unit,totalWeight*ptrw*scale);
+		//Hist_mjj80.Fill(JetInvMassUsing80GeVPair(unit),totalWeight*ptrw*scale);
+		//Hist_mjjmin.Fill(JetInvMassMin(unit),totalWeight*ptrw*scale);
+		//Hist_mjjmax.Fill(JetInvMassMax(unit),totalWeight*ptrw*scale);
+		Hist_mjjmax.Fill(JetInvMass(unit,1,2),totalWeight*ptrw*scale);
 		Hist_MT2.Fill(MT2W(unit),totalWeight*ptrw*scale);
-		Hist_MTWino_80.Fill(MTWinoUsing80GeVPair(unit),totalWeight*ptrw*scale);
-		Hist_MTWino_80_fine.Fill(MTWinoUsing80GeVPair(unit),totalWeight*ptrw*scale);
-		Hist_MTWinoMax_80.Fill(MTWinoMaxUsing80GeVPair(unit),totalWeight*ptrw*scale);
-		Hist_MTWinoMax_80_fine.Fill(MTWinoMaxUsing80GeVPair(unit),totalWeight*ptrw*scale);
-		Hist_RatioMETPhoton.Fill(RatioMETPhoton,totalWeight*ptrw*scale);
-		Hist_RatioMETW.Fill(RatioMETW01,totalWeight*ptrw*scale);
+		//Hist_MTWino_80.Fill(MTWinoUsing80GeVPair(unit),totalWeight*ptrw*scale);
+		//Hist_MTWino_80_fine.Fill(MTWinoUsing80GeVPair(unit),totalWeight*ptrw*scale);
+		//Hist_MTWinoMax_80.Fill(MTWinoMaxUsing80GeVPair(unit,0),totalWeight*ptrw*scale);
+		//Hist_MTWinoMax_80_fine.Fill(MTWinoMaxUsing80GeVPair(unit,0),totalWeight*ptrw*scale);
+		//Hist_RatioMETPhoton.Fill(RatioMETPhoton,totalWeight*ptrw*scale);
+		//Hist_RatioMETW.Fill(RatioMETW01,totalWeight*ptrw*scale);
 		Hist_DPhiMETPhoton.Fill(DPhiMETPhoton,totalWeight*ptrw*scale);
 		Hist_DPhiMETJet1st.Fill(DPhiMETJet1st,totalWeight*ptrw*scale);
 		Hist_DPhiMETJet2nd.Fill(DPhiMETJet2nd,totalWeight*ptrw*scale);
+		Hist_njet.Fill(jet_n,totalWeight*ptrw*scale);
+		Hist_HT.Fill(HT/unit,totalWeight*ptrw*scale);
+		Hist_Lep1stPt.Fill(lep_pT->at(0)/unit,totalWeight*ptrw*scale);
+		Hist_Lep2ndPt.Fill(lep_pT->at(1)/unit,totalWeight*ptrw*scale);
 		Hist_Jet1stPt.Fill(jet_pT->at(0)/unit,totalWeight*ptrw*scale);
+		if (jet_pT->size()>=2) Hist_Jet2ndPt.Fill(jet_pT->at(1)/unit,totalWeight*ptrw*scale);
 		if (jet_pT->size()>=3) Hist_Jet3rdPt.Fill(jet_pT->at(2)/unit,totalWeight*ptrw*scale);
-		Hist_JetIsrPt.Fill(IsrJetPtUsing80GeVPair(unit),totalWeight*ptrw*scale);
-		Hist_RatioMETJetIsr.Fill((MET/unit)/IsrJetPtUsing80GeVPair(unit),totalWeight*ptrw*scale);
-		//if (Z_pt/unit>500.) Hist_HighPtResolution.Fill(Z_pt-Z_truthPt,totalWeight*ptrw*scale);
-		//if (Z_pt/unit<200.) Hist_LowPtResolution.Fill(Z_pt-Z_truthPt,totalWeight*ptrw*scale);
-		Hist_RatioMETJet1st.Fill(RatioMETJet1st,totalWeight*ptrw*scale);
-		Hist_RatioMETJet2nd.Fill(RatioMETJet2nd,totalWeight*ptrw*scale);
-		Hist_RatioMETJet3rd.Fill(RatioMETJet3rd,totalWeight*ptrw*scale);
-		Hist_RJ2CA_Wmass.Fill(RJ2CA_Wmass,totalWeight*ptrw*scale);
-		Hist_RJ2CA_RISR.Fill(RISR,totalWeight*ptrw*scale);
+		//Hist_JetIsrPt.Fill(IsrJetPtUsing80GeVPair(unit),totalWeight*ptrw*scale);
+		//Hist_RatioMETJetIsr.Fill((MET/unit)/IsrJetPtUsing80GeVPair(unit),totalWeight*ptrw*scale);
+		//Hist_RatioMETJet1st.Fill(RatioMETJet1st,totalWeight*ptrw*scale);
+		//Hist_RatioMETJet2nd.Fill(RatioMETJet2nd,totalWeight*ptrw*scale);
+		//Hist_RatioMETJet3rd.Fill(RatioMETJet3rd,totalWeight*ptrw*scale);
+		//Hist_RJ2CA_Wmass.Fill(RJ2CA_Wmass,totalWeight*ptrw*scale);
+		//Hist_RJ2CA_RISR.Fill(RISR,totalWeight*ptrw*scale);
 
 		Prof_ZPtResolution.Fill(Z_pt/unit,pow(pow(Z_pt-Z_truthPt,2),0.5)/unit,totalWeight*ptrw*scale);
 		Prof_TSTResolution.Fill(jet_pT->at(0)/unit,pow(pow(MET_softTerm,2),0.5)/unit,totalWeight*ptrw*scale);
@@ -856,7 +1005,12 @@ void Strong2L(TString pathToNtuple, TString pathToOutput, TString TreeName, bool
 	}
 
 	Hist_MET.Write();
+	Hist_METl.Write();
+	Hist_METt.Write();
+	Hist_ZPt.Write();
+	Hist_ZPt2.Write();
 	Hist_mll.Write();
+	Hist_mll2.Write();
 	Hist_mjj80.Write();
 	Hist_mjjmin.Write();
 	Hist_mjjmax.Write();
@@ -873,12 +1027,15 @@ void Strong2L(TString pathToNtuple, TString pathToOutput, TString TreeName, bool
 	Hist_DPhiMETPhoton.Write();
 	Hist_DPhiMETJet1st.Write();
 	Hist_DPhiMETJet2nd.Write();
+	Hist_njet.Write();
+	Hist_HT.Write();
+	Hist_Lep1stPt.Write();
+	Hist_Lep2ndPt.Write();
 	Hist_Jet1stPt.Write();
+	Hist_Jet2ndPt.Write();
 	Hist_Jet3rdPt.Write();
 	Hist_JetIsrPt.Write();
 	Hist_RatioMETJetIsr.Write();
-	//Hist_HighPtResolution.Write();
-	//Hist_LowPtResolution.Write();
 	Prof_TSTResolution.Write();
 	Prof_ZPtResolution.Write();
 	Prof_JetPtResolution.Write();
@@ -937,16 +1094,16 @@ void Strong2LSignal(TString pathToNtuple, TString pathToOutput, TString TreeName
 	for (Long64_t i=0;i<nentries;i+=step) {
 		if (fmod(i,1e5)==0) std::cout << pathToNtuple << " " << i << "/" << nentries << " events processed." << std::endl;
 		inputTree->GetEntry(i);
-		if (tag == TString("MonoJet")) {if (!MonoJetSelection(unit)) continue;}
-		else if (tag == TString("CompressWino")) {if (!CompressWino(unit)) continue;}
-		else if (tag == TString("LowWino")) {if (!LowWino(unit)) continue;}
-		else if (tag == TString("LowPtLep")) {if (!LowPtLep(unit)) continue;}
+		if (tag.Contains("MonoJet")) {if (!MonoJetSelection(unit)) continue;}
+		else if (tag.Contains("CompressWino")) {if (!CompressWino(unit)) continue;}
+		else if (tag.Contains("LowWino")) {if (!LowWino(unit)) continue;}
+		else if (tag.Contains("LowPtLep")) {if (!LowPtLep(unit)) continue;}
 		else {if (!Strong2LSelection(unit)) continue;}
-		if (tag == TString("BadMuon")) if (!BadMuon(unit)) continue;
-		if (tag == TString("MET50")) if (MET/unit<50.) continue;
-		if (tag == TString("MET100")) if (MET/unit<100.) continue;
-		if (tag == TString("MET150")) if (MET/unit<150.) continue;
-		if (tag == TString("MET200")) if (MET/unit<200.) continue;
+		if (tag.Contains("BadMuon")) if (!BadMuon(unit)) continue;
+		if (tag.Contains("MET50")) if (MET/unit<50.) continue;
+		if (tag.Contains("MET100")) if (MET/unit<100.) continue;
+		if (tag.Contains("MET150")) if (MET/unit<150.) continue;
+		if (tag.Contains("MET200")) if (MET/unit<200.) continue;
 
 		double DPhiMETJet1st = JetEtMissDPhi(unit,0);
 		double DPhiMETJet2nd = JetEtMissDPhi(unit,1);
@@ -1011,6 +1168,17 @@ void RunStrong2L() {
 	DoReweighting = false;
 	Strong2L(pathToNtuple,pathToOutput,"BaselineTree",DoReweighting,Scale,1.0);
 
+	pathToNtuple = TString("/eos/atlas/user/r/rshang/OutputNtuples/wjets/wjets_ee.root");
+	pathToOutput = TString("../OutputHistogram/WMC_ee_Strong2L_")+tag+TString(".root");
+	DoReweighting = false;
+	Strong2L(pathToNtuple,pathToOutput,"BaselineTree",DoReweighting,Scale,1.0);
+	
+	pathToNtuple = TString("/eos/atlas/user/r/rshang/OutputNtuples/wjets/wjets_mm.root");
+	pathToOutput = TString("../OutputHistogram/WMC_mm_Strong2L_")+tag+TString(".root");
+	DoReweighting = false;
+	Strong2L(pathToNtuple,pathToOutput,"BaselineTree",DoReweighting,Scale,1.0);
+	
+
 	pathToNtuple = TString("/eos/atlas/user/r/rshang/OutputNtuples/tt/ttee.root");
 	pathToOutput = TString("../OutputHistogram/Top_ee_Strong2L_")+tag+TString(".root");
 	DoReweighting = false;
@@ -1041,12 +1209,15 @@ void RunStrong2L() {
 	DoReweighting = false;
 	Strong2L(pathToNtuple,pathToOutput,"BaselineTree",DoReweighting,1.0,1.0);
 
-	pathToNtuple = TString("/eos/atlas/user/r/rshang/OutputNtuples/gdata/gdata_ee_McSmear.root");
+	pathToNtuple = TString("/eos/atlas/user/r/rshang/OutputNtuples/gdata/gdata_ee_NoSmear.root");
 	pathToOutput = TString("../OutputHistogram/GData_ee_Strong2L_")+tag+TString(".root");
 	DoReweighting = true;
 	Strong2L(pathToNtuple,pathToOutput,"BaselineTree",DoReweighting,1.3,1.0);
 
-	pathToNtuple = TString("/eos/atlas/user/r/rshang/OutputNtuples/gdata/gdata_mm_McSmear.root");
+	if (tag.Contains("McSmear"))
+		pathToNtuple = TString("/eos/atlas/user/r/rshang/OutputNtuples/gdata/gdata_mm_McSmear.root");
+	else if (tag.Contains("NoSmear"))
+		pathToNtuple = TString("/eos/atlas/user/r/rshang/OutputNtuples/gdata/gdata_mm_NoSmear.root");
 	pathToOutput = TString("../OutputHistogram/GData_mm_Strong2L_")+tag+TString(".root");
 	DoReweighting = true;
 	Strong2L(pathToNtuple,pathToOutput,"BaselineTree",DoReweighting,1.3,1.0);
@@ -1062,25 +1233,28 @@ void RunStrong2L() {
 	Strong2L(pathToNtuple,pathToOutput,"BaselineTree",DoReweighting,Scale*0.5,1.0);
 
 
-	//pathToNtuple = TString("/eos/atlas/user/r/rshang/OutputNtuples/gmc/gmc_ee_McSmear.root");
-	//pathToOutput = TString("../OutputHistogram/GMC_ee_Strong2L_")+tag+TString(".root");
-	//DoReweighting = true;
-	//Strong2L(pathToNtuple,pathToOutput,"BaselineTree",DoReweighting,Scale*1.3,1.0);
-	//
-	//pathToNtuple = TString("/eos/atlas/user/r/rshang/OutputNtuples/zjets/zjets_ee.root");
-	//pathToOutput = TString("../OutputHistogram/ZMC_ee_Strong2L_")+tag+TString(".root");
-	//DoReweighting = false;
-	//Strong2L(pathToNtuple,pathToOutput,"BaselineTree",DoReweighting,Scale,1.0);
-	//
-	//pathToNtuple = TString("/eos/atlas/user/r/rshang/OutputNtuples/gmc/gmc_mm_McSmear.root");
-	//pathToOutput = TString("../OutputHistogram/GMC_mm_Strong2L_")+tag+TString(".root");
-	//DoReweighting = true;
-	//Strong2L(pathToNtuple,pathToOutput,"BaselineTree",DoReweighting,Scale*1.3,1.0);
-	//
-	//pathToNtuple = TString("/eos/atlas/user/r/rshang/OutputNtuples/zjets/zjets_mm.root");
-	//pathToOutput = TString("../OutputHistogram/ZMC_mm_Strong2L_")+tag+TString(".root");
-	//DoReweighting = false;
-	//Strong2L(pathToNtuple,pathToOutput,"BaselineTree",DoReweighting,Scale,1.0);
+	pathToNtuple = TString("/eos/atlas/user/r/rshang/OutputNtuples/gmc/gmc_ee_NoSmear.root");
+	pathToOutput = TString("../OutputHistogram/GMC_ee_Strong2L_")+tag+TString(".root");
+	DoReweighting = true;
+	Strong2L(pathToNtuple,pathToOutput,"BaselineTree",DoReweighting,Scale*1.3,1.0);
+	
+	pathToNtuple = TString("/eos/atlas/user/r/rshang/OutputNtuples/zjets/zjets_ee.root");
+	pathToOutput = TString("../OutputHistogram/ZMC_ee_Strong2L_")+tag+TString(".root");
+	DoReweighting = false;
+	Strong2L(pathToNtuple,pathToOutput,"BaselineTree",DoReweighting,Scale,1.0);
+	
+	if (tag.Contains("McSmear"))
+		pathToNtuple = TString("/eos/atlas/user/r/rshang/OutputNtuples/gmc/gmc_mm_McSmear.root");
+	else if (tag.Contains("NoSmear"))
+		pathToNtuple = TString("/eos/atlas/user/r/rshang/OutputNtuples/gmc/gmc_mm_NoSmear.root");
+	pathToOutput = TString("../OutputHistogram/GMC_mm_Strong2L_")+tag+TString(".root");
+	DoReweighting = true;
+	Strong2L(pathToNtuple,pathToOutput,"BaselineTree",DoReweighting,Scale*1.3,1.0);
+	
+	pathToNtuple = TString("/eos/atlas/user/r/rshang/OutputNtuples/zjets/zjets_mm.root");
+	pathToOutput = TString("../OutputHistogram/ZMC_mm_Strong2L_")+tag+TString(".root");
+	DoReweighting = false;
+	Strong2L(pathToNtuple,pathToOutput,"BaselineTree",DoReweighting,Scale,1.0);
 	
 
 }
@@ -1150,9 +1324,147 @@ void RunStrong2LSignal() {
 	Strong2LSignal(pathToNtuple,pathToOutput,"BaselineTree",DoReweighting,Scale,1.0);
 	
 }
+void RunStrong2LSS() {
+
+	bool DoReweighting;
+	double Scale = 36.1*1000.;
+	TString pathToNtuple;
+	TString pathToOutput;
+
+	pathToNtuple = TString("/eos/atlas/user/r/rshang/OutputNtuples_SS/data/data_ee.root");
+	pathToOutput = TString("../OutputHistogram/Data_ee_Strong2LSS_")+tag+TString(".root");
+	DoReweighting = false;
+	Strong2L(pathToNtuple,pathToOutput,"BaselineTree",DoReweighting,1.0,1.0);
+
+	pathToNtuple = TString("/eos/atlas/user/r/rshang/OutputNtuples_SS/data/data_mm.root");
+	pathToOutput = TString("../OutputHistogram/Data_mm_Strong2LSS_")+tag+TString(".root");
+	DoReweighting = false;
+	Strong2L(pathToNtuple,pathToOutput,"BaselineTree",DoReweighting,1.0,1.0);
+
+	pathToNtuple = TString("/eos/atlas/user/r/rshang/OutputNtuples_SS/wjets/wjets_ee.root");
+	pathToOutput = TString("../OutputHistogram/WMC_ee_Strong2LSS_")+tag+TString(".root");
+	DoReweighting = false;
+	Strong2L(pathToNtuple,pathToOutput,"BaselineTree",DoReweighting,Scale*1.0,1.0);
+	
+	pathToNtuple = TString("/eos/atlas/user/r/rshang/OutputNtuples_SS/wjets/wjets_mm.root");
+	pathToOutput = TString("../OutputHistogram/WMC_mm_Strong2LSS_")+tag+TString(".root");
+	DoReweighting = false;
+	Strong2L(pathToNtuple,pathToOutput,"BaselineTree",DoReweighting,Scale*1.0,1.0);
+	
+	pathToNtuple = TString("/eos/atlas/user/r/rshang/OutputNtuples_SS/tt/ttee.root");
+	pathToOutput = TString("../OutputHistogram/Top_ee_Strong2LSS_")+tag+TString(".root");
+	DoReweighting = false;
+	Strong2L(pathToNtuple,pathToOutput,"BaselineTree",DoReweighting,Scale*1.0,1.0);
+
+	pathToNtuple = TString("/eos/atlas/user/r/rshang/OutputNtuples_SS/tt/ttmm.root");
+	pathToOutput = TString("../OutputHistogram/Top_mm_Strong2LSS_")+tag+TString(".root");
+	DoReweighting = false;
+	Strong2L(pathToNtuple,pathToOutput,"BaselineTree",DoReweighting,Scale*1.0,1.0);
+
+	pathToNtuple = TString("/eos/atlas/user/r/rshang/OutputNtuples_SS/vv/vvee.root");
+	pathToOutput = TString("../OutputHistogram/VV_ee_Strong2LSS_")+tag+TString(".root");
+	DoReweighting = false;
+	Strong2L(pathToNtuple,pathToOutput,"BaselineTree",DoReweighting,Scale*1.0,1.0);
+
+	pathToNtuple = TString("/eos/atlas/user/r/rshang/OutputNtuples_SS/vv/vvmm.root");
+	pathToOutput = TString("../OutputHistogram/VV_mm_Strong2LSS_")+tag+TString(".root");
+	DoReweighting = false;
+	Strong2L(pathToNtuple,pathToOutput,"BaselineTree",DoReweighting,Scale*1.0,1.0);
+
+	pathToNtuple = TString("/eos/atlas/user/r/rshang/OutputNtuples_SS/zjets_221/zjets_ee.root");
+	pathToOutput = TString("../OutputHistogram/ZMC221_ee_Strong2LSS_")+tag+TString(".root");
+	DoReweighting = false;
+	Strong2L(pathToNtuple,pathToOutput,"BaselineTree",DoReweighting,Scale*1.0,1.0);
+
+	pathToNtuple = TString("/eos/atlas/user/r/rshang/OutputNtuples_SS/zjets_221/zjets_mm.root");
+	pathToOutput = TString("../OutputHistogram/ZMC221_mm_Strong2LSS_")+tag+TString(".root");
+	DoReweighting = false;
+	Strong2L(pathToNtuple,pathToOutput,"BaselineTree",DoReweighting,Scale*1.0,1.0);
+
+
+}
+void RunStrong2LDF() {
+
+	bool DoReweighting;
+	double Scale = 36.1*1000.;
+	TString pathToNtuple;
+	TString pathToOutput;
+
+	pathToNtuple = TString("/eos/atlas/user/r/rshang/OutputNtuples_DF/tt/ttem.root");
+	pathToOutput = TString("../OutputHistogram/Top_em_Strong2LDF_")+tag+TString(".root");
+	DoReweighting = false;
+	Strong2L(pathToNtuple,pathToOutput,"BaselineTree",DoReweighting,Scale*0.5,1.0);
+
+	pathToNtuple = TString("/eos/atlas/user/r/rshang/OutputNtuples_DF/vv/vvem.root");
+	pathToOutput = TString("../OutputHistogram/VV_em_Strong2LDF_")+tag+TString(".root");
+	DoReweighting = false;
+	Strong2L(pathToNtuple,pathToOutput,"BaselineTree",DoReweighting,Scale*0.5,1.0);
+
+	pathToNtuple = TString("/eos/atlas/user/r/rshang/OutputNtuples_DF/zjets_221/zjets_em.root");
+	pathToOutput = TString("../OutputHistogram/ZMC221_em_Strong2LDF_")+tag+TString(".root");
+	DoReweighting = false;
+	Strong2L(pathToNtuple,pathToOutput,"BaselineTree",DoReweighting,Scale*1.0,1.0);
+
+	pathToNtuple = TString("/eos/atlas/user/r/rshang/OutputNtuples_DF/data/data_em.root");
+	pathToOutput = TString("../OutputHistogram/Data_em_Strong2LDF_")+tag+TString(".root");
+	DoReweighting = false;
+	Strong2L(pathToNtuple,pathToOutput,"BaselineTree",DoReweighting,1.0,1.0);
+
+
+}
 void MakeSelectionHistogram_QA() {
 
-	RunStrong2L();
+	//tag = TString("MonoJetOnZ_PTRW_McSmear");
+	//RunStrong2L();
+	//tag = TString("MonoJetOnZMET50_PTRW_McSmear");
+	//RunStrong2L();
+	//tag = TString("MonoJetOnZMET80_PTRW_McSmear");
+	//RunStrong2L();
+	//tag = TString("MonoJetOnZMET100_PTRW_McSmear");
+	//RunStrong2L();
+	//tag = TString("MonoJetOnZ_PTRW_NoSmear");
+	//RunStrong2L();
+
+	//tag = TString("MonoJet_PTRW_NoSmear");
+	//RunStrong2L();
+	//tag = TString("MonoJet_PTRW_McSmear");
+	//RunStrong2L();
+	//tag = TString("MonoJetMET80_PTRW_McSmear");
+	//RunStrong2L();
+	//tag = TString("MonoJetMET100_PTRW_McSmear");
+	//RunStrong2L();
+	//tag = TString("MonoJetMET120_PTRW_McSmear");
+	//RunStrong2L();
+	//tag = TString("MonoJetMET140_PTRW_McSmear");
+	//RunStrong2L();
+	//tag = TString("MonoJetMET160_PTRW_McSmear");
+	//RunStrong2L();
+	//tag = TString("LowMllExcess2JetMET100_PTRW_McSmear");
+	//RunStrong2L();
+	//tag = TString("LowMllExcess3JetMET100_PTRW_McSmear");
+	//RunStrong2L();
+	//tag = TString("LowMllExcess4JetMET100_PTRW_McSmear");
+	//RunStrong2L();
+	//tag = TString("LowMllExcess5JetMET100_PTRW_McSmear");
+	//RunStrong2L();
+	//tag = TString("LowMllExcessBJetMET100_PTRW_McSmear");
+	//RunStrong2L();
+
+	//tag = TString("MonoJet_PTRW_McSmear");
+	//RunStrong2LSS();
+	//tag = TString("MonoJetMET100_PTRW_McSmear");
+	//RunStrong2LSS();
+	tag = TString("MonoJetMET100_PTRW_McSmear");
+	RunStrong2LDF();
+
+	//tag = TString("TwoJetsOnZ_PTRW_McSmear");
+	//RunStrong2L();
+	//tag = TString("TwoJetsOnZMET100_PTRW_McSmear");
+	//RunStrong2L();
+
+	//tag = TString("LowPtZOnZ_PTRW_McSmear");
+	//RunStrong2L();
+
 	//RunStrong2LSignal();
 
 }
