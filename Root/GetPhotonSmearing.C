@@ -252,8 +252,8 @@ void GetPhotonSmearing(string ch, int isData, string year) {
 	TH1::SetDefaultSumw2();
 
 	string  filename;
-	if (isData==1) filename = TString(TString(outputPath)+"gdata/gdata_raw.root"); 
-	if (isData==0) filename = TString(TString(outputPath)+"gmc/gmc_raw.root"); 
+	if (isData==1) filename = TString(TString(smearingPath)+"gdata/gdata_raw.root"); 
+	if (isData==0) filename = TString(TString(smearingPath)+"gmc/gmc_raw.root"); 
 	TFile*  inputFile      = TFile::Open(filename.c_str());
 	TTree*  T              = (TTree*)inputFile->Get("BaselineTree");
 
@@ -519,7 +519,8 @@ void GetPhotonSmearing(string ch, int isData, string year) {
 		// compute dijet system variables, m80jj, W pT, DR(2jet), etc.
 		//---------------------------------------------
 		TLorentzVector z_4vec;
-		z_4vec.SetPtEtaPhiM(gamma_pt_smear,gamma_eta,gamma_phi,mll);
+		z_4vec.SetPtEtaPhiM(gamma_pt,gamma_eta,gamma_phi,mll);
+		//z_4vec.SetPtEtaPhiM(gamma_pt_smear,gamma_eta,gamma_phi,mll);
 		GetDijetVariables(z_4vec,met_4vec_smear);
 
 		lep_pT->clear();
