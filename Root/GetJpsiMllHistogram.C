@@ -1,4 +1,3 @@
-//TH1D* hist_Mll_dPt[dpt_bin_size];
 TH1D* hist_Mll_dPt[bin_size][dpt_bin_size];
 TH1D* hist_low_dpt = new TH1D("hist_low_dpt","",dpt_bin_size,dpt_bin);
 TH1D* hist_sm_pt = new TH1D("hist_sm_pt","",bin_size,bphys_pt_bin);

@@ -271,8 +271,8 @@ void AddBranches(TTree* BaselineTree, bool isData) {
 	BaselineTree->Branch("METl",&METl,"METl/D");
 	BaselineTree->Branch("METt",&METt,"METt/D");
 	BaselineTree->Branch("MET_phi",&MET_phi,"MET_phi/D");
-	//BaselineTree->Branch("MET_softTerm",&MET_softTerm,"MET_softTerm/D");
-	//BaselineTree->Branch("MET_softPhi",&MET_softPhi,"MET_softPhi/D");
+	BaselineTree->Branch("MET_softTerm",&MET_softTerm,"MET_softTerm/D");
+	BaselineTree->Branch("MET_softPhi",&MET_softPhi,"MET_softPhi/D");
 	//BaselineTree->Branch("truthMET",&truthMET,"truthMET/Float_t");
 	//BaselineTree->Branch("truthMETl",&truthMETl,"truthMETl/D");
 	//BaselineTree->Branch("truthMETt",&truthMETt,"truthMETt/D");

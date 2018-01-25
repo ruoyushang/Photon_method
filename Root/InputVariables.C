@@ -47,9 +47,9 @@ std::vector<double>* jet_btag = new std::vector<double>(10);
 std::vector<int>* pass_trig_MET = new std::vector<int>(10);
 double sampleWeight;
 Float_t eventWeight;
-//Float_t emtrigweight;
-//Float_t eetrigweight;
-//Float_t mmtrigweight;
+Float_t emtrigweight;
+Float_t eetrigweight;
+Float_t mmtrigweight;
 Double_t trig_sf;
 Float_t truth_ZpT;
 Float_t truth_Zphi;
@@ -116,10 +116,10 @@ void GetBranches(TTree* inputTree, bool isData) {
 	if (!isData) {
 		inputTree->SetBranchStatus("sampleWeight"        ,1);
 		inputTree->SetBranchStatus("eventWeight"         ,1);
-		//inputTree->SetBranchStatus("emtrigweight"        ,1);
-		//inputTree->SetBranchStatus("eetrigweight"        ,1);
-		//inputTree->SetBranchStatus("mmtrigweight"        ,1);
-		inputTree->SetBranchStatus("trig_sf"        ,1);
+		inputTree->SetBranchStatus("emtrigweight"        ,1);
+		inputTree->SetBranchStatus("eetrigweight"        ,1);
+		inputTree->SetBranchStatus("mmtrigweight"        ,1);
+		//inputTree->SetBranchStatus("trig_sf"        ,1);
 		inputTree->SetBranchStatus("lep_truthPt"         ,1);
 		inputTree->SetBranchStatus("lep_truthEta"        ,1);
 		inputTree->SetBranchStatus("lep_truthPhi"        ,1);
@@ -184,10 +184,10 @@ void GetBranches(TTree* inputTree, bool isData) {
 	if (!isData) {
 		inputTree->SetBranchAddress("sampleWeight",&sampleWeight);
 		inputTree->SetBranchAddress("eventWeight",&eventWeight);
-		//inputTree->SetBranchAddress("emtrigweight",&emtrigweight);
-		//inputTree->SetBranchAddress("eetrigweight",&eetrigweight);
-		//inputTree->SetBranchAddress("mmtrigweight",&mmtrigweight);
-		inputTree->SetBranchAddress("trig_sf",&trig_sf);
+		inputTree->SetBranchAddress("emtrigweight",&emtrigweight);
+		inputTree->SetBranchAddress("eetrigweight",&eetrigweight);
+		inputTree->SetBranchAddress("mmtrigweight",&mmtrigweight);
+		//inputTree->SetBranchAddress("trig_sf",&trig_sf);
 		inputTree->SetBranchAddress("lep_truthPt"          ,&lep_truthPt           );
 		inputTree->SetBranchAddress("lep_truthEta"          ,&lep_truthEta           );
 		inputTree->SetBranchAddress("lep_truthPhi"          ,&lep_truthPhi           );

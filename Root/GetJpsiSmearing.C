@@ -33,8 +33,8 @@
 #include "BasicSetting.C"
 #include "PhotonVariables.C"
 #include "GetDijetVariables.C"
-#include "GetSmearingHistogram.C"
-#include "GetMllHistogram.C"
+#include "GetJpsiSmearingHistogram.C"
+#include "GetJpsiMllHistogram.C"
 #include "GetIndividualLeptonInfo.C"
 #include "MT2_ROOT.h"
 
@@ -110,7 +110,7 @@ void GetJpsiSmearing(string ch, int isData, string year) {
 	
 	std::cout << "Prepare Mll histograms..." << std::endl;
 
-	GetMllHistogram(ch);
+	GetJpsiMllHistogram(ch);
 	//for (int bin=0;bin<dpt_bin_size;bin++) {
 	//	int rebin = RebinHistogram(hist_Mll_dPt[bin],0);
 	//}
@@ -151,7 +151,7 @@ void GetJpsiSmearing(string ch, int isData, string year) {
 	}
 
 
-	if (smearing_method != 0) GetSmearingHistogram(ch,lumi, photon_tag);
+	if (smearing_method != 0) GetJpsiSmearingHistogram(ch,lumi, photon_tag);
 
 	if (smearing_method != 0) {  // if you want to use the deconvolution method to smear photon events. To enable this method, set "bool useDeconvolution = true" in BasicSetting.C
 		for (int bin=0;bin<bin_size;bin++) {
@@ -255,8 +255,8 @@ void GetJpsiSmearing(string ch, int isData, string year) {
 	TH1::SetDefaultSumw2();
 
 	string  filename;
-	if (isData==1) filename = TString(TString(outputPath)+"bphys/bphys_raw.root"); 
-	if (isData==0) filename = TString(TString(outputPath)+"bphys/bphys_raw.root"); 
+	if (isData==1) filename = TString(TString(smearingPath)+"bphys/bdata_raw.root"); 
+	if (isData==0) filename = TString(TString(smearingPath)+"bphys/bdata_raw.root"); 
 	TFile*  inputFile      = TFile::Open(filename.c_str());
 	TTree*  T              = (TTree*)inputFile->Get("BaselineTree");
 
@@ -270,8 +270,8 @@ void GetJpsiSmearing(string ch, int isData, string year) {
 
 	TH1::SetDefaultSumw2();
 
-	if (isData==1) filename = TString(TString(outputPath)+"bphys/bphys_"+TString(ch)+TString(photon_tag)+".root"); 
-	if (isData==0) filename = TString(TString(outputPath)+"bphys/bphys_"+TString(ch)+TString(photon_tag)+".root"); 
+	if (isData==1) filename = TString(TString(outputPath)+"bphys/bdata_"+TString(ch)+TString(photon_tag)+".root"); 
+	if (isData==0) filename = TString(TString(outputPath)+"bphys/bdata_"+TString(ch)+TString(photon_tag)+".root"); 
 	TFile*  f              = new TFile(filename.c_str(),"recreate");          
 	TTree* BaselineTree = new TTree("BaselineTree","baseline tree");
 
@@ -307,6 +307,8 @@ void GetJpsiSmearing(string ch, int isData, string year) {
 	T->SetBranchAddress("jet_eta"         ,&jet_eta          );
 	T->SetBranchAddress("jet_phi"         ,&jet_phi          );
 	T->SetBranchAddress("jet_m"         ,&jet_m          );
+	double Jpsi_mll = 0;
+	T->SetBranchAddress("Jpsi_mll", &Jpsi_mll);
 
 	//-----------------------------
 	// add new branches
@@ -318,6 +320,7 @@ void GetJpsiSmearing(string ch, int isData, string year) {
 	TBranch *b_bjet_n = BaselineTree->Branch("bjet_n",&bjet_n,"bjet_n/I");
 	TBranch *b_lep_n = BaselineTree->Branch("lep_n",&lep_n,"lep_n/I");
 	TBranch *b_mll = BaselineTree->Branch("mll",&mll,"mll/D");
+	TBranch *b_Jpsi_mll = BaselineTree->Branch("Jpsi_mll",&Jpsi_mll,"Jpsi_mll/D");
 	TBranch *b_Jpsi_pt = BaselineTree->Branch("Jpsi_pt",&gamma_pt,"Jpsi_pt/D");
 	TBranch *b_Jpsi_pt_smear = BaselineTree->Branch("Z_pt",&gamma_pt_smear,"Z_pt/D");
 	TBranch *b_Jpsi_phi_smear = BaselineTree->Branch("Z_phi",&gamma_phi_smear,"Z_phi/D");
@@ -398,7 +401,7 @@ void GetJpsiSmearing(string ch, int isData, string year) {
 		MET_smear = pow(METl_smear*METl_smear+METt_smear*METt_smear,0.5);
 
 		pt_smear = hist_sm_pt->FindBin(gamma_pt_smear)-1;
-		if (gamma_pt_smear>sm_pt_bin[bin_size]) pt_smear = bin_size-1;
+		if (gamma_pt_smear>bphys_sm_pt_bin[bin_size]) pt_smear = bin_size-1;
 
 		// recompute DPhi after smearing
 		if (fmod(i,1e5)==0) std::cout << i << " compute DPhi" << std::endl;

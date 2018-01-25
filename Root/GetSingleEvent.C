@@ -21,6 +21,7 @@
 #include "TFile.h"
 #include "TF1.h"
 #include "TH1.h"
+#include "TH2.h"
 #include "TTree.h"
 #include "TString.h"
 #include "TSystem.h"
@@ -38,7 +39,9 @@
 #include "GetDijetVariables.C"
 #include "GetJigsawVariables.C"
 #include "MT2_ROOT.h"
-double beta_limit = 10.;
+double beta_limit = 100.;
+TH2D* hist_mt2max_map = new TH2D("hist_mt2max_map","",100,0,beta_limit,100,-4,4);
+TH1D* hist_mt2max_beta = new TH1D("hist_mt2max_beta","",100,0,beta_limit);
 #include "GetMT2Max.C"
 
 using namespace std;
@@ -63,7 +66,7 @@ void RebinHistogram(TH1D* hist) {
 		}
 	}
 }
-void GetBaseLineEvents(string sampleID, string outputName, string pathToNtuples, string ch, bool isData) {
+void GetSingleEvent(string sampleID, string outputName, string pathToNtuples, string ch, bool isData) {
 
 	if (isData) doTruthJetMatch = false;
 
@@ -137,11 +140,19 @@ void GetBaseLineEvents(string sampleID, string outputName, string pathToNtuples,
 
 	Long64_t nentries = inputTree->GetEntries();
 
+	bool stop = false;
 	for (Long64_t i=0;i<nentries;i+=event_interval) {
+
+		if (stop) continue;
 
 		if (fmod(i,1e5)==0) std::cout << i << " events processed." << std::endl;
 		//std::cout << i << " events processed." << std::endl;
 		inputTree->GetEntry(i);
+
+		std::cout << MT2W << std::endl;
+		//if (MT2W>70) continue;
+		//if (MT2W<30) continue;
+		//if (MT2W>0.1) continue;
 
 		if (MET>100) N_passMET100 += 1; 
 		if (jet_n>=3 && MET>150) n_3jet += 1;
@@ -154,9 +165,9 @@ void GetBaseLineEvents(string sampleID, string outputName, string pathToNtuples,
 		if (lep_pT->at(1)<second_lep_pt_cut) continue;
 
 		totalWeight = 1;
-		//if (!isData) totalWeight = (sampleWeight*eventWeight*lep_weight->at(0)*lep_weight->at(1)*emtrigweight*eetrigweight*mmtrigweight)/_nGenEvents;
+		if (!isData) totalWeight = (sampleWeight*eventWeight*lep_weight->at(0)*lep_weight->at(1)*emtrigweight*eetrigweight*mmtrigweight)/_nGenEvents;
 		//if (!isData) totalWeight = (sampleWeight*eventWeight*lep_weight->at(0)*lep_weight->at(1)*trig_sf)/_nGenEvents;
-		if (!isData) totalWeight = (sampleWeight*eventWeight)/_nGenEvents;
+		//if (!isData) totalWeight = (sampleWeight*eventWeight)/_nGenEvents;
 
 		hist_cutflow_raw->Fill(0.);
 		hist_cutflow_weight->Fill(0.,totalWeight);
@@ -176,7 +187,6 @@ void GetBaseLineEvents(string sampleID, string outputName, string pathToNtuples,
 		hist_cutflow_raw->Fill(2.);
 		hist_cutflow_weight->Fill(2.,totalWeight);
 		if (is_OS!=1) continue;
-		//if (is_OS==1) continue;
 		hist_cutflow_raw->Fill(3.);
 		hist_cutflow_weight->Fill(3.,totalWeight);
 		if (jet_n==0) continue;
@@ -209,9 +219,9 @@ void GetBaseLineEvents(string sampleID, string outputName, string pathToNtuples,
 
 			// here we compute truth Z pT and adjust MC weights
 
-			//totalWeight = (sampleWeight*eventWeight*lep_weight->at(0)*lep_weight->at(1)*emtrigweight*eetrigweight*mmtrigweight)/_nGenEvents;
+			totalWeight = (sampleWeight*eventWeight*lep_weight->at(0)*lep_weight->at(1)*emtrigweight*eetrigweight*mmtrigweight)/_nGenEvents;
 			//totalWeight = (sampleWeight*eventWeight*lep_weight->at(0)*lep_weight->at(1)*trig_sf)/_nGenEvents;
-			totalWeight = (sampleWeight*eventWeight)/_nGenEvents;
+			//totalWeight = (sampleWeight*eventWeight)/_nGenEvents;
 			if (totalWeight!=totalWeight) totalWeight = 0.;
 			if (sampleID.find("361381")!=std::string::npos) totalWeight = totalWeight*1.1;
 			if (sampleID.find("361382")!=std::string::npos) totalWeight = totalWeight*1.1;
@@ -334,57 +344,73 @@ void GetBaseLineEvents(string sampleID, string outputName, string pathToNtuples,
 		met_4vec.SetPtEtaPhiM(MET,0,MET_phi,0);
 		GetDijetVariables(z_4vec,met_4vec);
 
-		//if (lep_truthPt->size()<2) continue;
-		//if (truthJet_pT->size()<2) continue;
-		//TLorentzVector met_4vec_truth;
-		//met_4vec_truth.SetPtEtaPhiM(truthMET,0,truthMET_Phi,0);
-		//double lep0_pt_truth = lep_truthPt->at(0);
-		//double lep0_eta_truth = lep_truthEta->at(0);
-		//double lep0_phi_truth = lep_truthPhi->at(0);
-		//double lep1_pt_truth = lep_truthPt->at(1);
-		//double lep1_eta_truth = lep_truthEta->at(1);
-		//double lep1_phi_truth = lep_truthPhi->at(1);
-		//if (lep0_pt_truth<0) {
-		//	lep0_pt_truth = 0;
-		//	lep0_eta_truth = 0;
-		//	lep0_phi_truth = 0;
-		//}
-		//if (lep1_pt_truth<0) {
-		//	lep1_pt_truth = 0;
-		//	lep1_eta_truth = 0;
-		//	lep1_phi_truth = 0;
-		//}
-		//double jet0_pt_truth = truthJet_pT->at(0);
-		//double jet0_eta_truth = truthJet_eta->at(0);
-		//double jet0_phi_truth = truthJet_phi->at(0);
-		//double jet1_pt_truth = truthJet_pT->at(1);
-		//double jet1_eta_truth = truthJet_eta->at(1);
-		//double jet1_phi_truth = truthJet_phi->at(1);
-		//if (jet0_pt_truth<0) {
-		//	jet0_pt_truth = 0;
-		//	jet0_eta_truth = 0;
-		//	jet0_phi_truth = 0;
-		//}
-		//if (jet1_pt_truth<0) {
-		//	jet1_pt_truth = 0;
-		//	jet1_eta_truth = 0;
-		//	jet1_phi_truth = 0;
-		//}
-		//TLorentzVector lep0_4vec_truth;
-		//lep0_4vec_truth.SetPtEtaPhiM(lep0_pt_truth,lep0_eta_truth,lep0_phi_truth,0);
-		//TLorentzVector lep1_4vec_truth;
-		//lep1_4vec_truth.SetPtEtaPhiM(lep1_pt_truth,lep1_eta_truth,lep1_phi_truth,0);
-		//TLorentzVector z_4vec_truth = lep0_4vec_truth+lep1_4vec_truth;
-		//TLorentzVector jet0_4vec_truth;
-		//jet0_4vec_truth.SetPtEtaPhiM(jet0_pt_truth,jet0_eta_truth,jet0_phi_truth,0);
-		//TLorentzVector jet1_4vec_truth;
-		//jet1_4vec_truth.SetPtEtaPhiM(jet1_pt_truth,jet1_eta_truth,jet1_phi_truth,0);
-		//TLorentzVector w_4vec_truth = jet0_4vec_truth+jet1_4vec_truth;
-		//MT2_truth = ComputeMT2(z_4vec_truth, w_4vec_truth, met_4vec_truth, 0, 0).Compute();
-		//MT2_max = GetMT2Max(MT2_truth,z_4vec_truth, w_4vec_truth, met_4vec_truth,&boost_pt,&boost_phi);
+		if (lep_truthPt->size()<2) continue;
+		if (truthJet_pT->size()<2) continue;
+		TLorentzVector met_4vec_truth;
+		met_4vec_truth.SetPtEtaPhiM(truthMET,0,truthMET_Phi,0);
+		double lep0_pt_truth = lep_truthPt->at(0);
+		double lep0_eta_truth = lep_truthEta->at(0);
+		double lep0_phi_truth = lep_truthPhi->at(0);
+		double lep1_pt_truth = lep_truthPt->at(1);
+		double lep1_eta_truth = lep_truthEta->at(1);
+		double lep1_phi_truth = lep_truthPhi->at(1);
+		if (lep0_pt_truth<0) {
+			lep0_pt_truth = 0;
+			lep0_eta_truth = 0;
+			lep0_phi_truth = 0;
+		}
+		if (lep1_pt_truth<0) {
+			lep1_pt_truth = 0;
+			lep1_eta_truth = 0;
+			lep1_phi_truth = 0;
+		}
+		double jet0_pt_truth = truthJet_pT->at(0);
+		double jet0_eta_truth = truthJet_eta->at(0);
+		double jet0_phi_truth = truthJet_phi->at(0);
+		double jet1_pt_truth = truthJet_pT->at(1);
+		double jet1_eta_truth = truthJet_eta->at(1);
+		double jet1_phi_truth = truthJet_phi->at(1);
+		if (jet0_pt_truth<0) {
+			jet0_pt_truth = 0;
+			jet0_eta_truth = 0;
+			jet0_phi_truth = 0;
+		}
+		if (jet1_pt_truth<0) {
+			jet1_pt_truth = 0;
+			jet1_eta_truth = 0;
+			jet1_phi_truth = 0;
+		}
+		TLorentzVector lep0_4vec_truth;
+		lep0_4vec_truth.SetPtEtaPhiM(lep0_pt_truth,lep0_eta_truth,lep0_phi_truth,0);
+		TLorentzVector lep1_4vec_truth;
+		lep1_4vec_truth.SetPtEtaPhiM(lep1_pt_truth,lep1_eta_truth,lep1_phi_truth,0);
+		TLorentzVector z_4vec_truth = lep0_4vec_truth+lep1_4vec_truth;
+		TLorentzVector jet0_4vec_truth;
+		jet0_4vec_truth.SetPtEtaPhiM(jet0_pt_truth,jet0_eta_truth,jet0_phi_truth,0);
+		TLorentzVector jet1_4vec_truth;
+		jet1_4vec_truth.SetPtEtaPhiM(jet1_pt_truth,jet1_eta_truth,jet1_phi_truth,0);
+		TLorentzVector w_4vec_truth = jet0_4vec_truth+jet1_4vec_truth;
+		MT2_truth = ComputeMT2(z_4vec_truth, w_4vec_truth, met_4vec_truth, 0, 0).Compute();
+		hist_mt2max_map->Reset();
+		hist_mt2max_beta->Reset();
+		MT2_max = GetMT2Max(MT2_truth,z_4vec_truth, w_4vec_truth, met_4vec_truth,&boost_pt,&boost_phi);
 
 		//MT2_max = GetMT2Max(mll,lep0_4vec, lep1_4vec, met_4vec,&boost_pt,&boost_phi);
+		//std::cout << "use mll, mt2_max = " << MT2_max << std::endl;
+		//MT2_max = GetMT2Max(80,lep0_4vec, lep1_4vec, met_4vec,&boost_pt,&boost_phi);
+		//std::cout << "use 80, mt2_max = " << MT2_max << std::endl;
+		//hist_mt2max_map->Reset();
+		//hist_mt2max_beta->Reset();
 		//MT2_max = GetMT2Max(MT2W,lep0_4vec, lep1_4vec, met_4vec,&boost_pt,&boost_phi);
+		//std::cout << "use MT2W, mt2_max = " << MT2_max << std::endl;
+		//MT2_max = GetMT2Max(MT2_max,lep0_4vec, lep1_4vec, met_4vec,&boost_pt,&boost_phi);
+		//std::cout << "use MT2_max, mt2_max = " << MT2_max << std::endl;
+		//MT2_max = GetMT2Max(MT2_max,lep0_4vec, lep1_4vec, met_4vec,&boost_pt,&boost_phi);
+		//std::cout << "use MT2_max, mt2_max = " << MT2_max << std::endl;
+		//MT2_max = GetMT2Max(MT2_max,lep0_4vec, lep1_4vec, met_4vec,&boost_pt,&boost_phi);
+		//std::cout << "use MT2_max, mt2_max = " << MT2_max << std::endl;
+		//MT2_max = GetMT2Max(MT2_max,lep0_4vec, lep1_4vec, met_4vec,&boost_pt,&boost_phi);
+		//std::cout << "use MT2_max, mt2_max = " << MT2_max << std::endl;
 
 		//---------------------------------------------
 		// prompt jet truth matching
@@ -448,6 +474,7 @@ void GetBaseLineEvents(string sampleID, string outputName, string pathToNtuples,
 			}
 		}
 
+		stop = true;
 
 		//BaselineTree.Fill();     
 		BaselineTree->Fill();     
@@ -459,6 +486,8 @@ void GetBaseLineEvents(string sampleID, string outputName, string pathToNtuples,
 	//BaselineTree.Write();
 	BaselineTree->Write();
 
+	hist_mt2max_map->Write();
+	hist_mt2max_beta->Write();
 	hist_cutflow_raw->Write();
 	hist_cutflow_weight->Write();
 	for (int bin=0;bin<bin_size;bin++) {

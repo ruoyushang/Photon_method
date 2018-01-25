@@ -111,6 +111,7 @@ void GetBPhysicsEvents(string sampleID, string outputName, string pathToNtuples,
 	std::vector<double>* jet_pT = new std::vector<double>(10);
 	std::vector<double>* jet_eta = new std::vector<double>(10);
 	std::vector<double>* jet_phi = new std::vector<double>(10);
+	Int_t Jpsi_is_OS;
 	double Jpsi_mll;
 	double Jpsi_pt;
 	double Jpsi_eta;
@@ -156,6 +157,7 @@ void GetBPhysicsEvents(string sampleID, string outputName, string pathToNtuples,
     //T->SetBranchStatus("HLT_g100_loose", 1); 
     //T->SetBranchStatus("HLT_g120_loose", 1); 
     //T->SetBranchStatus("HLT_g140_loose", 1); 
+    T->SetBranchStatus("is_OS", 1); 
     T->SetBranchStatus("mll", 1); 
     T->SetBranchStatus("Z_pt", 1); 
     T->SetBranchStatus("Z_eta", 1); 
@@ -201,6 +203,7 @@ void GetBPhysicsEvents(string sampleID, string outputName, string pathToNtuples,
 	//T->SetBranchAddress("HLT_g100_loose", &HLT_g100_loose);
 	//T->SetBranchAddress("HLT_g120_loose", &HLT_g120_loose);
 	//T->SetBranchAddress("HLT_g140_loose", &HLT_g140_loose);
+	T->SetBranchAddress("is_OS", &Jpsi_is_OS);
 	T->SetBranchAddress("mll", &Jpsi_mll);
 	T->SetBranchAddress("Z_pt", &Jpsi_pt);
 	T->SetBranchAddress("Z_eta", &Jpsi_eta);
@@ -344,7 +347,7 @@ void GetBPhysicsEvents(string sampleID, string outputName, string pathToNtuples,
 		if (lep_n<2) continue;
 		if (jet_n==0) continue;
 		if (channel!=0 && channel!=1) continue;
-		//if (is_OS!=1) continue;
+		if (Jpsi_is_OS!=1) continue;
 		if (abs(Jpsi_mll-3.)>0.5 && abs(Jpsi_mll-9.5)>1.5) continue;
 
 		// find the trigger and prescale
