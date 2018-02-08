@@ -48,7 +48,8 @@ std::vector<double>* jet_pT = new std::vector<double>(10);
 
 void GetJpsiReweightingHistogram(string ch, int isData, double lumi, string photon_tag) {
 
-	if (isData==1) {
+	string  filename;
+	if (isData!=-1) {
 		cout << "Opening file           : " << TString(outputPath)+"data/data_"+TString(ch)+".root"  << endl;
 		TFile fZ( TString(outputPath)+"data/data_"+TString(ch)+".root" );
 		TTree*  tZ              = (TTree*)fZ.Get("BaselineTree");
@@ -84,6 +85,7 @@ void GetJpsiReweightingHistogram(string ch, int isData, double lumi, string phot
 			if (lep_pT->at(0)<leading_lep_pt_cut) continue;
 			if (lep_pT->at(1)<second_lep_pt_cut) continue;
 			if (Z_pt>40) continue;
+			if (Z_pt<2) continue;
 			hist_bveto_z_njet->Fill(jet_n,totalWeight);
 			hist_bveto_z_nbjet->Fill(bjet_n,totalWeight);
 			hist_bveto_z_pt->Fill(Z_pt,totalWeight);
@@ -198,7 +200,10 @@ void GetJpsiReweightingHistogram(string ch, int isData, double lumi, string phot
 		//hist_bveto_etsmrw_correction->Add(hist_bveto_vv_et,-1.*lumi);
 		//hist_bveto_htrw_correction->Add(hist_bveto_vv_ht,-1.*lumi);
 		//fvv.Close();
-		TFile fPhoton( TString(outputPath)+"bphys/bdata_"+TString(ch)+TString(photon_tag)+".root" );
+		if (isData==0) filename = TString(TString(outputPath)+"bphys/bdata_"+TString(ch)+TString(photon_tag)+".root"); 
+		if (isData==1) filename = TString(TString(outputPath)+"bphys/jpsidata_"+TString(ch)+TString(photon_tag)+".root"); 
+		if (isData==2) filename = TString(TString(outputPath)+"bphys/upsidata_"+TString(ch)+TString(photon_tag)+".root"); 
+		TFile fPhoton(filename.c_str());
 		TTree*  tPhoton              = (TTree*)fPhoton.Get("BaselineTree");
 		tPhoton->SetBranchStatus("*", 0);
 		tPhoton->SetBranchStatus("totalWeight", 1);
@@ -234,6 +239,7 @@ void GetJpsiReweightingHistogram(string ch, int isData, double lumi, string phot
 			if (lep_pT->at(0)<leading_lep_pt_cut) continue;
 			if (lep_pT->at(1)<second_lep_pt_cut) continue;
 			if (Jpsi_pt>40) continue;
+			if (Jpsi_pt<2) continue;
 			hist_bveto_photon_njet->Fill(jet_n,totalWeight);
 			hist_bveto_photon_nbjet->Fill(bjet_n,totalWeight);
 			hist_bveto_photon_pt->Fill(Jpsi_pt,totalWeight);

@@ -5,18 +5,26 @@
 // bool useDeconvolution allows you to switch between deconvolution method and the standard smearing method
 //-----------------------------------------------------------------------------------------------
 
-double lumi = 36100;
+//double lumi = 3200.;
+double lumi = 36100.;
 
 std::string outputPath = "../OutputNtuples/";
 std::string smearingPath = "../OutputNtuples/";
+//std::string outputPath = "/eos/atlas/user/r/rshang/OutputNtuples/";
+//std::string smearingPath = "/eos/atlas/user/r/rshang/OutputNtuples/";
+//std::string smearingPath = "/eos/atlas/atlascerngroupdisk/phys-susy/strong2L/v02-04/Ruo/PhotonMethodOutput/OutputNtuples_EWK2L/";
+//std::string outputPath = "/eos/atlas/user/r/rshang/OutputNtuples_SS/";
+//std::string smearingPath = "/eos/atlas/user/r/rshang/OutputNtuples_SS/";
+//std::string outputPath = "/eos/atlas/user/r/rshang/OutputNtuples_DF/";
+//std::string smearingPath = "/eos/atlas/user/r/rshang/OutputNtuples_DF/";
 
 string photon_tag = "";
 
-//int event_interval = 1;
-int event_interval = 10;
+int event_interval = 1;
+//int event_interval = 100;
 
-//int smearing_method = 0; // No smearing
-int smearing_method = 1; // MC smearing
+int smearing_method = 0; // No smearing
+//int smearing_method = 1; // MC smearing
 //int smearing_method = 2; // Data smearing
 //int smearing_method = 3; // Truth smearing
 
@@ -37,7 +45,8 @@ double lpt_bin[bin_size+1] =  {0, 20, 30, 40, 50, 60, 70 , 80 ,  90,100 ,120 ,14
 double ht_bin[bin_size+1] =   {0, 60, 80,100,120,140,160 ,180 ,200 ,250 ,300 ,350 ,400 ,500 ,600 ,800 ,1000,1200,1400,1800,1e10,1e10,1e10};
 
 // binning for Jpsi/Upsi methods
-double bphys_pt_bin[bin_size+1] ={0, 10, 20, 30, 40, 50, 100,  1e10, 1e10, 1e10,1e10,1e10,1e10,1e10,1e10,1e10,1e10,1e10,1e10,1e10,1e10,1e10,1e10};
+double bphys_pt_bin[bin_size+1] ={0, 2, 4, 6, 8, 10, 15,  20, 25, 30, 35, 40, 45, 50,1e10,1e10,1e10,1e10,1e10,1e10,1e10,1e10,1e10};
+double bphys_sm_pt_bin[bin_size+1] ={0, 2, 4, 6, 8, 10, 15,  20, 25, 30, 35, 40, 45, 50,1e10,1e10,1e10,1e10,1e10,1e10,1e10,1e10,1e10};
 
 // not using them
 double met_bin[bin_size+1] =  {0, 20,40 ,60 ,80 ,100,120 ,140 ,160 ,180 ,200,250  ,300 ,350 ,400 ,1e10,1e10,1e10,1e10,1e10,1e10,1e10,1e10};

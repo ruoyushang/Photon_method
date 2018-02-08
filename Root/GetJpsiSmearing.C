@@ -255,8 +255,9 @@ void GetJpsiSmearing(string ch, int isData, string year) {
 	TH1::SetDefaultSumw2();
 
 	string  filename;
-	if (isData==1) filename = TString(TString(smearingPath)+"bphys/bdata_raw.root"); 
 	if (isData==0) filename = TString(TString(smearingPath)+"bphys/bdata_raw.root"); 
+	if (isData==1) filename = TString(TString(smearingPath)+"bphys/bdata_raw.root"); 
+	if (isData==2) filename = TString(TString(smearingPath)+"bphys/bdata_raw.root"); 
 	TFile*  inputFile      = TFile::Open(filename.c_str());
 	TTree*  T              = (TTree*)inputFile->Get("BaselineTree");
 
@@ -270,8 +271,9 @@ void GetJpsiSmearing(string ch, int isData, string year) {
 
 	TH1::SetDefaultSumw2();
 
-	if (isData==1) filename = TString(TString(outputPath)+"bphys/bdata_"+TString(ch)+TString(photon_tag)+".root"); 
 	if (isData==0) filename = TString(TString(outputPath)+"bphys/bdata_"+TString(ch)+TString(photon_tag)+".root"); 
+	if (isData==1) filename = TString(TString(outputPath)+"bphys/jpsidata_"+TString(ch)+TString(photon_tag)+".root"); 
+	if (isData==2) filename = TString(TString(outputPath)+"bphys/upsidata_"+TString(ch)+TString(photon_tag)+".root"); 
 	TFile*  f              = new TFile(filename.c_str(),"recreate");          
 	TTree* BaselineTree = new TTree("BaselineTree","baseline tree");
 
@@ -372,6 +374,9 @@ void GetJpsiSmearing(string ch, int isData, string year) {
 
 		if (fmod(i,1e5)==0) std::cout << i << " events processed." << std::endl;
 		T->GetEntry(i);
+
+		if (isData==1 && Jpsi_mll>5.) continue; 
+		if (isData==2 && Jpsi_mll<5.) continue; 
 
 		// use the smearing function to smear MET and pT in photon events
 		if (fmod(i,1e5)==0) std::cout << i << " smear photon." << std::endl;

@@ -55,8 +55,9 @@ void GetJpsiReweighting(string ch, int isData, string year) {
 	TH1::SetDefaultSumw2();
 
 	string  filename;
-	if (isData==1) filename = TString(TString(outputPath)+"bphys/bdata_"+TString(ch)+TString(photon_tag)+".root"); 
 	if (isData==0) filename = TString(TString(outputPath)+"bphys/bdata_"+TString(ch)+TString(photon_tag)+".root"); 
+	if (isData==1) filename = TString(TString(outputPath)+"bphys/jpsidata_"+TString(ch)+TString(photon_tag)+".root"); 
+	if (isData==2) filename = TString(TString(outputPath)+"bphys/upsidata_"+TString(ch)+TString(photon_tag)+".root"); 
 	TFile*  f              = new TFile(filename.c_str(),"update");          
 	TTree*  outputTree              = (TTree*)f->Get("BaselineTree");
 

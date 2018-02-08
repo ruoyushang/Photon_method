@@ -13,7 +13,7 @@ void GetJpsiMllHistogram(string ch) {
 			hist_Mll_dPt[bin0][bin1] = new TH1D(TString("hist_Mll_dPt_")+TString::Itoa(bin0,10)+TString("_")+TString::Itoa(bin1,10),"",mll_bin_size,mll_bin);
 		}
 	}
-	TFile fZ( TString(smearingPath)+"zjets/zjets_"+TString(ch)+".root" );
+	TFile fZ( TString(smearingPath)+"zjets_221/zjets_"+TString(ch)+".root" );
 	TTree*  tZ              = (TTree*)fZ.Get("BaselineTree");
 	tZ->SetBranchStatus("*", 0);
 	tZ->SetBranchStatus("totalWeight", 1);
