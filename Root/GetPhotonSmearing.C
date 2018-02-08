@@ -516,7 +516,7 @@ void GetPhotonSmearing(string ch, int isData, string year) {
 		if (dpt>=0 && pt_smear>=0) if (hist_Mll_dPt[pt_smear][dpt]->Integral()>0) mll = hist_Mll_dPt[pt_smear][dpt]->GetRandom();
 
 		//---------------------------------------------
-		// compute dijet system variables, m80jj, W pT, DR(2jet), etc.
+		// compute two lepton kinematics
 		//---------------------------------------------
 		TLorentzVector z_4vec;
 		z_4vec.SetPtEtaPhiM(gamma_pt,gamma_eta,gamma_phi,mll);
