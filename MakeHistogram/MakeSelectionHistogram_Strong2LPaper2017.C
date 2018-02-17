@@ -527,17 +527,17 @@ void MakeSelectionHistogram_Strong2LPaper2017() {
 
 	//RunStrong2L();
 	//
-	tag = TString("Strong2LVRhigh_PTRW_McSmear");
+	tag = TString("Strong2LVRhigh_PTRW_McSmear");  // the nominal prediction (pT-reweighting and MC smearing) in VR-high
 	RunStrong2L();
-	tag = TString("Strong2LSRhigh_PTRW_McSmear");
+	tag = TString("Strong2LSRhigh_PTRW_McSmear");  // the nominal prediction in SR-high
 	RunStrong2L();
-	tag = TString("Strong2LSRhigh_PTRW_McSmear_VgOff");
+	tag = TString("Strong2LSRhigh_PTRW_McSmear_VgOff");  // the prediction without V-gamma subtraction in SR-high
 	RunStrong2L();
 	tag = TString("Strong2LVRhigh_PTRW_McSmear_VgOff");
 	RunStrong2L();
-	tag = TString("Strong2LVRhigh_HTRW_McSmear");
+	tag = TString("Strong2LVRhigh_HTRW_McSmear");  // the prediction with HT-reweighting in VR-high
 	RunStrong2L();
-	tag = TString("Strong2LVRhigh_PTRW_DataSmear");
+	tag = TString("Strong2LVRhigh_PTRW_DataSmear"); // the prediction with data-driven smearing in VR-high
 	RunStrong2L();
 
 	tag = TString("Strong2LSRlow_PTRW_McSmear");
