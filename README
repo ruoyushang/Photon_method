@@ -53,6 +53,7 @@ A tutorial of the photon method:
 		sh run_gmc_sm.sh	# this script will derive smearing function from 1-jet events in gmc_raw.root, zjets_ee.root, and zjets_mm.root
 					# and smear the photon resolution 
 					# and create OutputNtuples/gmc/gmc_ee_McSmear.root and OutputNtuples/gmc/gmc_mm_McSmear.root 
+		sh run_gdata_sm.sh	# this script does the smearing for photon data
 		There are 4 different modes of smearing in Root/BasicSetting.C
 			int smearing_method = 0; # No smearing will be applied.
 			int smearing_method = 1; # use the MC smearing funtion from Sherpa Z+ 1 jet events and photon + 1 jet events
@@ -71,6 +72,7 @@ A tutorial of the photon method:
 
 	5. Run the photon reweighting
 		sh run_gmc_rw.sh	# this script will derive reweighting factors from gmc_raw.root, zjets_ee.root, and zjets_mm.root
+		sh run_gdata_rw.sh	# this script does the reweighting for photon data
 		The reweighting binning is defined in Root/BasicSetting.C: pt_bin[bin_size+1]
 		The reweighting histograms are sampled in Root/GetReweightingHistogram.C
 		The reweighting histogram with the most inclusive selection is hist_bveto_*, which should be good enough for any possible analysis region.
