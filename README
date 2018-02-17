@@ -125,6 +125,18 @@ A tutorial of the photon method:
 		In Root/BasicSetting.C, smearing_method = 1 means the deconvolution is done using MC 1-jets events.
 		You can change smearing_method to 2 if you want to derive the smearing function from data 1-jet events, or to 0 if you don't want smearing. 
 
+	7. Making plots in the Strong2L 2017 paper
+		cd MakeHistogram
+		root -l
+		.L MakeSelectionHistogram_Strong2LPaper2017.C++
+		MakeSelectionHistogram_Strong2LPaper2017()
+		This command will produce many histograms in OutputHistogram/
+		When the job is done, go to MakePlots/
+		cd MakePlots
+		python SimplePlot_Strong2LPaper2017.py
+		Then you got plots for the 2017 paper!
+
+
 
 If you have further questions, please send an email to ruo-yu.shang@cern.ch
 
