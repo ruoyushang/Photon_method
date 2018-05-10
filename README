@@ -4,6 +4,7 @@ Setup:
 
 Check out the code:
 	git clone https://:@gitlab.cern.ch:8443/rshang/PhotonTemplateMethod.git
+	git clone https://github.com/ruoyushang/Photon_method
 
 A tutorial of the photon method:
 
