@@ -38,7 +38,7 @@
 #include "GetDijetVariables.C"
 #include "GetJigsawVariables.C"
 #include "MT2_ROOT.h"
-double beta_limit = 10.;
+float beta_limit = 10.;
 #include "GetMT2Max.C"
 
 using namespace std;
@@ -47,8 +47,8 @@ bool doTruthJetMatch = true;
 bool doJigsaw = false;
 
 void RebinHistogram(TH1D* hist) {
-	double negative_yield = 0.;
-	double positive_yield = 0.;
+	float negative_yield = 0.;
+	float positive_yield = 0.;
 	for (int bin=1;bin<=hist->GetNbinsX();bin++) {
 		if (hist->GetBinContent(bin)>=0) positive_yield += hist->GetBinContent(bin);
 		else negative_yield += hist->GetBinContent(bin);
@@ -65,7 +65,8 @@ void RebinHistogram(TH1D* hist) {
 }
 void GetBaseLineEvents(string sampleID, string outputName, string pathToNtuples, string ch, bool isData) {
 
-	if (isData) doTruthJetMatch = false;
+	//if (isData) doTruthJetMatch = false;
+	doTruthJetMatch = false;
 
 	
 	//---------------------------------------------
@@ -75,7 +76,7 @@ void GetBaseLineEvents(string sampleID, string outputName, string pathToNtuples,
 	TH1::SetDefaultSumw2();
 
 	TH1D* hist_EventCount = new TH1D("hist_EventCount","",3,0,3);
-	double N_passMET100 = 0.;
+	float N_passMET100 = 0.;
 	string  filename       = Form("%s%s.root",pathToNtuples.c_str(),sampleID.c_str()); 
 	TFile*  inputFile      = TFile::Open(filename.c_str());
 	Float_t _nGenEvents = 1.;
@@ -84,7 +85,11 @@ void GetBaseLineEvents(string sampleID, string outputName, string pathToNtuples,
 	//	_nGenEvents    = EventCountHist->GetBinContent(2);
 	//	hist_EventCount->SetBinContent(1,EventCountHist->GetBinContent(1));
 	//}
-	TTree*  inputTree              = (TTree*)inputFile->Get("data");
+	string treename;
+	if (sampleID.find("data") != std::string::npos) treename = Form("data");
+	if (sampleID.find("Zjets") != std::string::npos) treename = Form("Zjets_NoSys");
+	if (sampleID.find("diboson") != std::string::npos) treename = Form("diboson_NoSys");
+	TTree*  inputTree              = (TTree*)inputFile->Get(treename.c_str());
 
 	cout << endl;
 	cout << "Opening file           : " << filename        << endl;
@@ -108,28 +113,28 @@ void GetBaseLineEvents(string sampleID, string outputName, string pathToNtuples,
 	BaselineTree = new TTree("BaselineTree","baseline tree");
 	AddBranches(BaselineTree, isData);
 
-	Double_t MT2_max= 0;
-	TBranch *b_MT2_max = BaselineTree->Branch("MT2_max",&MT2_max,"MT2_max/Double_t");
-	Double_t boost_phi= 0;
-	TBranch *b_boost_phi = BaselineTree->Branch("boost_phi",&boost_phi,"boost_phi/Double_t");
-	Double_t boost_eta= 0;
-	TBranch *b_boost_eta = BaselineTree->Branch("boost_eta",&boost_eta,"boost_eta/Double_t");
-	Double_t boost_pt= 0;
-	TBranch *b_boost_pt = BaselineTree->Branch("boost_pt",&boost_pt,"boost_pt/Double_t");
+	Float_t MT2_max= 0;
+	TBranch *b_MT2_max = BaselineTree->Branch("MT2_max",&MT2_max,"MT2_max/Float_t");
+	Float_t boost_phi= 0;
+	TBranch *b_boost_phi = BaselineTree->Branch("boost_phi",&boost_phi,"boost_phi/Float_t");
+	Float_t boost_eta= 0;
+	TBranch *b_boost_eta = BaselineTree->Branch("boost_eta",&boost_eta,"boost_eta/Float_t");
+	Float_t boost_pt= 0;
+	TBranch *b_boost_pt = BaselineTree->Branch("boost_pt",&boost_pt,"boost_pt/Float_t");
 
-	//Double_t MT2_truth= 0;
-	//TBranch *b_MT2_truth = BaselineTree->Branch("MT2_truth",&MT2_truth,"MT2_truth/Double_t");
+	//Float_t MT2_truth= 0;
+	//TBranch *b_MT2_truth = BaselineTree->Branch("MT2_truth",&MT2_truth,"MT2_truth/Float_t");
 
 	//-----------------------------
 	// these variables do not go to output
 	//-----------------------------
-	double n_3jet = 0;
-	double Wtruth_corr = 0;
-	double Wmin_corr = 0;
-	double W12_corr = 0;
-	double W80_corr = 0;
-	double W01_corr = 0;
-	double Wjigsaw_corr = 0;
+	float n_3jet = 0;
+	float Wtruth_corr = 0;
+	float Wmin_corr = 0;
+	float W12_corr = 0;
+	float W80_corr = 0;
+	float W01_corr = 0;
+	float Wjigsaw_corr = 0;
 
 	//-----------------------------
 	// loop over events
@@ -150,10 +155,8 @@ void GetBaseLineEvents(string sampleID, string outputName, string pathToNtuples,
 		//if (isData && MET>150) continue;
 		
 		if (lep_n<2) continue;
-		std::cout << i << " events processed n lep cut." << std::endl;
 		if (lep_pT->at(0)<leading_lep_pt_cut) continue;
 		if (lep_pT->at(1)<second_lep_pt_cut) continue;
-		std::cout << i << " events processed lep pt cut." << std::endl;
 
 		totalWeight = 1;
 		//if (!isData) totalWeight = (sampleWeight*eventWeight*lep_weight->at(0)*lep_weight->at(1)*emtrigweight*eetrigweight*mmtrigweight)/_nGenEvents;
@@ -168,7 +171,6 @@ void GetBaseLineEvents(string sampleID, string outputName, string pathToNtuples,
 		if (ch=="ee" && channel!=1) continue;
 		if (ch=="mm" && channel!=0) continue;
 		if (ch=="em" && (channel!=2 && channel!=3)) continue;
-		std::cout << i << " events processed flavor cut." << std::endl;
 		hist_cutflow_raw->Fill(1.);
 		hist_cutflow_weight->Fill(1.,totalWeight);
 		//if (!useMETtrig) {
@@ -176,7 +178,6 @@ void GetBaseLineEvents(string sampleID, string outputName, string pathToNtuples,
 		//	if (ch=="mm" && mmtrig!=1) continue;
 		//	if (ch=="em" && emtrig!=1) continue;
 		//}
-		std::cout << i << " events processed trig cut." << std::endl;
 		//else {
 		//	if (pass_trig_MET->at(0)!=1) continue;
 		//}
@@ -185,16 +186,13 @@ void GetBaseLineEvents(string sampleID, string outputName, string pathToNtuples,
 		is_OS = 0;
 		if (lep_charge->at(0)!=lep_charge->at(1)) is_OS = 1;
 		if (is_OS!=1) continue;
-		std::cout << i << " events processed charge cut." << std::endl;
 		//if (is_OS==1) continue;
 		hist_cutflow_raw->Fill(3.);
 		hist_cutflow_weight->Fill(3.,totalWeight);
 		if (jet_n==0) continue;
-		std::cout << i << " events processed n jet cut." << std::endl;
 		hist_cutflow_raw->Fill(4.);
 		hist_cutflow_weight->Fill(4.,totalWeight);
 		if (mll<12.) continue;
-		std::cout << i << " events processed mll cut." << std::endl;
 		hist_cutflow_raw->Fill(5.);
 		hist_cutflow_weight->Fill(5.,totalWeight);
 		//if (!isData) {if (lep_isPrompt->at(0)==0 || lep_isPrompt->at(1)==0) continue;}
@@ -216,7 +214,7 @@ void GetBaseLineEvents(string sampleID, string outputName, string pathToNtuples,
 
 		if (fmod(i,1e5)==0) std::cout << i << " process MC info." << std::endl;
 
-		double Z_truthPt_dilep = 0;
+		float Z_truthPt_dilep = 0;
 		if (!isData) {
 
 			// here we compute truth Z pT and adjust MC weights
@@ -318,17 +316,17 @@ void GetBaseLineEvents(string sampleID, string outputName, string pathToNtuples,
 		TLorentzVector jet_4vec;
 		for (int j=0;j<jet_pT->size();j++) {
 			jet_4vec.SetPtEtaPhiM(jet_pT->at(j),jet_eta->at(j),jet_phi->at(j),jet_m->at(j));
-			double DR_Lep0Jet = jet_4vec.DeltaR(lep0_4vec);
-			double DR_Lep1Jet = jet_4vec.DeltaR(lep1_4vec);
+			float DR_Lep0Jet = jet_4vec.DeltaR(lep0_4vec);
+			float DR_Lep1Jet = jet_4vec.DeltaR(lep1_4vec);
 			if (MinDR_Lep0Jet>DR_Lep0Jet) MinDR_Lep0Jet = DR_Lep0Jet;
 			if (MinDR_Lep1Jet>DR_Lep1Jet) MinDR_Lep1Jet = DR_Lep1Jet;
-			double DR_PhotonJet = jet_4vec.DeltaR(z_4vec);
-			double DPhi_PhotonJet = jet_4vec.DeltaPhi(z_4vec);
+			float DR_PhotonJet = jet_4vec.DeltaR(z_4vec);
+			float DPhi_PhotonJet = jet_4vec.DeltaPhi(z_4vec);
 			if (MinDR_PhotonJet>DR_PhotonJet) MinDR_PhotonJet = DR_PhotonJet;
 			if (MinDPhi_PhotonJet>DPhi_PhotonJet) MinDPhi_PhotonJet = DPhi_PhotonJet;
 		}
-		double min_DPhi_MET_LepJet = 1000.;
-		double DPhi_MET_LepJet = 1000.;
+		float min_DPhi_MET_LepJet = 1000.;
+		float DPhi_MET_LepJet = 1000.;
 		for (int j=0;j<jet_pT->size();j++) {
 			jet_4vec.SetPtEtaPhiM(jet_pT->at(j),jet_eta->at(j),jet_phi->at(j),jet_m->at(j));
 			DPhi_MET_LepJet = jet_4vec.DeltaR(met_4vec);
@@ -353,12 +351,12 @@ void GetBaseLineEvents(string sampleID, string outputName, string pathToNtuples,
 		//if (truthJet_pT->size()<2) continue;
 		//TLorentzVector met_4vec_truth;
 		//met_4vec_truth.SetPtEtaPhiM(truthMET,0,truthMET_Phi,0);
-		//double lep0_pt_truth = lep_truthPt->at(0);
-		//double lep0_eta_truth = lep_truthEta->at(0);
-		//double lep0_phi_truth = lep_truthPhi->at(0);
-		//double lep1_pt_truth = lep_truthPt->at(1);
-		//double lep1_eta_truth = lep_truthEta->at(1);
-		//double lep1_phi_truth = lep_truthPhi->at(1);
+		//float lep0_pt_truth = lep_truthPt->at(0);
+		//float lep0_eta_truth = lep_truthEta->at(0);
+		//float lep0_phi_truth = lep_truthPhi->at(0);
+		//float lep1_pt_truth = lep_truthPt->at(1);
+		//float lep1_eta_truth = lep_truthEta->at(1);
+		//float lep1_phi_truth = lep_truthPhi->at(1);
 		//if (lep0_pt_truth<0) {
 		//	lep0_pt_truth = 0;
 		//	lep0_eta_truth = 0;
@@ -369,12 +367,12 @@ void GetBaseLineEvents(string sampleID, string outputName, string pathToNtuples,
 		//	lep1_eta_truth = 0;
 		//	lep1_phi_truth = 0;
 		//}
-		//double jet0_pt_truth = truthJet_pT->at(0);
-		//double jet0_eta_truth = truthJet_eta->at(0);
-		//double jet0_phi_truth = truthJet_phi->at(0);
-		//double jet1_pt_truth = truthJet_pT->at(1);
-		//double jet1_eta_truth = truthJet_eta->at(1);
-		//double jet1_phi_truth = truthJet_phi->at(1);
+		//float jet0_pt_truth = truthJet_pT->at(0);
+		//float jet0_eta_truth = truthJet_eta->at(0);
+		//float jet0_phi_truth = truthJet_phi->at(0);
+		//float jet1_pt_truth = truthJet_pT->at(1);
+		//float jet1_eta_truth = truthJet_eta->at(1);
+		//float jet1_phi_truth = truthJet_phi->at(1);
 		//if (jet0_pt_truth<0) {
 		//	jet0_pt_truth = 0;
 		//	jet0_eta_truth = 0;
@@ -415,11 +413,11 @@ void GetBaseLineEvents(string sampleID, string outputName, string pathToNtuples,
 		//	if (!isData) {
 		//		for (int j0=0;j0<truthJet_pT->size();j0++) {
 		//			truthJet_4vec.SetPtEtaPhiM(truthJet_pT->at(j0),truthJet_eta->at(j0),truthJet_phi->at(j0),0);
-		//			double min_DR = 1000.;
+		//			float min_DR = 1000.;
 		//			int reco_this = 0;
 		//			for (int j1=0;j1<jet_pT->size();j1++) {
 		//				recoJet_4vec.SetPtEtaPhiM(jet_pT->at(j1),jet_eta->at(j1),jet_phi->at(j1),0);
-		//				double DR_this = truthJet_4vec.DeltaR(recoJet_4vec);
+		//				float DR_this = truthJet_4vec.DeltaR(recoJet_4vec);
 		//				if (DR_this<min_DR) {
 		//					min_DR = DR_this;
 		//					reco_this = j1;
@@ -449,7 +447,7 @@ void GetBaseLineEvents(string sampleID, string outputName, string pathToNtuples,
 		// as well as the hist_2LPt_Pt histogram, which translates Z pT to dilepton sum pT
 		//---------------------------------------------
 		if (fmod(i,1e5)==0) std::cout << i << " Fill METl histograms" << std::endl;
-		double pt37_cut = 37.;
+		float pt37_cut = 37.;
 		//if (!isData) {
 		//	if (Z_pt>pt37_cut && abs(MinDPhi_PhotonJet)>0.0) {
 		//		truthMETt = truthMET*TMath::Sin(truthMET_Phi-Z_truthPhi);

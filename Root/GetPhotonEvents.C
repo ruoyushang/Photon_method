@@ -94,22 +94,22 @@ void GetPhotonEvents(string sampleID, string outputName, string pathToNtuples, i
 	float trigPrescale_HLT_g120_loose;
 	float trigPrescale_HLT_g140_loose;
 	Float_t Mu;
-	double MET;
-	double MET_phi;
-	double MET_softTerm;
-	double MET_softPhi;
+	float MET;
+	float MET_phi;
+	float MET_softTerm;
+	float MET_softPhi;
 	Float_t truthMET = 0;
 	Float_t truthMET_Phi = 0;
-	double DPhi_METJetLeading;
-	double DPhi_METJetSecond;
-	double HT;
+	float DPhi_METJetLeading;
+	float DPhi_METJetSecond;
+	float HT;
 	Int_t jet_n;
 	Int_t bjet_n;
 	Int_t lep_n;
 	std::vector<float>* lep_pT = new std::vector<float>(10);
 	std::vector<float>* lep_eta = new std::vector<float>(10);
 	std::vector<float>* lep_phi = new std::vector<float>(10);
-	//std::vector<double>* jet_btag = new std::vector<double>(10);
+	//std::vector<float>* jet_btag = new std::vector<float>(10);
 	std::vector<float>* jet_m = new std::vector<float>(10);
 	std::vector<float>* jet_pT = new std::vector<float>(10);
 	std::vector<float>* jet_eta = new std::vector<float>(10);
@@ -218,14 +218,14 @@ void GetPhotonEvents(string sampleID, string outputName, string pathToNtuples, i
 	T->SetBranchAddress("PhotonPhi", &PhotonPhi);
 	//T->SetBranchAddress("photon_passAmbi", &photon_passAmbi);
 
-	double sampleWeight;
+	float sampleWeight;
 	Float_t eventWeight;
-	//std::vector<double>* truthPhoton_pT = new std::vector<double>(10);
-	//std::vector<double>* truthPhoton_eta = new std::vector<double>(10);
-	//std::vector<double>* truthPhoton_phi = new std::vector<double>(10);
-	//std::vector<double>* photon_truthPt = new std::vector<double>(10);
-	//std::vector<double>* photon_truthEta = new std::vector<double>(10);
-	//std::vector<double>* photon_truthPhi = new std::vector<double>(10);
+	//std::vector<float>* truthPhoton_pT = new std::vector<float>(10);
+	//std::vector<float>* truthPhoton_eta = new std::vector<float>(10);
+	//std::vector<float>* truthPhoton_phi = new std::vector<float>(10);
+	//std::vector<float>* photon_truthPt = new std::vector<float>(10);
+	//std::vector<float>* photon_truthEta = new std::vector<float>(10);
+	//std::vector<float>* photon_truthPhi = new std::vector<float>(10);
 	if (isData!=1) {
 	        T->SetBranchStatus("sampleWeight",1);
 	        T->SetBranchStatus("eventWeight",1);
@@ -252,72 +252,72 @@ void GetPhotonEvents(string sampleID, string outputName, string pathToNtuples, i
 
 	TFile   outputFile(TString(outputPath)+"/"+TString(outputName)+"/"+TString(sampleID.c_str())+".root","recreate");
 	TTree BaselineTree("BaselineTree","baseline tree");
-	double gamma_pt = 0.;
-	double gamma_eta = 0.;
-	double gamma_phi = 0.;
-	double gamma_dR = 999.;
+	float gamma_pt = 0.;
+	float gamma_eta = 0.;
+	float gamma_phi = 0.;
+	float gamma_dR = 999.;
 	//int gamma_passAmbi = 0;
-	//double truthGamma_pt = 0.;
-	//double truthGamma_eta = 0.;
-	//double truthGamma_phi = 0.;
-	double METl = 0.;
-	double METt = 0.;
-	//double truthMETl = 0.;
-	//double truthMETt = 0.;
-	double DPhi_METPhoton = 0.;
-	double MinDR_PhotonJet = 0.;
-	double MinDPhi_PhotonJet = 0.;
+	//float truthGamma_pt = 0.;
+	//float truthGamma_eta = 0.;
+	//float truthGamma_phi = 0.;
+	float METl = 0.;
+	float METt = 0.;
+	//float truthMETl = 0.;
+	//float truthMETt = 0.;
+	float DPhi_METPhoton = 0.;
+	float MinDR_PhotonJet = 0.;
+	float MinDPhi_PhotonJet = 0.;
 	int pt = 0;
 	int ht = 0;
 	int njet = 0;
 	int nbjet = 0;
-	double MT;
+	float MT;
 	BaselineTree.Branch("pt",&pt,"pt/I");
 	BaselineTree.Branch("ht",&ht,"ht/I");
 	BaselineTree.Branch("njet",&njet,"njet/I");
 	BaselineTree.Branch("nbjet",&nbjet,"nbjet/I");
 	BaselineTree.Branch("Mu",&Mu,"Mu/Float_t");
-	BaselineTree.Branch("MET_raw",&MET,"MET_raw/D");
-	BaselineTree.Branch("METl_raw",&METl,"METl_raw/D");
-	BaselineTree.Branch("METt_raw",&METt,"METt_raw/D");
-	BaselineTree.Branch("MET_phi_raw",&MET_phi,"MET_phi_raw/D");
-	//BaselineTree.Branch("MET_softTerm",&MET_softTerm,"MET_softTerm/D");
-	//BaselineTree.Branch("MET_softPhi",&MET_softPhi,"MET_softPhi/D");
+	BaselineTree.Branch("MET_raw",&MET,"MET_raw/F");
+	BaselineTree.Branch("METl_raw",&METl,"METl_raw/F");
+	BaselineTree.Branch("METt_raw",&METt,"METt_raw/F");
+	BaselineTree.Branch("MET_phi_raw",&MET_phi,"MET_phi_raw/F");
+	//BaselineTree.Branch("MET_softTerm",&MET_softTerm,"MET_softTerm/F");
+	//BaselineTree.Branch("MET_softPhi",&MET_softPhi,"MET_softPhi/F");
 	//BaselineTree.Branch("truthMET",&truthMET,"truthMET/Float_t");
-	//BaselineTree.Branch("truthMETl",&truthMETl,"truthMETl/D");
-	//BaselineTree.Branch("truthMETt",&truthMETt,"truthMETt/D");
+	//BaselineTree.Branch("truthMETl",&truthMETl,"truthMETl/F");
+	//BaselineTree.Branch("truthMETt",&truthMETt,"truthMETt/F");
 	//BaselineTree.Branch("truthMET_Phi",&MET_phi,"MET_phi/Float_t");
-	//BaselineTree.Branch("DPhi_METJetLeading_raw",&DPhi_METJetLeading,"DPhi_METJetLeading_raw/D");
-	//BaselineTree.Branch("DPhi_METJetSecond_raw",&DPhi_METJetSecond,"DPhi_METJetSecond_raw/D");
-	//BaselineTree.Branch("DPhi_METPhoton_raw",&DPhi_METPhoton,"DPhi_METPhoton_raw/D");
-	//BaselineTree.Branch("MinDR_PhotonJet",&MinDR_PhotonJet,"MinDR_PhotonJet/D");
-	//BaselineTree.Branch("MinDPhi_PhotonJet",&MinDPhi_PhotonJet,"MinDPhi_PhotonJet/D");
-	BaselineTree.Branch("HT",&HT,"HT/D");
-	BaselineTree.Branch("MT",&MT,"MT/D");
-	BaselineTree.Branch("gamma_pt",&gamma_pt,"gamma_pt/D");
-	BaselineTree.Branch("gamma_eta",&gamma_eta,"gamma_eta/D");
-	BaselineTree.Branch("gamma_phi",&gamma_phi,"gamma_phi/D");
+	//BaselineTree.Branch("DPhi_METJetLeading_raw",&DPhi_METJetLeading,"DPhi_METJetLeading_raw/F");
+	//BaselineTree.Branch("DPhi_METJetSecond_raw",&DPhi_METJetSecond,"DPhi_METJetSecond_raw/F");
+	//BaselineTree.Branch("DPhi_METPhoton_raw",&DPhi_METPhoton,"DPhi_METPhoton_raw/F");
+	//BaselineTree.Branch("MinDR_PhotonJet",&MinDR_PhotonJet,"MinDR_PhotonJet/F");
+	//BaselineTree.Branch("MinDPhi_PhotonJet",&MinDPhi_PhotonJet,"MinDPhi_PhotonJet/F");
+	BaselineTree.Branch("HT",&HT,"HT/F");
+	BaselineTree.Branch("MT",&MT,"MT/F");
+	BaselineTree.Branch("gamma_pt",&gamma_pt,"gamma_pt/F");
+	BaselineTree.Branch("gamma_eta",&gamma_eta,"gamma_eta/F");
+	BaselineTree.Branch("gamma_phi",&gamma_phi,"gamma_phi/F");
 	//BaselineTree.Branch("gamma_passAmbi",&gamma_passAmbi,"gamma_passAmbi/I");
 	BaselineTree.Branch("bjet_n",&bjet_n,"bjet_n/Int_t");
 	BaselineTree.Branch("jet_n",&jet_n,"jet_n/Int_t");
-	//BaselineTree.Branch("jet_btag","std::vector<double>",&jet_btag);
-	BaselineTree.Branch("jet_m","std::vector<double>",&jet_m);
-	BaselineTree.Branch("jet_pT","std::vector<double>",&jet_pT);
-	BaselineTree.Branch("jet_phi","std::vector<double>",&jet_phi);
-	BaselineTree.Branch("jet_eta","std::vector<double>",&jet_eta);
+	//BaselineTree.Branch("jet_btag","std::vector<float>",&jet_btag);
+	BaselineTree.Branch("jet_m","std::vector<float>",&jet_m);
+	BaselineTree.Branch("jet_pT","std::vector<float>",&jet_pT);
+	BaselineTree.Branch("jet_phi","std::vector<float>",&jet_phi);
+	BaselineTree.Branch("jet_eta","std::vector<float>",&jet_eta);
 	BaselineTree.Branch("EventNumber",&EventNumber,"EventNumber/Long64_t");
 	BaselineTree.Branch("RunNumber",&RunNumber,"RunNumber/Int_t");
 	BaselineTree.Branch("lep_n_raw",&lep_n,"lep_n_raw/Int_t");
-	BaselineTree.Branch("lep_pT_raw","std::vector<double>",&lep_pT);
-	BaselineTree.Branch("lep_phi_raw","std::vector<double>",&lep_phi);
-	BaselineTree.Branch("lep_eta_raw","std::vector<double>",&lep_eta);
-	double totalWeight = 0.;
-	BaselineTree.Branch("totalWeight",&totalWeight,"totalWeight/D");
+	BaselineTree.Branch("lep_pT_raw","std::vector<float>",&lep_pT);
+	BaselineTree.Branch("lep_phi_raw","std::vector<float>",&lep_phi);
+	BaselineTree.Branch("lep_eta_raw","std::vector<float>",&lep_eta);
+	float totalWeight = 0.;
+	BaselineTree.Branch("totalWeight",&totalWeight,"totalWeight/F");
 	if (isData!=1) {
-		//BaselineTree.Branch("truthGamma_pt",&truthGamma_pt,"truthGamma_pt/D");
-		//BaselineTree.Branch("truthGamma_eta",&truthGamma_eta,"truthGamma_eta/D");
-		//BaselineTree.Branch("truthGamma_phi",&truthGamma_phi,"truthGamma_phi/D");
-	//	BaselineTree.Branch("gamma_dR",&gamma_dR,"gamma_dR/D");
+		//BaselineTree.Branch("truthGamma_pt",&truthGamma_pt,"truthGamma_pt/F");
+		//BaselineTree.Branch("truthGamma_eta",&truthGamma_eta,"truthGamma_eta/F");
+		//BaselineTree.Branch("truthGamma_phi",&truthGamma_phi,"truthGamma_phi/F");
+	//	BaselineTree.Branch("gamma_dR",&gamma_dR,"gamma_dR/F");
 	}
 
 	TH1D* hist_low_njet = new TH1D("hist_low_njet","",bin_size,njet_bin);
@@ -395,18 +395,18 @@ void GetPhotonEvents(string sampleID, string outputName, string pathToNtuples, i
 		photon_phi->push_back(PhotonPhi);
 
 		if (lep_n>0) continue;
-		std::cout << i << " events processed nlep cut." << std::endl;
+		//std::cout << i << " events processed nlep cut." << std::endl;
 		if (jet_n==0) continue;
-		std::cout << i << " events processed njet cut." << std::endl;
+		//std::cout << i << " events processed njet cut." << std::endl;
 		if (photon_pT->size()==0) continue;
-		std::cout << i << " events processed size cut." << std::endl;
+		//std::cout << i << " events processed size cut." << std::endl;
 		if (photon_pT->at(0)<37.) continue;
 		//if (photon_pT->at(0)<50.) continue;
 		//if (abs(photon_eta->at(0))>1.5 && abs(photon_eta->at(0))<1.6) continue;
 
-		std::cout << i << " events processed pt cut." << std::endl;
+		//std::cout << i << " events processed pt cut." << std::endl;
 		// find the trigger and prescale
-		double trigWeight = 0;
+		float trigWeight = 0;
 
 //		if (!is2016) {
 //			if (HLT_g15_loose_L1EM7->at(1)==1 && photon_pT->at(0)>(15+2) && photon_pT->at(0)<(20+2)) trigWeight = HLT_g15_loose_L1EM7->at(0);
@@ -427,7 +427,7 @@ void GetPhotonEvents(string sampleID, string outputName, string pathToNtuples, i
 		if (trigMatch_HLT_g100_loose==1 && photon_pT->at(0)>(100+5) && photon_pT->at(0)<(140+5)) trigWeight = trigPrescale_HLT_g100_loose;
 		if (trigMatch_HLT_g140_loose==1 && photon_pT->at(0)>(140+5)) trigWeight = trigPrescale_HLT_g140_loose;
 		if (trigWeight==0) continue;
-		std::cout << i << " events processed trigger cut." << std::endl;
+		//std::cout << i << " events processed trigger cut." << std::endl;
 
 		gamma_pt = photon_pT->at(0);
 		gamma_eta = photon_eta->at(0);
@@ -456,8 +456,8 @@ void GetPhotonEvents(string sampleID, string outputName, string pathToNtuples, i
 
 			totalWeight = (sampleWeight*eventWeight)/_nGenEvents;
 			if (isData==2) totalWeight = totalWeight*-1.; // V+gamma subtraction
-			//double Vgamma_SF = 1.5;  // v02-03
-			double Vgamma_SF = 1.0;  // v02-04
+			//float Vgamma_SF = 1.5;  // v02-03
+			float Vgamma_SF = 1.0;  // v02-04
 			if (outputName=="Vg") totalWeight = totalWeight*lumi*Vgamma_SF;
 
 			//truthGamma_pt =  photon_truthPt->at(0);
@@ -482,8 +482,8 @@ void GetPhotonEvents(string sampleID, string outputName, string pathToNtuples, i
 		TLorentzVector jet_4vec;
 		for (int j=0;j<jet_pT->size();j++) {
 			jet_4vec.SetPtEtaPhiM(jet_pT->at(j),jet_eta->at(j),jet_phi->at(j),jet_m->at(j));
-			double DR_PhotonJet = jet_4vec.DeltaR(gamma_4vec);
-			double DPhi_PhotonJet = jet_4vec.DeltaPhi(gamma_4vec);
+			float DR_PhotonJet = jet_4vec.DeltaR(gamma_4vec);
+			float DPhi_PhotonJet = jet_4vec.DeltaPhi(gamma_4vec);
 			if (MinDR_PhotonJet>DR_PhotonJet) MinDR_PhotonJet = DR_PhotonJet;
 			if (MinDPhi_PhotonJet>DPhi_PhotonJet) MinDPhi_PhotonJet = DPhi_PhotonJet;
 		}
@@ -498,7 +498,7 @@ void GetPhotonEvents(string sampleID, string outputName, string pathToNtuples, i
 
 
 
-		double resample_size = 1.;
+		float resample_size = 1.;
 		if (MET>200.) {
 			if (totalWeight>1 && isData==1) {
 				totalWeight = totalWeight/resample_size;
