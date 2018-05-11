@@ -12,17 +12,17 @@ TH1D* vv_jetmetl[bin_size];
 
 TH1D* hist_low_pt = new TH1D("hist_low_pt","",bin_size,sm_pt_bin);
 
-//double totalWeight = 0.;
+//float totalWeight = 0.;
 //int jet_n = 0;
 //int bjet_n = 0;
-double Z_pt = 0.;
-double Z_truthPt = 0.;
-//double gamma_pt = 0.;
-//double HT = 0.;
-//double mll = 0.;
-//double METl = 0.;
+float Z_pt = 0.;
+float Z_truthPt = 0.;
+//float gamma_pt = 0.;
+//float HT = 0.;
+//float mll = 0.;
+//float METl = 0.;
 
-void GetSmearingHistogram(string ch, double lumi, string photon_tag) {
+void GetSmearingHistogram(string ch, float lumi, string photon_tag) {
 
 	for (int bin=0;bin<bin_size;bin++) {
 		z_dpt[bin] = new TH1D(TString("z_dpt_")+TString::Itoa(bin,10),"",40000,-30000,10000);
@@ -63,64 +63,64 @@ void GetSmearingHistogram(string ch, double lumi, string photon_tag) {
 			z_jetmetl[pt]->Fill(METl,totalWeight);
 		}
 		fZ.Close();
-		cout << "Opening file           : " << TString(smearingPath)+"tt/tt"+TString(ch)+".root"        << endl;
-		TFile ftt( TString(smearingPath)+"tt/tt"+TString(ch)+".root" );
-		TTree*  ttt              = (TTree*)ftt.Get("BaselineTree");
-		ttt->SetBranchStatus("*", 0);
-		ttt->SetBranchStatus("totalWeight", 1);
-		ttt->SetBranchStatus("jet_n", 1);
-		ttt->SetBranchStatus("bjet_n", 1);
-		ttt->SetBranchStatus("Z_pt", 1);
-		ttt->SetBranchStatus("HT", 1);
-		ttt->SetBranchStatus("mll", 1);
-		ttt->SetBranchStatus("METl", 1);
-		ttt->SetBranchAddress("totalWeight" ,&totalWeight);
-		ttt->SetBranchAddress("jet_n" ,&jet_n);
-		ttt->SetBranchAddress("bjet_n" ,&bjet_n);
-		ttt->SetBranchAddress("Z_pt" ,&Z_pt);
-		ttt->SetBranchAddress("HT" ,&HT);
-		ttt->SetBranchAddress("mll" ,&mll);
-		ttt->SetBranchAddress("METl" ,&METl);
-		for (int entry=0;entry<ttt->GetEntries();entry++) {
-			ttt->GetEntry(entry);
-			if (Z_pt<50.) continue;
-			int pt = hist_low_pt->FindBin(Z_pt)-1;
-			if (jet_n!=1) continue;
-			if (bjet_n!=0) continue;
-			z_metl[pt]->Fill(METl,-1.*lumi*totalWeight);
-			if (mll<90 || mll>92) continue;
-			z_jetmetl[pt]->Fill(METl,-1.*lumi*totalWeight);
-		}
-		ftt.Close();
-		cout << "Opening file           : " << TString(smearingPath)+"vv/vv"+TString(ch)+".root"       << endl;
-		TFile fvv( TString(smearingPath)+"vv/vv"+TString(ch)+".root" );
-		TTree*  tvv              = (TTree*)fvv.Get("BaselineTree");
-		tvv->SetBranchStatus("*", 0);
-		tvv->SetBranchStatus("totalWeight", 1);
-		tvv->SetBranchStatus("jet_n", 1);
-		tvv->SetBranchStatus("bjet_n", 1);
-		tvv->SetBranchStatus("Z_pt", 1);
-		tvv->SetBranchStatus("HT", 1);
-		tvv->SetBranchStatus("mll", 1);
-		tvv->SetBranchStatus("METl", 1);
-		tvv->SetBranchAddress("totalWeight" ,&totalWeight);
-		tvv->SetBranchAddress("jet_n" ,&jet_n);
-		tvv->SetBranchAddress("bjet_n" ,&bjet_n);
-		tvv->SetBranchAddress("Z_pt" ,&Z_pt);
-		tvv->SetBranchAddress("HT" ,&HT);
-		tvv->SetBranchAddress("mll" ,&mll);
-		tvv->SetBranchAddress("METl" ,&METl);
-		for (int entry=0;entry<tvv->GetEntries();entry++) {
-			tvv->GetEntry(entry);
-			if (Z_pt<50.) continue;
-			int pt = hist_low_pt->FindBin(Z_pt)-1;
-			if (jet_n!=1) continue;
-			if (bjet_n!=0) continue;
-			z_metl[pt]->Fill(METl,-1.*lumi*totalWeight);
-			if (mll<90 || mll>92) continue;
-			z_jetmetl[pt]->Fill(METl,-1.*lumi*totalWeight);
-		}
-		fvv.Close();
+		//cout << "Opening file           : " << TString(smearingPath)+"tt/tt"+TString(ch)+".root"        << endl;
+		//TFile ftt( TString(smearingPath)+"tt/tt"+TString(ch)+".root" );
+		//TTree*  ttt              = (TTree*)ftt.Get("BaselineTree");
+		//ttt->SetBranchStatus("*", 0);
+		//ttt->SetBranchStatus("totalWeight", 1);
+		//ttt->SetBranchStatus("jet_n", 1);
+		//ttt->SetBranchStatus("bjet_n", 1);
+		//ttt->SetBranchStatus("Z_pt", 1);
+		//ttt->SetBranchStatus("HT", 1);
+		//ttt->SetBranchStatus("mll", 1);
+		//ttt->SetBranchStatus("METl", 1);
+		//ttt->SetBranchAddress("totalWeight" ,&totalWeight);
+		//ttt->SetBranchAddress("jet_n" ,&jet_n);
+		//ttt->SetBranchAddress("bjet_n" ,&bjet_n);
+		//ttt->SetBranchAddress("Z_pt" ,&Z_pt);
+		//ttt->SetBranchAddress("HT" ,&HT);
+		//ttt->SetBranchAddress("mll" ,&mll);
+		//ttt->SetBranchAddress("METl" ,&METl);
+		//for (int entry=0;entry<ttt->GetEntries();entry++) {
+		//	ttt->GetEntry(entry);
+		//	if (Z_pt<50.) continue;
+		//	int pt = hist_low_pt->FindBin(Z_pt)-1;
+		//	if (jet_n!=1) continue;
+		//	if (bjet_n!=0) continue;
+		//	z_metl[pt]->Fill(METl,-1.*lumi*totalWeight);
+		//	if (mll<90 || mll>92) continue;
+		//	z_jetmetl[pt]->Fill(METl,-1.*lumi*totalWeight);
+		//}
+		//ftt.Close();
+		//cout << "Opening file           : " << TString(smearingPath)+"vv/vv"+TString(ch)+".root"       << endl;
+		//TFile fvv( TString(smearingPath)+"vv/vv"+TString(ch)+".root" );
+		//TTree*  tvv              = (TTree*)fvv.Get("BaselineTree");
+		//tvv->SetBranchStatus("*", 0);
+		//tvv->SetBranchStatus("totalWeight", 1);
+		//tvv->SetBranchStatus("jet_n", 1);
+		//tvv->SetBranchStatus("bjet_n", 1);
+		//tvv->SetBranchStatus("Z_pt", 1);
+		//tvv->SetBranchStatus("HT", 1);
+		//tvv->SetBranchStatus("mll", 1);
+		//tvv->SetBranchStatus("METl", 1);
+		//tvv->SetBranchAddress("totalWeight" ,&totalWeight);
+		//tvv->SetBranchAddress("jet_n" ,&jet_n);
+		//tvv->SetBranchAddress("bjet_n" ,&bjet_n);
+		//tvv->SetBranchAddress("Z_pt" ,&Z_pt);
+		//tvv->SetBranchAddress("HT" ,&HT);
+		//tvv->SetBranchAddress("mll" ,&mll);
+		//tvv->SetBranchAddress("METl" ,&METl);
+		//for (int entry=0;entry<tvv->GetEntries();entry++) {
+		//	tvv->GetEntry(entry);
+		//	if (Z_pt<50.) continue;
+		//	int pt = hist_low_pt->FindBin(Z_pt)-1;
+		//	if (jet_n!=1) continue;
+		//	if (bjet_n!=0) continue;
+		//	z_metl[pt]->Fill(METl,-1.*lumi*totalWeight);
+		//	if (mll<90 || mll>92) continue;
+		//	z_jetmetl[pt]->Fill(METl,-1.*lumi*totalWeight);
+		//}
+		//fvv.Close();
 		TFile fPhoton( TString(smearingPath)+"gdata/gdata_raw.root" );
 		TTree*  tPhoton              = (TTree*)fPhoton.Get("BaselineTree");
 		tPhoton->SetBranchStatus("*", 0);
@@ -146,7 +146,7 @@ void GetSmearingHistogram(string ch, double lumi, string photon_tag) {
 		}
 		fPhoton.Close();
 	}
-	else {
+	else if (smearing_method == 1) {  // MC-driven smearing function
 		std::cout << "Get smearing function from MC." << std::endl;
 		cout << "Opening file           : " << TString(smearingPath)+"zjets/zjets_"+TString(ch)+".root"  << endl;
 		TFile fZ( TString(smearingPath)+"zjets/zjets_"+TString(ch)+".root" );
