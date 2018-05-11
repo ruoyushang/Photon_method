@@ -78,13 +78,13 @@ void GetBaseLineEvents(string sampleID, string outputName, string pathToNtuples,
 	double N_passMET100 = 0.;
 	string  filename       = Form("%s%s.root",pathToNtuples.c_str(),sampleID.c_str()); 
 	TFile*  inputFile      = TFile::Open(filename.c_str());
-	Float_t _nGenEvents = 0.;
-	if (!isData) {
-		TH1D*   EventCountHist = (TH1D*) inputFile->Get("EventCountHist");
-		_nGenEvents    = EventCountHist->GetBinContent(2);
-		hist_EventCount->SetBinContent(1,EventCountHist->GetBinContent(1));
-	}
-	TTree*  inputTree              = (TTree*)inputFile->Get("outputTree");
+	Float_t _nGenEvents = 1.;
+	//if (!isData) {
+	//	TH1D*   EventCountHist = (TH1D*) inputFile->Get("EventCountHist");
+	//	_nGenEvents    = EventCountHist->GetBinContent(2);
+	//	hist_EventCount->SetBinContent(1,EventCountHist->GetBinContent(1));
+	//}
+	TTree*  inputTree              = (TTree*)inputFile->Get("data");
 
 	cout << endl;
 	cout << "Opening file           : " << filename        << endl;
@@ -117,8 +117,8 @@ void GetBaseLineEvents(string sampleID, string outputName, string pathToNtuples,
 	Double_t boost_pt= 0;
 	TBranch *b_boost_pt = BaselineTree->Branch("boost_pt",&boost_pt,"boost_pt/Double_t");
 
-	Double_t MT2_truth= 0;
-	TBranch *b_MT2_truth = BaselineTree->Branch("MT2_truth",&MT2_truth,"MT2_truth/Double_t");
+	//Double_t MT2_truth= 0;
+	//TBranch *b_MT2_truth = BaselineTree->Branch("MT2_truth",&MT2_truth,"MT2_truth/Double_t");
 
 	//-----------------------------
 	// these variables do not go to output
@@ -150,39 +150,51 @@ void GetBaseLineEvents(string sampleID, string outputName, string pathToNtuples,
 		//if (isData && MET>150) continue;
 		
 		if (lep_n<2) continue;
+		std::cout << i << " events processed n lep cut." << std::endl;
 		if (lep_pT->at(0)<leading_lep_pt_cut) continue;
 		if (lep_pT->at(1)<second_lep_pt_cut) continue;
+		std::cout << i << " events processed lep pt cut." << std::endl;
 
 		totalWeight = 1;
 		//if (!isData) totalWeight = (sampleWeight*eventWeight*lep_weight->at(0)*lep_weight->at(1)*emtrigweight*eetrigweight*mmtrigweight)/_nGenEvents;
 		//if (!isData) totalWeight = (sampleWeight*eventWeight*lep_weight->at(0)*lep_weight->at(1)*trig_sf)/_nGenEvents;
 		if (!isData) totalWeight = (sampleWeight*eventWeight)/_nGenEvents;
 
+		channel = 2;
+		if (lep_flavor->at(0)==1 && lep_flavor->at(0)==lep_flavor->at(1)) channel = 0;
+		if (lep_flavor->at(0)==2 && lep_flavor->at(0)==lep_flavor->at(1)) channel = 1;
 		hist_cutflow_raw->Fill(0.);
 		hist_cutflow_weight->Fill(0.,totalWeight);
 		if (ch=="ee" && channel!=1) continue;
 		if (ch=="mm" && channel!=0) continue;
 		if (ch=="em" && (channel!=2 && channel!=3)) continue;
+		std::cout << i << " events processed flavor cut." << std::endl;
 		hist_cutflow_raw->Fill(1.);
 		hist_cutflow_weight->Fill(1.,totalWeight);
-		if (!useMETtrig) {
-			if (ch=="ee" && eetrig!=1) continue;
-			if (ch=="mm" && mmtrig!=1) continue;
-			if (ch=="em" && emtrig!=1) continue;
-		}
-		else {
-			if (pass_trig_MET->at(0)!=1) continue;
-		}
+		//if (!useMETtrig) {
+		//	if (ch=="ee" && eetrig!=1) continue;
+		//	if (ch=="mm" && mmtrig!=1) continue;
+		//	if (ch=="em" && emtrig!=1) continue;
+		//}
+		std::cout << i << " events processed trig cut." << std::endl;
+		//else {
+		//	if (pass_trig_MET->at(0)!=1) continue;
+		//}
 		hist_cutflow_raw->Fill(2.);
 		hist_cutflow_weight->Fill(2.,totalWeight);
+		is_OS = 0;
+		if (lep_charge->at(0)!=lep_charge->at(1)) is_OS = 1;
 		if (is_OS!=1) continue;
+		std::cout << i << " events processed charge cut." << std::endl;
 		//if (is_OS==1) continue;
 		hist_cutflow_raw->Fill(3.);
 		hist_cutflow_weight->Fill(3.,totalWeight);
 		if (jet_n==0) continue;
+		std::cout << i << " events processed n jet cut." << std::endl;
 		hist_cutflow_raw->Fill(4.);
 		hist_cutflow_weight->Fill(4.,totalWeight);
 		if (mll<12.) continue;
+		std::cout << i << " events processed mll cut." << std::endl;
 		hist_cutflow_raw->Fill(5.);
 		hist_cutflow_weight->Fill(5.,totalWeight);
 		//if (!isData) {if (lep_isPrompt->at(0)==0 || lep_isPrompt->at(1)==0) continue;}
@@ -244,25 +256,25 @@ void GetBaseLineEvents(string sampleID, string outputName, string pathToNtuples,
 			if (sampleID.find("361418")!=std::string::npos) totalWeight = totalWeight*1.1;
 			if (sampleID.find("361419")!=std::string::npos) totalWeight = totalWeight*1.1;
 
-			TLorentzVector lep0_truth4vec;
-			lep0_truthPt = lep_truthPt->at(0);
-			lep0_truthEta = lep_truthEta->at(0);
-			lep0_truthPhi = lep_truthPhi->at(0);
-			lep0_truth4vec.SetPtEtaPhiM(lep_truthPt->at(0),lep_truthEta->at(0),lep_truthPhi->at(0),0);
-			TLorentzVector lep1_truth4vec;
-			lep1_truthPt = lep_truthPt->at(1);
-			lep1_truthEta = lep_truthEta->at(1);
-			lep1_truthPhi = lep_truthPhi->at(1);
-			lep1_truth4vec.SetPtEtaPhiM(lep_truthPt->at(1),lep_truthEta->at(1),lep_truthPhi->at(1),0);
-			TLorentzVector dilep_truth4vec;
-			dilep_truth4vec = lep0_truth4vec + lep1_truth4vec;
-			Z_truthPt = dilep_truth4vec.Pt();
-			Z_truthPt_dilep = dilep_truth4vec.Pt();
-			Z_truthEta = dilep_truth4vec.Eta();
-			Z_truthPhi = dilep_truth4vec.Phi();
-			lep0_truthGammaPt = lep_truthGammaPt->at(0);
-			lep1_truthGammaPt = lep_truthGammaPt->at(1);
-			if (ch=="ee") Z_truthPt = truth_ZpT/1e3;  // for Sherpa ee channel, Z truth pT includes vertex photon radiation
+			//TLorentzVector lep0_truth4vec;
+			//lep0_truthPt = lep_truthPt->at(0);
+			//lep0_truthEta = lep_truthEta->at(0);
+			//lep0_truthPhi = lep_truthPhi->at(0);
+			//lep0_truth4vec.SetPtEtaPhiM(lep_truthPt->at(0),lep_truthEta->at(0),lep_truthPhi->at(0),0);
+			//TLorentzVector lep1_truth4vec;
+			//lep1_truthPt = lep_truthPt->at(1);
+			//lep1_truthEta = lep_truthEta->at(1);
+			//lep1_truthPhi = lep_truthPhi->at(1);
+			//lep1_truth4vec.SetPtEtaPhiM(lep_truthPt->at(1),lep_truthEta->at(1),lep_truthPhi->at(1),0);
+			//TLorentzVector dilep_truth4vec;
+			//dilep_truth4vec = lep0_truth4vec + lep1_truth4vec;
+			//Z_truthPt = dilep_truth4vec.Pt();
+			//Z_truthPt_dilep = dilep_truth4vec.Pt();
+			//Z_truthEta = dilep_truth4vec.Eta();
+			//Z_truthPhi = dilep_truth4vec.Phi();
+			//lep0_truthGammaPt = lep_truthGammaPt->at(0);
+			//lep1_truthGammaPt = lep_truthGammaPt->at(1);
+			//if (ch=="ee") Z_truthPt = truth_ZpT/1e3;  // for Sherpa ee channel, Z truth pT includes vertex photon radiation
 			//if (ch=="ee") Z_truthPhi = truth_Zphi;  // for Sherpa ee channel, Z truth pT includes vertex photon radiation
 
 		}
@@ -275,6 +287,13 @@ void GetBaseLineEvents(string sampleID, string outputName, string pathToNtuples,
 		//---------------------------------------------
 		if (fmod(i,1e5)==0) std::cout << i << " compute the MET parallel" << std::endl;
 
+		TLorentzVector lep0_4vec;
+		lep0_4vec.SetPtEtaPhiM(lep_pT->at(0),lep_eta->at(0),lep_phi->at(0),0);
+		TLorentzVector lep1_4vec;
+		lep1_4vec.SetPtEtaPhiM(lep_pT->at(1),lep_eta->at(1),lep_phi->at(1),0);
+		Z_pt = (lep0_4vec+lep1_4vec).Pt();
+		Z_eta = (lep0_4vec+lep1_4vec).Eta();
+		Z_phi = (lep0_4vec+lep1_4vec).Phi();
 		METt = MET*TMath::Sin(MET_phi-Z_phi);
 		METl = MET*TMath::Cos(MET_phi-Z_phi);
 		TLorentzVector met_4vec;
@@ -282,10 +301,6 @@ void GetBaseLineEvents(string sampleID, string outputName, string pathToNtuples,
 		TLorentzVector z_4vec;
 		z_4vec.SetPtEtaPhiM(Z_pt,Z_eta,Z_phi,0);
 		DPhi_METPhoton = fabs(met_4vec.DeltaPhi(z_4vec));
-		TLorentzVector lep0_4vec;
-		lep0_4vec.SetPtEtaPhiM(lep_pT->at(0),lep_eta->at(0),lep_phi->at(0),0);
-		TLorentzVector lep1_4vec;
-		lep1_4vec.SetPtEtaPhiM(lep_pT->at(1),lep_eta->at(1),lep_phi->at(1),0);
 		DPhi_2Lep = fabs(lep0_4vec.DeltaPhi(lep1_4vec));
 		DR_2Lep = lep0_4vec.DeltaR(lep1_4vec);
 		DPhi_METLepLeading = fabs(met_4vec.DeltaPhi(lep0_4vec));
@@ -389,35 +404,35 @@ void GetBaseLineEvents(string sampleID, string outputName, string pathToNtuples,
 		//---------------------------------------------
 		// prompt jet truth matching
 		//---------------------------------------------
-		if (fmod(i,1e5)==0) std::cout << i << " prompt jet truth matching" << std::endl;
-		TLorentzVector truthJet_4vec;
-		TLorentzVector recoJet_4vec;
-		jet_isPrompt->clear();
-		for (int j1=0;j1<jet_pT->size();j1++) {
-			jet_isPrompt->push_back(0);
-		}
-		if (doTruthJetMatch) {
-			if (!isData) {
-				for (int j0=0;j0<truthJet_pT->size();j0++) {
-					truthJet_4vec.SetPtEtaPhiM(truthJet_pT->at(j0),truthJet_eta->at(j0),truthJet_phi->at(j0),0);
-					double min_DR = 1000.;
-					int reco_this = 0;
-					for (int j1=0;j1<jet_pT->size();j1++) {
-						recoJet_4vec.SetPtEtaPhiM(jet_pT->at(j1),jet_eta->at(j1),jet_phi->at(j1),0);
-						double DR_this = truthJet_4vec.DeltaR(recoJet_4vec);
-						if (DR_this<min_DR) {
-							min_DR = DR_this;
-							reco_this = j1;
-						}
-					}
-					if (min_DR<0.3) jet_isPrompt->at(reco_this) = 1;
-				}
-			}
-		}
-		int njet_turth_prompt = 0;
-		for (int j=0;j<jet_isPrompt->size();j++) {
-			if (jet_isPrompt->at(j)==1) njet_turth_prompt += 1;
-		}
+		//if (fmod(i,1e5)==0) std::cout << i << " prompt jet truth matching" << std::endl;
+		//TLorentzVector truthJet_4vec;
+		//TLorentzVector recoJet_4vec;
+		//jet_isPrompt->clear();
+		//for (int j1=0;j1<jet_pT->size();j1++) {
+		//	jet_isPrompt->push_back(0);
+		//}
+		//if (doTruthJetMatch) {
+		//	if (!isData) {
+		//		for (int j0=0;j0<truthJet_pT->size();j0++) {
+		//			truthJet_4vec.SetPtEtaPhiM(truthJet_pT->at(j0),truthJet_eta->at(j0),truthJet_phi->at(j0),0);
+		//			double min_DR = 1000.;
+		//			int reco_this = 0;
+		//			for (int j1=0;j1<jet_pT->size();j1++) {
+		//				recoJet_4vec.SetPtEtaPhiM(jet_pT->at(j1),jet_eta->at(j1),jet_phi->at(j1),0);
+		//				double DR_this = truthJet_4vec.DeltaR(recoJet_4vec);
+		//				if (DR_this<min_DR) {
+		//					min_DR = DR_this;
+		//					reco_this = j1;
+		//				}
+		//			}
+		//			if (min_DR<0.3) jet_isPrompt->at(reco_this) = 1;
+		//		}
+		//	}
+		//}
+		//int njet_turth_prompt = 0;
+		//for (int j=0;j<jet_isPrompt->size();j++) {
+		//	if (jet_isPrompt->at(j)==1) njet_turth_prompt += 1;
+		//}
 
 		//---------------------------------------------
 		// apply Jigsaw rules to find ISR jets, without knowing the flavor of the objects
@@ -435,18 +450,18 @@ void GetBaseLineEvents(string sampleID, string outputName, string pathToNtuples,
 		//---------------------------------------------
 		if (fmod(i,1e5)==0) std::cout << i << " Fill METl histograms" << std::endl;
 		double pt37_cut = 37.;
-		if (!isData) {
-			if (Z_pt>pt37_cut && abs(MinDPhi_PhotonJet)>0.0) {
-				truthMETt = truthMET*TMath::Sin(truthMET_Phi-Z_truthPhi);
-				truthMETl = truthMET*TMath::Cos(truthMET_Phi-Z_truthPhi);
-				int pt_truth = hist_low_pt->FindBin(Z_truthPt)-1;
-				int dpt = hist_low_dpt->FindBin((Z_pt-Z_truthPt))-1;
-				int dpt_dilep = hist_low_dpt->FindBin((Z_pt-Z_truthPt_dilep))-1;
-				if (Z_truthPt>pt_bin[bin_size]) pt_truth = bin_size-1;
-				if (pt>=0) hist_METl_Pt[pt]->Fill(METl,totalWeight);
-				if (pt>=0) hist_METt_Pt[pt]->Fill(METt,totalWeight);
-			}
-		}
+		//if (!isData) {
+		//	if (Z_pt>pt37_cut && abs(MinDPhi_PhotonJet)>0.0) {
+		//		truthMETt = truthMET*TMath::Sin(truthMET_Phi-Z_truthPhi);
+		//		truthMETl = truthMET*TMath::Cos(truthMET_Phi-Z_truthPhi);
+		//		int pt_truth = hist_low_pt->FindBin(Z_truthPt)-1;
+		//		int dpt = hist_low_dpt->FindBin((Z_pt-Z_truthPt))-1;
+		//		int dpt_dilep = hist_low_dpt->FindBin((Z_pt-Z_truthPt_dilep))-1;
+		//		if (Z_truthPt>pt_bin[bin_size]) pt_truth = bin_size-1;
+		//		if (pt>=0) hist_METl_Pt[pt]->Fill(METl,totalWeight);
+		//		if (pt>=0) hist_METt_Pt[pt]->Fill(METt,totalWeight);
+		//	}
+		//}
 
 
 		//BaselineTree.Fill();     
