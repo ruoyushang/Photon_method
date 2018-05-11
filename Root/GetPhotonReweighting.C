@@ -372,8 +372,6 @@ void GetPhotonReweighting(string ch, int isData, string year) {
 		pt37_bveto_corr_met = gr_37_bveto_met_correction->Eval(MET_smear);
 		pt37_bveto_corr_lpt = gr_37_bveto_lpt_correction->Eval(lep_pT->at(0));
 		ptrw_bveto = gr_bveto_ptrw_correction->Eval(gamma_pt);
-		std::cout << "gamma_pt = " << gamma_pt << std::endl;
-		std::cout << "ptrw_bveto = " << ptrw_bveto << std::endl;
 		ptsmrw_bveto = gr_bveto_ptsmrw_correction->Eval(gamma_pt_smear);
 		etrw_bveto = gr_bveto_etrw_correction->Eval(gamma_pt);
 		etsmrw_bveto = gr_bveto_etsmrw_correction->Eval(gamma_et_smear);
