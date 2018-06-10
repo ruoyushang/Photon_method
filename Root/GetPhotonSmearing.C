@@ -101,7 +101,7 @@ void getPhotonSmearingFunction2(TString file, TString histname, TH1D* hist, int 
 	}
 	fData->Close();
 }
-void GetPhotonSmearing(string ch, int isData, string year) {
+void GetPhotonSmearing(string ch, int isData, string year, int smearing_method) {
 
 
 	//-----------------------------
@@ -151,7 +151,7 @@ void GetPhotonSmearing(string ch, int isData, string year) {
 	}
 
 
-	GetSmearingHistogram(ch,lumi, photon_tag);
+	GetSmearingHistogram(ch,lumi, photon_tag, smearing_method);
 
 	if (smearing_method >= 0) {  // if you want to use the deconvolution method to smear photon events. To enable this method, set "bool useDeconvolution = true" in BasicSetting.C
 		for (int bin=0;bin<bin_size;bin++) {
@@ -252,7 +252,7 @@ void GetPhotonSmearing(string ch, int isData, string year) {
 	TH1::SetDefaultSumw2();
 
 	string  filename;
-	if (isData==1) filename = TString(TString(smearingPath)+"gdata/gdata_raw.root"); 
+	if (isData==1) filename = TString(TString(smearingPath)+"gdata/JETM4_" + year + ".root"); 
 	if (isData==0) filename = TString(TString(smearingPath)+"gmc/gmc_raw.root"); 
 	TFile*  inputFile      = TFile::Open(filename.c_str());
 	TTree*  T              = (TTree*)inputFile->Get("BaselineTree");

@@ -12,7 +12,7 @@ std::string outputPath = "../OutputNtuples/";
 std::string smearingPath = "../OutputNtuples/";
 //std::string outputPath = "/eos/atlas/user/r/rshang/OutputNtuples/";
 //std::string smearingPath = "/eos/atlas/user/r/rshang/OutputNtuples/";
-//std::string smearingPath = "/eos/atlas/atlascerngroupdisk/phys-susy/strong2L/v02-04/Ruo/PhotonMethodOutput/OutputNtuples_EWK2L/";
+std::string R20smearingPath = "/eos/atlas/atlascerngroupdisk/phys-susy/strong2L/v02-04/Ruo/PhotonMethodOutput/OutputNtuples_EWK2L/";
 //std::string outputPath = "/eos/atlas/user/r/rshang/OutputNtuples_SS/";
 //std::string smearingPath = "/eos/atlas/user/r/rshang/OutputNtuples_SS/";
 //std::string outputPath = "/eos/atlas/user/r/rshang/OutputNtuples_DF/";
@@ -23,7 +23,7 @@ string photon_tag = "";
 int event_interval = 1;
 //int event_interval = 100;
 
-int smearing_method = 0; // No smearing
+//int smearing_method = 0; // No smearing
 //int smearing_method = 1; // MC smearing
 //int smearing_method = 2; // Data smearing
 //int smearing_method = 3; // Truth smearing

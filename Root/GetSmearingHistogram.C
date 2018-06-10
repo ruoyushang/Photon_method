@@ -22,7 +22,7 @@ float Z_truthPt = 0.;
 //float mll = 0.;
 //float METl = 0.;
 
-void GetSmearingHistogram(string ch, float lumi, string photon_tag) {
+void GetSmearingHistogram(string ch, float lumi, string photon_tag, int smearing_method) {
 
 	for (int bin=0;bin<bin_size;bin++) {
 		z_dpt[bin] = new TH1D(TString("z_dpt_")+TString::Itoa(bin,10),"",40000,-30000,10000);
@@ -34,7 +34,7 @@ void GetSmearingHistogram(string ch, float lumi, string photon_tag) {
 	}
 	if (smearing_method == 2) {  // data-driven smearing function
 		std::cout << "Get smearing function from data." << std::endl;
-		cout << "Opening file           : " << TString(smearingPath)+"data/data_"+TString(ch)+".root"  << endl;
+		cout << "Opening file           : " << TString(R20smearingPath)+"data/data_"+TString(ch)+".root"  << endl;
 		TFile fZ( TString(smearingPath)+"data/data_"+TString(ch)+".root" );
 		TTree*  tZ              = (TTree*)fZ.Get("BaselineTree");
 		tZ->SetBranchStatus("*", 0);
@@ -121,7 +121,7 @@ void GetSmearingHistogram(string ch, float lumi, string photon_tag) {
 		//	z_jetmetl[pt]->Fill(METl,-1.*lumi*totalWeight);
 		//}
 		//fvv.Close();
-		TFile fPhoton( TString(smearingPath)+"gdata/gdata_raw.root" );
+		TFile fPhoton( TString(R20smearingPath)+"gdata/gdata_raw.root" );
 		TTree*  tPhoton              = (TTree*)fPhoton.Get("BaselineTree");
 		tPhoton->SetBranchStatus("*", 0);
 		tPhoton->SetBranchStatus("totalWeight", 1);
@@ -148,8 +148,8 @@ void GetSmearingHistogram(string ch, float lumi, string photon_tag) {
 	}
 	else if (smearing_method == 1) {  // MC-driven smearing function
 		std::cout << "Get smearing function from MC." << std::endl;
-		cout << "Opening file           : " << TString(smearingPath)+"zjets/zjets_"+TString(ch)+".root"  << endl;
-		TFile fZ( TString(smearingPath)+"zjets/zjets_"+TString(ch)+".root" );
+		cout << "Opening file           : " << TString(R20smearingPath)+"zjets/zjets_"+TString(ch)+".root"  << endl;
+		TFile fZ( TString(R20smearingPath)+"zjets/zjets_"+TString(ch)+".root" );
 		TTree*  tZ              = (TTree*)fZ.Get("BaselineTree");
 		tZ->SetBranchStatus("*", 0);
 		tZ->SetBranchStatus("totalWeight", 1);
@@ -193,7 +193,7 @@ void GetSmearingHistogram(string ch, float lumi, string photon_tag) {
 			z_jetmetl[pt]->Fill(METl,totalWeight);
 		}
 		fZ.Close();
-		TFile fPhoton( TString(smearingPath)+"gmc/gmc_raw.root" );
+		TFile fPhoton( TString(R20smearingPath)+"gmc/gmc_raw.root" );
 		TTree*  tPhoton              = (TTree*)fPhoton.Get("BaselineTree");
 		tPhoton->SetBranchStatus("*", 0);
 		tPhoton->SetBranchStatus("totalWeight", 1);
