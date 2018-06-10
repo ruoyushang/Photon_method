@@ -71,7 +71,7 @@ void GetPhotonEvents(string sampleID, string outputName, string pathToNtuples, i
 	//-----------------------------
 	
 	
-	Long64_t EventNumber;
+	ULong64_t EventNumber;
 	Int_t RunNumber;
 	int trigMatch_HLT_g35_loose_L1EM15;
 	int trigMatch_HLT_g40_loose_L1EM15;
@@ -276,7 +276,7 @@ void GetPhotonEvents(string sampleID, string outputName, string pathToNtuples, i
 	BaselineTree.Branch("ht",&ht,"ht/I");
 	BaselineTree.Branch("njet",&njet,"njet/I");
 	BaselineTree.Branch("nbjet",&nbjet,"nbjet/I");
-	BaselineTree.Branch("Mu",&Mu,"Mu/Float_t");
+	BaselineTree.Branch("Mu",&Mu,"Mu/F");
 	BaselineTree.Branch("MET_raw",&MET,"MET_raw/F");
 	BaselineTree.Branch("METl_raw",&METl,"METl_raw/F");
 	BaselineTree.Branch("METt_raw",&METt,"METt_raw/F");
@@ -298,16 +298,16 @@ void GetPhotonEvents(string sampleID, string outputName, string pathToNtuples, i
 	BaselineTree.Branch("gamma_eta",&gamma_eta,"gamma_eta/F");
 	BaselineTree.Branch("gamma_phi",&gamma_phi,"gamma_phi/F");
 	//BaselineTree.Branch("gamma_passAmbi",&gamma_passAmbi,"gamma_passAmbi/I");
-	BaselineTree.Branch("bjet_n",&bjet_n,"bjet_n/Int_t");
-	BaselineTree.Branch("jet_n",&jet_n,"jet_n/Int_t");
+	BaselineTree.Branch("bjet_n",&bjet_n,"bjet_n/I");
+	BaselineTree.Branch("jet_n",&jet_n,"jet_n/I");
 	//BaselineTree.Branch("jet_btag","std::vector<float>",&jet_btag);
 	BaselineTree.Branch("jet_m","std::vector<float>",&jet_m);
 	BaselineTree.Branch("jet_pT","std::vector<float>",&jet_pT);
 	BaselineTree.Branch("jet_phi","std::vector<float>",&jet_phi);
 	BaselineTree.Branch("jet_eta","std::vector<float>",&jet_eta);
-	BaselineTree.Branch("EventNumber",&EventNumber,"EventNumber/Long64_t");
-	BaselineTree.Branch("RunNumber",&RunNumber,"RunNumber/Int_t");
-	BaselineTree.Branch("lep_n_raw",&lep_n,"lep_n_raw/Int_t");
+	BaselineTree.Branch("EventNumber",&EventNumber,"EventNumber/l");
+	BaselineTree.Branch("RunNumber",&RunNumber,"RunNumber/I");
+	BaselineTree.Branch("lep_n_raw",&lep_n,"lep_n_raw/I");
 	BaselineTree.Branch("lep_pT_raw","std::vector<float>",&lep_pT);
 	BaselineTree.Branch("lep_phi_raw","std::vector<float>",&lep_phi);
 	BaselineTree.Branch("lep_eta_raw","std::vector<float>",&lep_eta);
@@ -480,7 +480,7 @@ void GetPhotonEvents(string sampleID, string outputName, string pathToNtuples, i
 		MinDR_PhotonJet = 1000.;
 		MinDPhi_PhotonJet = 1000.;
 		TLorentzVector jet_4vec;
-		for (int j=0;j<jet_pT->size();j++) {
+		for (unsigned int j=0;j<jet_pT->size();j++) {
 			jet_4vec.SetPtEtaPhiM(jet_pT->at(j),jet_eta->at(j),jet_phi->at(j),jet_m->at(j));
 			float DR_PhotonJet = jet_4vec.DeltaR(gamma_4vec);
 			float DPhi_PhotonJet = jet_4vec.DeltaPhi(gamma_4vec);
