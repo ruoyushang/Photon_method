@@ -73,6 +73,8 @@ void GetPhotonEvents(string sampleID, string outputName, string pathToNtuples, i
 	
 	ULong64_t EventNumber;
 	Int_t RunNumber;
+	int trigMatch_HLT_g15_loose_L1EM7;
+	int trigMatch_HLT_g25_loose_L1EM15;
 	int trigMatch_HLT_g35_loose_L1EM15;
 	int trigMatch_HLT_g40_loose_L1EM15;
 	int trigMatch_HLT_g45_loose_L1EM15;
@@ -83,6 +85,8 @@ void GetPhotonEvents(string sampleID, string outputName, string pathToNtuples, i
 	int trigMatch_HLT_g100_loose;
 	int trigMatch_HLT_g120_loose;
 	int trigMatch_HLT_g140_loose;
+	float trigPrescale_HLT_g15_loose_L1EM7;
+	float trigPrescale_HLT_g25_loose_L1EM15;
 	float trigPrescale_HLT_g35_loose_L1EM15;
 	float trigPrescale_HLT_g40_loose_L1EM15;
 	float trigPrescale_HLT_g45_loose_L1EM15;
@@ -145,6 +149,8 @@ void GetPhotonEvents(string sampleID, string outputName, string pathToNtuples, i
     T->SetBranchStatus("jetPt"          ,1); 
     T->SetBranchStatus("jetEta"         ,1); 
     T->SetBranchStatus("jetPhi"         ,1); 
+    T->SetBranchStatus("trigMatch_HLT_g15_loose_L1EM7", 1);
+    T->SetBranchStatus("trigMatch_HLT_g25_loose_L1EM15", 1);
     T->SetBranchStatus("trigMatch_HLT_g35_loose_L1EM15", 1); 
     T->SetBranchStatus("trigMatch_HLT_g40_loose_L1EM15", 1); 
     T->SetBranchStatus("trigMatch_HLT_g45_loose_L1EM15", 1); 
@@ -155,6 +161,8 @@ void GetPhotonEvents(string sampleID, string outputName, string pathToNtuples, i
     T->SetBranchStatus("trigMatch_HLT_g100_loose", 1); 
     T->SetBranchStatus("trigMatch_HLT_g120_loose", 1); 
     T->SetBranchStatus("trigMatch_HLT_g140_loose", 1); 
+    T->SetBranchStatus("trigPrescale_HLT_g15_loose_L1EM7", 1);
+    T->SetBranchStatus("trigPrescale_HLT_g25_loose_L1EM15", 1);
     T->SetBranchStatus("trigPrescale_HLT_g35_loose_L1EM15", 1); 
     T->SetBranchStatus("trigPrescale_HLT_g40_loose_L1EM15", 1); 
     T->SetBranchStatus("trigPrescale_HLT_g45_loose_L1EM15", 1); 
@@ -193,6 +201,8 @@ void GetPhotonEvents(string sampleID, string outputName, string pathToNtuples, i
 	T->SetBranchAddress("jetPt"          ,&jet_pT           );
 	T->SetBranchAddress("jetEta"         ,&jet_eta          );
 	T->SetBranchAddress("jetPhi"         ,&jet_phi          );
+	T->SetBranchAddress("trigMatch_HLT_g15_loose_L1EM7", 		&trigMatch_HLT_g15_loose_L1EM7);
+	T->SetBranchAddress("trigMatch_HLT_g25_loose_L1EM15", 		&trigMatch_HLT_g25_loose_L1EM15);
 	T->SetBranchAddress("trigMatch_HLT_g35_loose_L1EM15", 		&trigMatch_HLT_g35_loose_L1EM15);
 	T->SetBranchAddress("trigMatch_HLT_g40_loose_L1EM15", 		&trigMatch_HLT_g40_loose_L1EM15);
 	T->SetBranchAddress("trigMatch_HLT_g45_loose_L1EM15", 		&trigMatch_HLT_g45_loose_L1EM15);
@@ -203,6 +213,8 @@ void GetPhotonEvents(string sampleID, string outputName, string pathToNtuples, i
 	T->SetBranchAddress("trigMatch_HLT_g100_loose", 		&trigMatch_HLT_g100_loose);
 	T->SetBranchAddress("trigMatch_HLT_g120_loose", 		&trigMatch_HLT_g120_loose);
 	T->SetBranchAddress("trigMatch_HLT_g140_loose", 		&trigMatch_HLT_g140_loose);
+	T->SetBranchAddress("trigPrescale_HLT_g15_loose_L1EM7", 	&trigPrescale_HLT_g15_loose_L1EM7);
+	T->SetBranchAddress("trigPrescale_HLT_g25_loose_L1EM15", 	&trigPrescale_HLT_g25_loose_L1EM15);
 	T->SetBranchAddress("trigPrescale_HLT_g35_loose_L1EM15", 	&trigPrescale_HLT_g35_loose_L1EM15);
 	T->SetBranchAddress("trigPrescale_HLT_g40_loose_L1EM15", 	&trigPrescale_HLT_g40_loose_L1EM15);
 	T->SetBranchAddress("trigPrescale_HLT_g45_loose_L1EM15", 	&trigPrescale_HLT_g45_loose_L1EM15);
@@ -311,6 +323,20 @@ void GetPhotonEvents(string sampleID, string outputName, string pathToNtuples, i
 	BaselineTree.Branch("lep_pT_raw","std::vector<float>",&lep_pT);
 	BaselineTree.Branch("lep_phi_raw","std::vector<float>",&lep_phi);
 	BaselineTree.Branch("lep_eta_raw","std::vector<float>",&lep_eta);
+
+	BaselineTree.Branch("trigMatch_HLT_g15_loose_L1EM7", 		&trigMatch_HLT_g15_loose_L1EM7      ,"trigMatch_HLT_g15_loose_L1EM7/I" 	             );
+	BaselineTree.Branch("trigMatch_HLT_g25_loose_L1EM15", 		&trigMatch_HLT_g25_loose_L1EM15     ,"trigMatch_HLT_g25_loose_L1EM15/I" 	     );
+	BaselineTree.Branch("trigMatch_HLT_g35_loose_L1EM15", 		&trigMatch_HLT_g35_loose_L1EM15     ,"trigMatch_HLT_g35_loose_L1EM15/I" 	     );
+	BaselineTree.Branch("trigMatch_HLT_g40_loose_L1EM15", 		&trigMatch_HLT_g40_loose_L1EM15     ,"trigMatch_HLT_g40_loose_L1EM15/I" 	     );
+	BaselineTree.Branch("trigMatch_HLT_g45_loose_L1EM15", 		&trigMatch_HLT_g45_loose_L1EM15     ,"trigMatch_HLT_g45_loose_L1EM15/I" 	     );
+	BaselineTree.Branch("trigMatch_HLT_g50_loose_L1EM15", 		&trigMatch_HLT_g50_loose_L1EM15     ,"trigMatch_HLT_g50_loose_L1EM15/I" 	     );
+	BaselineTree.Branch("trigMatch_HLT_g60_loose", 			&trigMatch_HLT_g60_loose            ,"trigMatch_HLT_g60_loose/I" 		     );
+	BaselineTree.Branch("trigMatch_HLT_g70_loose", 			&trigMatch_HLT_g70_loose            ,"trigMatch_HLT_g70_loose/I" 		     );
+	BaselineTree.Branch("trigMatch_HLT_g80_loose", 			&trigMatch_HLT_g80_loose            ,"trigMatch_HLT_g80_loose/I" 		     );
+	BaselineTree.Branch("trigMatch_HLT_g100_loose", 		&trigMatch_HLT_g100_loose           ,"trigMatch_HLT_g100_loose/I" 	             );
+	BaselineTree.Branch("trigMatch_HLT_g120_loose", 		&trigMatch_HLT_g120_loose           ,"trigMatch_HLT_g120_loose/I" 	             );
+	BaselineTree.Branch("trigMatch_HLT_g140_loose", 		&trigMatch_HLT_g140_loose           ,"trigMatch_HLT_g140_loose/I" 	             );
+
 	float totalWeight = 0.;
 	BaselineTree.Branch("totalWeight",&totalWeight,"totalWeight/F");
 	if (isData!=1) {
@@ -400,7 +426,7 @@ void GetPhotonEvents(string sampleID, string outputName, string pathToNtuples, i
 		//std::cout << i << " events processed njet cut." << std::endl;
 		if (photon_pT->size()==0) continue;
 		//std::cout << i << " events processed size cut." << std::endl;
-		if (photon_pT->at(0)<37.) continue;
+		if (photon_pT->at(0)<20.) continue;
 		//if (photon_pT->at(0)<50.) continue;
 		//if (abs(photon_eta->at(0))>1.5 && abs(photon_eta->at(0))<1.6) continue;
 
@@ -417,6 +443,8 @@ void GetPhotonEvents(string sampleID, string outputName, string pathToNtuples, i
 //			if (HLT_g50_loose_L1EM15->at(1)==1 && photon_pT->at(0)>(50+5) && photon_pT->at(0)<(120+5)) trigWeight = HLT_g50_loose_L1EM15->at(0);
 //			if (HLT_g120_loose->at(1)==1 && photon_pT->at(0)>(120+5)) trigWeight = 1.;
 //		}
+		if (trigMatch_HLT_g15_loose_L1EM7 ==1 && photon_pT->at(0)>(15+5) && photon_pT->at(0)<(25+5)) trigWeight = trigPrescale_HLT_g15_loose_L1EM7;
+		if (trigMatch_HLT_g25_loose_L1EM15==1 && photon_pT->at(0)>(25+5) && photon_pT->at(0)<(35+5)) trigWeight = trigPrescale_HLT_g25_loose_L1EM15;
 		if (trigMatch_HLT_g35_loose_L1EM15==1 && photon_pT->at(0)>(35+5) && photon_pT->at(0)<(40+5)) trigWeight = trigPrescale_HLT_g35_loose_L1EM15;
 		if (trigMatch_HLT_g40_loose_L1EM15==1 && photon_pT->at(0)>(40+5) && photon_pT->at(0)<(45+5)) trigWeight = trigPrescale_HLT_g40_loose_L1EM15;
 		if (trigMatch_HLT_g45_loose_L1EM15==1 && photon_pT->at(0)>(45+5) && photon_pT->at(0)<(50+5)) trigWeight = trigPrescale_HLT_g45_loose_L1EM15;
