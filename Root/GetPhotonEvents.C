@@ -46,7 +46,8 @@ void getPhotonSmearingFunction(TString file, TString histname, TH1D* hist) {
 	}
 	fData->Close();
 }
-void GetPhotonEvents(string sampleID, string outputName, string pathToNtuples, int isData) {
+
+void GetPhotonEvents(string sampleID, string outputName, string pathToNtuples, int isData, string treeName = "tree_NoSys" ) {
 
 	//---------------------------------------------
 	// open file, get Tree and EventCountHist
@@ -59,18 +60,20 @@ void GetPhotonEvents(string sampleID, string outputName, string pathToNtuples, i
 	//TH1D*   EventCountHist = (TH1D*) inputFile->Get("EventCountHist");
 	//Float_t _nGenEvents    = EventCountHist->GetBinContent(2);
 	Float_t _nGenEvents    = 1.;
-	TTree*  T              = (TTree*)inputFile->Get("tree_NoSys");
+	TTree*  T              = (TTree*)inputFile->Get( treeName.c_str() );
 
 	cout << endl;
 	cout << "Opening file           : " << filename        << endl;
 	cout << "Events in ntuple       : " << T->GetEntries() << endl;
 	cout << "Total generated events : " << _nGenEvents     << endl;
-
+	cout << "Output type            : " << outputName      << endl;
+	cout << "Output path            : " << outputPath      << endl;
+	cout << "updated event weights" << endl;
+	
 	//-----------------------------
 	// access existing branches
 	//-----------------------------
-	
-	
+		
 	ULong64_t EventNumber;
 	Int_t RunNumber;
 	int trigMatch_HLT_g15_loose_L1EM7;
@@ -109,7 +112,9 @@ void GetPhotonEvents(string sampleID, string outputName, string pathToNtuples, i
 	float HT;
 	Int_t jet_n;
 	Int_t bjet_n;
-	Int_t lep_n;
+	//Int_t lep_n;
+	Int_t nLep_signal;
+	Int_t nLep_base;
 	std::vector<float>* lep_pT = new std::vector<float>(10);
 	std::vector<float>* lep_eta = new std::vector<float>(10);
 	std::vector<float>* lep_phi = new std::vector<float>(10);
@@ -125,58 +130,60 @@ void GetPhotonEvents(string sampleID, string outputName, string pathToNtuples, i
 	float PhotonPt;
 	float PhotonEta;
 	float PhotonPhi;
-    T->SetBranchStatus("*", 0);
-    T->SetBranchStatus("EventNumber"              ,1); 
-    T->SetBranchStatus("RunNumber"              ,1); 
-    T->SetBranchStatus("mu"              ,1); 
-    T->SetBranchStatus("met_Et"             ,1); 
-    T->SetBranchStatus("met_Phi"         ,1); 
-    T->SetBranchStatus("TST_Et"         ,1); 
-    T->SetBranchStatus("TST_Phi"         ,1); 
-    //T->SetBranchStatus("truthMET"             ,1); 
-    //T->SetBranchStatus("truthMET_Phi"         ,1); 
-    //T->SetBranchStatus("DPhi_METJetLeading"         ,1); 
-    //T->SetBranchStatus("DPhi_METJetSecond"          ,1); 
-    T->SetBranchStatus("Ht30"              ,1); 
-    T->SetBranchStatus("nBJet30_MV2c10_FixedCutBEff_77"          ,1); 
-    T->SetBranchStatus("nLep_signal"           ,1); 
-    T->SetBranchStatus("lepPt"          ,1); 
-    T->SetBranchStatus("lepEta"         ,1); 
-    T->SetBranchStatus("lepPhi"         ,1); 
-    T->SetBranchStatus("nJet30"           ,1); 
-    //T->SetBranchStatus("jet_btag"          ,1); 
-    T->SetBranchStatus("jetM"          ,1); 
-    T->SetBranchStatus("jetPt"          ,1); 
-    T->SetBranchStatus("jetEta"         ,1); 
-    T->SetBranchStatus("jetPhi"         ,1); 
-    T->SetBranchStatus("trigMatch_HLT_g15_loose_L1EM7", 1);
-    T->SetBranchStatus("trigMatch_HLT_g25_loose_L1EM15", 1);
-    T->SetBranchStatus("trigMatch_HLT_g35_loose_L1EM15", 1); 
-    T->SetBranchStatus("trigMatch_HLT_g40_loose_L1EM15", 1); 
-    T->SetBranchStatus("trigMatch_HLT_g45_loose_L1EM15", 1); 
-    T->SetBranchStatus("trigMatch_HLT_g50_loose_L1EM15", 1); 
-    T->SetBranchStatus("trigMatch_HLT_g60_loose", 1); 
-    T->SetBranchStatus("trigMatch_HLT_g70_loose", 1); 
-    T->SetBranchStatus("trigMatch_HLT_g80_loose", 1); 
-    T->SetBranchStatus("trigMatch_HLT_g100_loose", 1); 
-    T->SetBranchStatus("trigMatch_HLT_g120_loose", 1); 
-    T->SetBranchStatus("trigMatch_HLT_g140_loose", 1); 
-    T->SetBranchStatus("trigPrescale_HLT_g15_loose_L1EM7", 1);
-    T->SetBranchStatus("trigPrescale_HLT_g25_loose_L1EM15", 1);
-    T->SetBranchStatus("trigPrescale_HLT_g35_loose_L1EM15", 1); 
-    T->SetBranchStatus("trigPrescale_HLT_g40_loose_L1EM15", 1); 
-    T->SetBranchStatus("trigPrescale_HLT_g45_loose_L1EM15", 1); 
-    T->SetBranchStatus("trigPrescale_HLT_g50_loose_L1EM15", 1); 
-    T->SetBranchStatus("trigPrescale_HLT_g60_loose", 1); 
-    T->SetBranchStatus("trigPrescale_HLT_g70_loose", 1); 
-    T->SetBranchStatus("trigPrescale_HLT_g80_loose", 1); 
-    T->SetBranchStatus("trigPrescale_HLT_g100_loose", 1); 
-    T->SetBranchStatus("trigPrescale_HLT_g120_loose", 1); 
-    T->SetBranchStatus("trigPrescale_HLT_g140_loose", 1); 
-    T->SetBranchStatus("PhotonPt", 1); 
-    T->SetBranchStatus("PhotonEta", 1); 
-    T->SetBranchStatus("PhotonPhi", 1); 
-    //T->SetBranchStatus("photon_passAmbi", 1); 
+
+	T->SetBranchStatus("*", 0);
+	T->SetBranchStatus("EventNumber"              ,1); 
+	T->SetBranchStatus("RunNumber"              ,1); 
+	T->SetBranchStatus("mu"              ,1); 
+	T->SetBranchStatus("met_Et"             ,1); 
+	T->SetBranchStatus("met_Phi"         ,1); 
+	T->SetBranchStatus("TST_Et"         ,1); 
+	T->SetBranchStatus("TST_Phi"         ,1); 
+	//T->SetBranchStatus("truthMET"             ,1); 
+	//T->SetBranchStatus("truthMET_Phi"         ,1); 
+	T->SetBranchStatus("DPhiJ1Met"          ,1); 
+	T->SetBranchStatus("DPhiJ2Met"          ,1); 
+	T->SetBranchStatus("Ht30"              ,1); 
+	T->SetBranchStatus("nBJet30_MV2c10_FixedCutBEff_77"          ,1); 
+	T->SetBranchStatus("nLep_signal"           ,1);
+	T->SetBranchStatus("nLep_base"             ,1); 
+	T->SetBranchStatus("lepPt"          ,1); 
+	T->SetBranchStatus("lepEta"         ,1); 
+	T->SetBranchStatus("lepPhi"         ,1); 
+	T->SetBranchStatus("nJet30"           ,1); 
+	//T->SetBranchStatus("jet_btag"          ,1); 
+	T->SetBranchStatus("jetM"          ,1); 
+	T->SetBranchStatus("jetPt"          ,1); 
+	T->SetBranchStatus("jetEta"         ,1); 
+	T->SetBranchStatus("jetPhi"         ,1); 
+	T->SetBranchStatus("trigMatch_HLT_g15_loose_L1EM7", 1);
+	T->SetBranchStatus("trigMatch_HLT_g25_loose_L1EM15", 1);
+	T->SetBranchStatus("trigMatch_HLT_g35_loose_L1EM15", 1); 
+	T->SetBranchStatus("trigMatch_HLT_g40_loose_L1EM15", 1); 
+	T->SetBranchStatus("trigMatch_HLT_g45_loose_L1EM15", 1); 
+	T->SetBranchStatus("trigMatch_HLT_g50_loose_L1EM15", 1); 
+	T->SetBranchStatus("trigMatch_HLT_g60_loose", 1); 
+	T->SetBranchStatus("trigMatch_HLT_g70_loose", 1); 
+	T->SetBranchStatus("trigMatch_HLT_g80_loose", 1); 
+	T->SetBranchStatus("trigMatch_HLT_g100_loose", 1); 
+	T->SetBranchStatus("trigMatch_HLT_g120_loose", 1); 
+	T->SetBranchStatus("trigMatch_HLT_g140_loose", 1); 
+	T->SetBranchStatus("trigPrescale_HLT_g15_loose_L1EM7", 1);
+	T->SetBranchStatus("trigPrescale_HLT_g25_loose_L1EM15", 1);
+	T->SetBranchStatus("trigPrescale_HLT_g35_loose_L1EM15", 1); 
+	T->SetBranchStatus("trigPrescale_HLT_g40_loose_L1EM15", 1); 
+	T->SetBranchStatus("trigPrescale_HLT_g45_loose_L1EM15", 1); 
+	T->SetBranchStatus("trigPrescale_HLT_g50_loose_L1EM15", 1); 
+	T->SetBranchStatus("trigPrescale_HLT_g60_loose", 1); 
+	T->SetBranchStatus("trigPrescale_HLT_g70_loose", 1); 
+	T->SetBranchStatus("trigPrescale_HLT_g80_loose", 1); 
+	T->SetBranchStatus("trigPrescale_HLT_g100_loose", 1); 
+	T->SetBranchStatus("trigPrescale_HLT_g120_loose", 1); 
+	T->SetBranchStatus("trigPrescale_HLT_g140_loose", 1); 
+	T->SetBranchStatus("PhotonPt", 1); 
+	T->SetBranchStatus("PhotonEta", 1); 
+	T->SetBranchStatus("PhotonPhi", 1); 
+	//T->SetBranchStatus("photon_passAmbi", 1); 
 
 	T->SetBranchAddress("EventNumber"              ,&EventNumber               );
 	T->SetBranchAddress("RunNumber"              ,&RunNumber               );
@@ -187,11 +194,13 @@ void GetPhotonEvents(string sampleID, string outputName, string pathToNtuples, i
 	T->SetBranchAddress("TST_Phi"         ,&MET_softPhi          );
 	//T->SetBranchAddress("truthMET"             ,&truthMET              );
 	//T->SetBranchAddress("truthMET_Phi"         ,&truthMET_Phi          );
-	//T->SetBranchAddress("DPhi_METJetLeading"         ,&DPhi_METJetLeading          );
-	//T->SetBranchAddress("DPhi_METJetSecond"          ,&DPhi_METJetSecond           );
+	T->SetBranchAddress("DPhiJ1Met"          ,&DPhi_METJetLeading          );
+	T->SetBranchAddress("DPhiJ2Met"          ,&DPhi_METJetSecond           );
 	T->SetBranchAddress("Ht30"              ,&HT               );
 	T->SetBranchAddress("nBJet30_MV2c10_FixedCutBEff_77"          ,&bjet_n            );
-	T->SetBranchAddress("nLep_signal"           ,&lep_n            );
+	//T->SetBranchAddress("nLep_signal"           ,&lep_n            );
+	T->SetBranchAddress("nLep_signal"           ,&nLep_signal            );
+	T->SetBranchAddress("nLep_base"             ,&nLep_base            );
 	T->SetBranchAddress("lepPt"          ,&lep_pT           );
 	T->SetBranchAddress("lepEta"         ,&lep_eta          );
 	T->SetBranchAddress("lepPhi"         ,&lep_phi          );
@@ -230,39 +239,62 @@ void GetPhotonEvents(string sampleID, string outputName, string pathToNtuples, i
 	T->SetBranchAddress("PhotonPhi", &PhotonPhi);
 	//T->SetBranchAddress("photon_passAmbi", &photon_passAmbi);
 
-	float sampleWeight;
-	Float_t eventWeight;
+	//double sampleWeight;
+	//Float_t eventWeight;
 	//std::vector<float>* truthPhoton_pT = new std::vector<float>(10);
 	//std::vector<float>* truthPhoton_eta = new std::vector<float>(10);
 	//std::vector<float>* truthPhoton_phi = new std::vector<float>(10);
 	//std::vector<float>* photon_truthPt = new std::vector<float>(10);
 	//std::vector<float>* photon_truthEta = new std::vector<float>(10);
 	//std::vector<float>* photon_truthPhi = new std::vector<float>(10);
-	if (isData!=1) {
-	        T->SetBranchStatus("sampleWeight",1);
-	        T->SetBranchStatus("eventWeight",1);
-	        //T->SetBranchStatus("truthPhoton_pT", 1);
-	        //T->SetBranchStatus("truthPhoton_eta", 1);
-	        //T->SetBranchStatus("truthPhoton_phi", 1);
-	        //T->SetBranchStatus("photon_truthPt", 1);
-	        //T->SetBranchStatus("photon_truthEta", 1);
-	        //T->SetBranchStatus("photon_truthPhi", 1);
 
-		T->SetBranchAddress("sampleWeight",&sampleWeight);
-		T->SetBranchAddress("eventWeight",&eventWeight);
-		//T->SetBranchAddress("truthPhoton_pT", &truthPhoton_pT);
-		//T->SetBranchAddress("truthPhoton_eta", &truthPhoton_eta);
-		//T->SetBranchAddress("truthPhoton_phi", &truthPhoton_phi);
-		//T->SetBranchAddress("photon_truthPt", &photon_truthPt);
-		//T->SetBranchAddress("photon_truthEta", &photon_truthEta);
-		//T->SetBranchAddress("photon_truthPhi", &photon_truthPhi);
+	Double_t genWeight;
+	Double_t eventWeight;
+	Double_t jvtWeight;
+	Double_t bTagWeight;
+	Double_t pileupWeight;
+
+	if (isData!=1) {
+	  //T->SetBranchStatus("sampleWeight",1);
+	  //T->SetBranchStatus("eventWeight",1);
+	  //T->SetBranchStatus("truthPhoton_pT", 1);
+	  //T->SetBranchStatus("truthPhoton_eta", 1);
+	  //T->SetBranchStatus("truthPhoton_phi", 1);
+	  //T->SetBranchStatus("photon_truthPt", 1);
+	  //T->SetBranchStatus("photon_truthEta", 1);
+	  //T->SetBranchStatus("photon_truthPhi", 1);
+	  T->SetBranchStatus("genWeight", 1);
+	  T->SetBranchStatus("eventWeight", 1);
+	  T->SetBranchStatus("jvtWeight", 1);
+	  T->SetBranchStatus("bTagWeight", 1);
+	  T->SetBranchStatus("pileupWeight", 1);
+ 
+
+	  //T->SetBranchAddress("sampleWeight",&sampleWeight);
+	  //T->SetBranchAddress("eventWeight",&eventWeight);
+	  //T->SetBranchAddress("truthPhoton_pT", &truthPhoton_pT);
+	  //T->SetBranchAddress("truthPhoton_eta", &truthPhoton_eta);
+	  //T->SetBranchAddress("truthPhoton_phi", &truthPhoton_phi);
+	  //T->SetBranchAddress("photon_truthPt", &photon_truthPt);
+	  //T->SetBranchAddress("photon_truthEta", &photon_truthEta);
+	  //T->SetBranchAddress("photon_truthPhi", &photon_truthPhi);
+
+	  T->SetBranchAddress("genWeight"    , &genWeight   );
+	  T->SetBranchAddress("eventWeight"  , &eventWeight );
+	  T->SetBranchAddress("jvtWeight"    , &jvtWeight   );
+	  T->SetBranchAddress("bTagWeight"   , &bTagWeight  );
+	  T->SetBranchAddress("pileupWeight" , &pileupWeight);
 	}
 
 	//-----------------------------
 	// add new branches
 	//-----------------------------
 
-	TFile   outputFile(TString(outputPath)+"/"+TString(outputName)+"/"+TString(sampleID.c_str())+".root","recreate");
+	string outputfilename = outputPath + "/" + outputName + "/" + sampleID.c_str() + ".root";
+	cout << "Writing to output file : " << outputfilename << endl;
+	TFile   outputFile( outputfilename.c_str() , "recreate" );
+	
+	//TFile   outputFile(TString(outputPath)+"/"+TString(outputName)+"/"+TString(sampleID.c_str())+".root","recreate");
 	TTree BaselineTree("BaselineTree","baseline tree");
 	float gamma_pt = 0.;
 	float gamma_eta = 0.;
@@ -289,7 +321,7 @@ void GetPhotonEvents(string sampleID, string outputName, string pathToNtuples, i
 	BaselineTree.Branch("njet",&njet,"njet/I");
 	BaselineTree.Branch("nbjet",&nbjet,"nbjet/I");
 	BaselineTree.Branch("Mu",&Mu,"Mu/F");
-	BaselineTree.Branch("MET_raw",&MET,"MET_raw/F");
+	BaselineTree.Branch("MET_raw",&MET,"MET_raw/F"); 
 	BaselineTree.Branch("METl_raw",&METl,"METl_raw/F");
 	BaselineTree.Branch("METt_raw",&METt,"METt_raw/F");
 	BaselineTree.Branch("MET_phi_raw",&MET_phi,"MET_phi_raw/F");
@@ -299,11 +331,11 @@ void GetPhotonEvents(string sampleID, string outputName, string pathToNtuples, i
 	//BaselineTree.Branch("truthMETl",&truthMETl,"truthMETl/F");
 	//BaselineTree.Branch("truthMETt",&truthMETt,"truthMETt/F");
 	//BaselineTree.Branch("truthMET_Phi",&MET_phi,"MET_phi/Float_t");
-	//BaselineTree.Branch("DPhi_METJetLeading_raw",&DPhi_METJetLeading,"DPhi_METJetLeading_raw/F");
-	//BaselineTree.Branch("DPhi_METJetSecond_raw",&DPhi_METJetSecond,"DPhi_METJetSecond_raw/F");
+	BaselineTree.Branch("DPhi_METJetLeading_raw",&DPhi_METJetLeading,"DPhi_METJetLeading_raw/F");
+	BaselineTree.Branch("DPhi_METJetSecond_raw",&DPhi_METJetSecond,"DPhi_METJetSecond_raw/F");
 	//BaselineTree.Branch("DPhi_METPhoton_raw",&DPhi_METPhoton,"DPhi_METPhoton_raw/F");
 	//BaselineTree.Branch("MinDR_PhotonJet",&MinDR_PhotonJet,"MinDR_PhotonJet/F");
-	//BaselineTree.Branch("MinDPhi_PhotonJet",&MinDPhi_PhotonJet,"MinDPhi_PhotonJet/F");
+	BaselineTree.Branch("MinDPhi_PhotonJet",&MinDPhi_PhotonJet,"MinDPhi_PhotonJet/F");
 	BaselineTree.Branch("HT",&HT,"HT/F");
 	BaselineTree.Branch("MT",&MT,"MT/F");
 	BaselineTree.Branch("gamma_pt",&gamma_pt,"gamma_pt/F");
@@ -317,9 +349,11 @@ void GetPhotonEvents(string sampleID, string outputName, string pathToNtuples, i
 	BaselineTree.Branch("jet_pT","std::vector<float>",&jet_pT);
 	BaselineTree.Branch("jet_phi","std::vector<float>",&jet_phi);
 	BaselineTree.Branch("jet_eta","std::vector<float>",&jet_eta);
-	BaselineTree.Branch("EventNumber",&EventNumber,"EventNumber/l");
+	BaselineTree.Branch("EventNumber",&EventNumber,"EventNumber/I");
 	BaselineTree.Branch("RunNumber",&RunNumber,"RunNumber/I");
-	BaselineTree.Branch("lep_n_raw",&lep_n,"lep_n_raw/I");
+	//BaselineTree.Branch("lep_n_raw",&lep_n,"lep_n_raw/Int_t");
+	BaselineTree.Branch("nLep_signal",&nLep_signal,"nLep_signal/I");
+	BaselineTree.Branch("nLep_base"  ,&nLep_base  ,"nLep_base/I");
 	BaselineTree.Branch("lep_pT_raw","std::vector<float>",&lep_pT);
 	BaselineTree.Branch("lep_phi_raw","std::vector<float>",&lep_phi);
 	BaselineTree.Branch("lep_eta_raw","std::vector<float>",&lep_eta);
@@ -337,8 +371,14 @@ void GetPhotonEvents(string sampleID, string outputName, string pathToNtuples, i
 	BaselineTree.Branch("trigMatch_HLT_g120_loose", 		&trigMatch_HLT_g120_loose           ,"trigMatch_HLT_g120_loose/I" 	             );
 	BaselineTree.Branch("trigMatch_HLT_g140_loose", 		&trigMatch_HLT_g140_loose           ,"trigMatch_HLT_g140_loose/I" 	             );
 
-	float totalWeight = 0.;
-	BaselineTree.Branch("totalWeight",&totalWeight,"totalWeight/F");
+	BaselineTree.Branch("genWeight",                &genWeight            ,"genWeight/D"                 );
+	BaselineTree.Branch("eventWeight",              &eventWeight          ,"eventWeight/D"               );
+	BaselineTree.Branch("jvtWeight",                &jvtWeight            ,"jvtWeight/D"                 );
+	BaselineTree.Branch("bTagWeight",               &bTagWeight           ,"bTagWeight/D"                );
+	BaselineTree.Branch("pileupWeight",             &pileupWeight         ,"pileupWeight/D"              );
+
+	double totalWeight = 0.;
+	BaselineTree.Branch("totalWeight",&totalWeight,"totalWeight/D");
 	if (isData!=1) {
 		//BaselineTree.Branch("truthGamma_pt",&truthGamma_pt,"truthGamma_pt/F");
 		//BaselineTree.Branch("truthGamma_eta",&truthGamma_eta,"truthGamma_eta/F");
@@ -408,6 +448,7 @@ void GetPhotonEvents(string sampleID, string outputName, string pathToNtuples, i
 	//-----------------------------
 
 	Long64_t nentries = T->GetEntries();
+	//nentries=100;
 	for (Long64_t i=0;i<nentries;i+=event_interval) {
 
 		if (fmod(i,1e5)==0) std::cout << i << " events processed." << std::endl;
@@ -420,19 +461,21 @@ void GetPhotonEvents(string sampleID, string outputName, string pathToNtuples, i
 		photon_eta->push_back(PhotonEta);
 		photon_phi->push_back(PhotonPhi);
 
-		if (lep_n>0) continue;
+		//if (lep_n>0) continue;
+		//std::cout << i << " checking baseline leptons " << nLep_base << std::endl;
+		if (nLep_signal > 0) continue;
 		//std::cout << i << " events processed nlep cut." << std::endl;
-		if (jet_n==0) continue;
+		if (jet_n < 1) continue;
 		//std::cout << i << " events processed njet cut." << std::endl;
 		if (photon_pT->size()==0) continue;
 		//std::cout << i << " events processed size cut." << std::endl;
-		if (photon_pT->at(0)<20.) continue;
+		if (photon_pT->at(0)<15.) continue;
 		//if (photon_pT->at(0)<50.) continue;
 		//if (abs(photon_eta->at(0))>1.5 && abs(photon_eta->at(0))<1.6) continue;
-
+		
 		//std::cout << i << " events processed pt cut." << std::endl;
 		// find the trigger and prescale
-		float trigWeight = 0;
+		double trigWeight = 0;
 
 //		if (!is2016) {
 //			if (HLT_g15_loose_L1EM7->at(1)==1 && photon_pT->at(0)>(15+2) && photon_pT->at(0)<(20+2)) trigWeight = HLT_g15_loose_L1EM7->at(0);
@@ -443,7 +486,8 @@ void GetPhotonEvents(string sampleID, string outputName, string pathToNtuples, i
 //			if (HLT_g50_loose_L1EM15->at(1)==1 && photon_pT->at(0)>(50+5) && photon_pT->at(0)<(120+5)) trigWeight = HLT_g50_loose_L1EM15->at(0);
 //			if (HLT_g120_loose->at(1)==1 && photon_pT->at(0)>(120+5)) trigWeight = 1.;
 //		}
-		if (trigMatch_HLT_g15_loose_L1EM7 ==1 && photon_pT->at(0)>(15+5) && photon_pT->at(0)<(25+5)) trigWeight = trigPrescale_HLT_g15_loose_L1EM7;
+
+		if (trigMatch_HLT_g15_loose_L1EM7 ==1 && photon_pT->at(0)>(15)   && photon_pT->at(0)<(25+5)) trigWeight = trigPrescale_HLT_g15_loose_L1EM7;
 		if (trigMatch_HLT_g25_loose_L1EM15==1 && photon_pT->at(0)>(25+5) && photon_pT->at(0)<(35+5)) trigWeight = trigPrescale_HLT_g25_loose_L1EM15;
 		if (trigMatch_HLT_g35_loose_L1EM15==1 && photon_pT->at(0)>(35+5) && photon_pT->at(0)<(40+5)) trigWeight = trigPrescale_HLT_g35_loose_L1EM15;
 		if (trigMatch_HLT_g40_loose_L1EM15==1 && photon_pT->at(0)>(40+5) && photon_pT->at(0)<(45+5)) trigWeight = trigPrescale_HLT_g40_loose_L1EM15;
@@ -482,11 +526,14 @@ void GetPhotonEvents(string sampleID, string outputName, string pathToNtuples, i
 		// hist_dPt_Pt histogram, i.e. the photon truth-reco response function
 		if (isData!=1) {
 
-			totalWeight = (sampleWeight*eventWeight)/_nGenEvents;
-			if (isData==2) totalWeight = totalWeight*-1.; // V+gamma subtraction
-			//float Vgamma_SF = 1.5;  // v02-03
-			float Vgamma_SF = 1.0;  // v02-04
-			if (outputName=="Vg") totalWeight = totalWeight*lumi*Vgamma_SF;
+              		totalWeight = lumi * genWeight * eventWeight * jvtWeight * bTagWeight * pileupWeight;
+			if( TString(sampleID).Contains("Vg") ) totalWeight = -1.0 * totalWeight;
+		  
+			// totalWeight = (sampleWeight*eventWeight)/_nGenEvents;
+			// if (isData==2) totalWeight = totalWeight*-1.; // V+gamma subtraction
+			// //double Vgamma_SF = 1.5;  // v02-03
+			// double Vgamma_SF = 1.0;  // v02-04
+			// if (outputName=="Vg") totalWeight = totalWeight*lumi*Vgamma_SF;
 
 			//truthGamma_pt =  photon_truthPt->at(0);
 			//truthGamma_eta = photon_truthEta->at(0);
@@ -525,24 +572,27 @@ void GetPhotonEvents(string sampleID, string outputName, string pathToNtuples, i
 		else MT = 0;
 
 
+		// resampling for high MET events, disable for now
+		// float resample_size = 1.;
+		// if (MET>200.) {
+		// 	if (totalWeight>1 && isData==1) {
+		// 		totalWeight = totalWeight/resample_size;
+		// 		for (int r=0;r<resample_size;r++) BaselineTree.Fill();
+		// 	}
+		// 	else if (gamma_pt>200. && outputName=="gmc") {
+		// 		totalWeight = totalWeight/resample_size;
+		// 		for (int r=0;r<resample_size;r++) BaselineTree.Fill();
+		// 	}
+		// 	else if (outputName=="Vg") {
+		// 		totalWeight = totalWeight/resample_size;
+		// 		for (int r=0;r<resample_size;r++) BaselineTree.Fill();
+		// 	}
+		// 	else BaselineTree.Fill();
+		// }
+		// else BaselineTree.Fill();
 
-		float resample_size = 1.;
-		if (MET>200.) {
-			if (totalWeight>1 && isData==1) {
-				totalWeight = totalWeight/resample_size;
-				for (int r=0;r<resample_size;r++) BaselineTree.Fill();
-			}
-			else if (gamma_pt>200. && outputName=="gmc") {
-				totalWeight = totalWeight/resample_size;
-				for (int r=0;r<resample_size;r++) BaselineTree.Fill();
-			}
-			else if (outputName=="Vg") {
-				totalWeight = totalWeight/resample_size;
-				for (int r=0;r<resample_size;r++) BaselineTree.Fill();
-			}
-			else BaselineTree.Fill();
-		}
-		else BaselineTree.Fill();
+
+		BaselineTree.Fill();
 
 	}
 
