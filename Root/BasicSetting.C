@@ -8,15 +8,17 @@
 //double lumi = 3200.;
 double lumi = 36100.;
 
-std::string outputPath = "../OutputNtuples/";
-std::string smearingPath = "../OutputNtuples/";
+std::string outputPath = "../OutputNtuples_v1.2/";
+std::string smearingPath = "../OutputNtuples_v1.2/";
 //std::string outputPath = "/eos/atlas/user/r/rshang/OutputNtuples/";
 //std::string smearingPath = "/eos/atlas/user/r/rshang/OutputNtuples/";
-std::string R20smearingPath = "/eos/atlas/atlascerngroupdisk/phys-susy/strong2L/v02-04/Ruo/PhotonMethodOutput/OutputNtuples_EWK2L/";
+//std::string smearingPath = "/eos/atlas/atlascerngroupdisk/phys-susy/strong2L/v02-04/Ruo/PhotonMethodOutput/OutputNtuples_EWK2L/";
 //std::string outputPath = "/eos/atlas/user/r/rshang/OutputNtuples_SS/";
 //std::string smearingPath = "/eos/atlas/user/r/rshang/OutputNtuples_SS/";
 //std::string outputPath = "/eos/atlas/user/r/rshang/OutputNtuples_DF/";
 //std::string smearingPath = "/eos/atlas/user/r/rshang/OutputNtuples_DF/";
+
+std::string oldSmearingPath = "/eos/atlas/atlascerngroupdisk/phys-susy/strong2L/v02-04/Ruo/PhotonMethodOutput/OutputNtuples_EWK2L/";
 
 string photon_tag = "";
 
@@ -30,8 +32,8 @@ int event_interval = 1;
 
 bool useMETtrig = false;
 
-double leading_lep_pt_cut = 20.;
-double second_lep_pt_cut = 20.;
+double leading_lep_pt_cut = 25.;
+double second_lep_pt_cut = 25.;
 
 const int bin_size = 22;
 // binning for smearing methods
