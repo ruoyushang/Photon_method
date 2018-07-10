@@ -36,14 +36,14 @@
 #include "InputVariables.C"
 #include "OutputVariables.C"
 #include "GetDijetVariables.C"
-#include "GetJigsawVariables.C"
+//#include "GetJigsawVariables.C"
 #include "MT2_ROOT.h"
 float beta_limit = 10.;
 #include "GetMT2Max.C"
 
 using namespace std;
 
-bool doTruthJetMatch = true;
+bool doTruthJetMatch = false;
 bool doJigsaw = false;
 
 void RebinHistogram(TH1D* hist) {
@@ -63,11 +63,10 @@ void RebinHistogram(TH1D* hist) {
 		}
 	}
 }
-void GetBaseLineEvents(string sampleID, string outputName, string pathToNtuples, string ch, bool isData) {
+void GetBaseLineEvents(string sampleID, string outputName, string pathToNtuples, bool isData, string treename = "outputTree" ) {
 
-	//if (isData) doTruthJetMatch = false;
+        //if (isData) doTruthJetMatch = false;
 	doTruthJetMatch = false;
-
 	
 	//---------------------------------------------
 	// open file, get Tree and EventCountHist
@@ -80,16 +79,16 @@ void GetBaseLineEvents(string sampleID, string outputName, string pathToNtuples,
 	string  filename       = Form("%s%s.root",pathToNtuples.c_str(),sampleID.c_str()); 
 	TFile*  inputFile      = TFile::Open(filename.c_str());
 	Float_t _nGenEvents = 1.;
-	//if (!isData) {
-	//	TH1D*   EventCountHist = (TH1D*) inputFile->Get("EventCountHist");
-	//	_nGenEvents    = EventCountHist->GetBinContent(2);
-	//	hist_EventCount->SetBinContent(1,EventCountHist->GetBinContent(1));
-	//}
-	string treename;
-	if (sampleID.find("data") != std::string::npos) treename = Form("data");
-	if (sampleID.find("Zjets") != std::string::npos) treename = Form("Zjets_NoSys");
-	if (sampleID.find("diboson") != std::string::npos) treename = Form("diboson_NoSys");
-	TTree*  inputTree              = (TTree*)inputFile->Get(treename.c_str());
+	if (!isData) {
+	        //TH1D*   EventCountHist = (TH1D*) inputFile->Get("EventCountHist");
+		//_nGenEvents    = EventCountHist->GetBinContent(2);
+		//hist_EventCount->SetBinContent(1,EventCountHist->GetBinContent(1));
+
+		cout << "Setting _nGenEvents = 1 for now NEED TO FIX" << endl;
+		_nGenEvents    = 1.0;
+		hist_EventCount->SetBinContent(1,1.0);
+}
+	TTree*  inputTree              = (TTree*)inputFile->Get( treename.c_str() );
 
 	cout << endl;
 	cout << "Opening file           : " << filename        << endl;
@@ -97,18 +96,25 @@ void GetBaseLineEvents(string sampleID, string outputName, string pathToNtuples,
 	if (!isData) {
 		cout << "Total generated events : " << _nGenEvents     << endl;
 	}
-
+	
 	//-----------------------------
 	// access existing branches
 	//-----------------------------
 	
 	GetBranches(inputTree, isData);
 
+	//-- see code for branches, cut and pasted below
+	
 	//-----------------------------
 	// add new branches
 	//-----------------------------
 
-	TFile   outputFile(TString(outputPath)+"/"+TString(outputName.c_str())+"/"+TString(sampleID.c_str())+"_"+TString(ch.c_str())+".root","recreate");
+	string outfilename = outputPath + "/" + outputName + "/" + sampleID.c_str() + ".root";
+	cout << "Writing to : " << outfilename << endl;
+	
+	TFile   outputFile( outfilename.c_str() , "recreate" );
+
+	//TFile   outputFile(TString(outputPath)+"/"+TString(outputName.c_str())+"/"+TString(sampleID.c_str())+"_"+TString(ch.c_str())+".root","recreate");
 	TTree* BaselineTree;
 	BaselineTree = new TTree("BaselineTree","baseline tree");
 	AddBranches(BaselineTree, isData);
@@ -121,10 +127,9 @@ void GetBaseLineEvents(string sampleID, string outputName, string pathToNtuples,
 	TBranch *b_boost_eta = BaselineTree->Branch("boost_eta",&boost_eta,"boost_eta/Float_t");
 	Float_t boost_pt= 0;
 	TBranch *b_boost_pt = BaselineTree->Branch("boost_pt",&boost_pt,"boost_pt/Float_t");
-
 	//Float_t MT2_truth= 0;
 	//TBranch *b_MT2_truth = BaselineTree->Branch("MT2_truth",&MT2_truth,"MT2_truth/Float_t");
-
+	
 	//-----------------------------
 	// these variables do not go to output
 	//-----------------------------
@@ -142,6 +147,7 @@ void GetBaseLineEvents(string sampleID, string outputName, string pathToNtuples,
 
 	Long64_t nentries = inputTree->GetEntries();
 
+	//nentries = 1000;
 	for (Long64_t i=0;i<nentries;i+=event_interval) {
 
 		if (fmod(i,1e5)==0) std::cout << i << " events processed." << std::endl;
@@ -154,37 +160,58 @@ void GetBaseLineEvents(string sampleID, string outputName, string pathToNtuples,
 		//if (MET<100) continue;
 		//if (isData && MET>150) continue;
 		
-		if (lep_n<2) continue;
-		if (lep_pT->at(0)<leading_lep_pt_cut) continue;
-		if (lep_pT->at(1)<second_lep_pt_cut) continue;
+		if ( nLep_signal  != 2                 ) continue; // exactly 2 signal leptons
+		if ( nLep_base    != 2                 ) continue; // exactly 2 baseline leptons
+		if ( lep_pT->at(0) < leading_lep_pt_cut ) continue; // 1st lep pT > 25 GeV
+		if ( lep_pT->at(1) < second_lep_pt_cut  ) continue; // 2nd lep pT > 25 GeV
 
+		//--- evaluate weight
 		totalWeight = 1;
 		//if (!isData) totalWeight = (sampleWeight*eventWeight*lep_weight->at(0)*lep_weight->at(1)*emtrigweight*eetrigweight*mmtrigweight)/_nGenEvents;
 		//if (!isData) totalWeight = (sampleWeight*eventWeight*lep_weight->at(0)*lep_weight->at(1)*trig_sf)/_nGenEvents;
-		if (!isData) totalWeight = (sampleWeight*eventWeight)/_nGenEvents;
+		//if (!isData) totalWeight = (sampleWeight*eventWeight)/_nGenEvents;
+		if (!isData) totalWeight = genWeight * eventWeight * leptonWeight * jvtWeight * bTagWeight * pileupWeight * FFWeight;
 
-		channel = 2;
-		if (lep_flavor->at(0)==1 && lep_flavor->at(0)==lep_flavor->at(1)) channel = 0;
-		if (lep_flavor->at(0)==2 && lep_flavor->at(0)==lep_flavor->at(1)) channel = 1;
-		hist_cutflow_raw->Fill(0.);
-		hist_cutflow_weight->Fill(0.,totalWeight);
-		if (ch=="ee" && channel!=1) continue;
-		if (ch=="mm" && channel!=0) continue;
-		if (ch=="em" && (channel!=2 && channel!=3)) continue;
+		//--- determine channel
+		channel = -1;
+		if( ( lepFlavor->at(0) == 1 && lepFlavor->at(1) == 1 ) && trigMatch_1L2LTrig  ) channel = 1; // ee
+		if( ( lepFlavor->at(0) == 2 && lepFlavor->at(1) == 2 ) && trigMatch_1L2LTrig  ) channel = 0; // mumu
+		if( ( lepFlavor->at(0) == 1 && lepFlavor->at(1) == 2 ) && trigMatch_1L2LTrig  ) channel = 2; // em
+		if( ( lepFlavor->at(0) == 2 && lepFlavor->at(1) == 1 ) && trigMatch_1L2LTrig  ) channel = 3; // me
+
+		//--- determine OS / SS
+		is_OS = -1;
+		if( lepCharge->at(0) != lepCharge->at(1) ) is_OS = 1;
+		if( lepCharge->at(0) == lepCharge->at(1) ) is_OS = 0;
+
+		//hist_cutflow_raw->Fill(0.);
+		//hist_cutflow_weight->Fill(0.,totalWeight);
+
+		if( channel < 0 ) continue; // require exactly 2 signal leptons and corresponding triggers
+		if( is_OS != 1  ) continue; // require opposite-sign
+		if( jet_n < 1   ) continue; // require at least 1 pT > 30 GeV jets
+		
+		//if (ch=="ee" && channel!=1) continue;
+		//if (ch=="mm" && channel!=0) continue;
+		//if (ch=="em" && (channel!=2 && channel!=3)) continue;
+
+		/*
+		//--- commenting out for now
+		  
 		hist_cutflow_raw->Fill(1.);
 		hist_cutflow_weight->Fill(1.,totalWeight);
-		//if (!useMETtrig) {
-		//	if (ch=="ee" && eetrig!=1) continue;
-		//	if (ch=="mm" && mmtrig!=1) continue;
-		//	if (ch=="em" && emtrig!=1) continue;
-		//}
-		//else {
-		//	if (pass_trig_MET->at(0)!=1) continue;
-		//}
+
+		if (!useMETtrig) {
+			if (ch=="ee" && eetrig!=1) continue;
+			if (ch=="mm" && mmtrig!=1) continue;
+			if (ch=="em" && emtrig!=1) continue;
+		}
+		else {
+			if (pass_trig_MET->at(0)!=1) continue;
+		}
+		
 		hist_cutflow_raw->Fill(2.);
 		hist_cutflow_weight->Fill(2.,totalWeight);
-		is_OS = 0;
-		if (lep_charge->at(0)!=lep_charge->at(1)) is_OS = 1;
 		if (is_OS!=1) continue;
 		//if (is_OS==1) continue;
 		hist_cutflow_raw->Fill(3.);
@@ -198,7 +225,8 @@ void GetBaseLineEvents(string sampleID, string outputName, string pathToNtuples,
 		//if (!isData) {if (lep_isPrompt->at(0)==0 || lep_isPrompt->at(1)==0) continue;}
 		hist_cutflow_raw->Fill(6.);
 		hist_cutflow_weight->Fill(6.,totalWeight);
-
+		*/
+		
 		int njet = hist_low_njet->FindBin(jet_n)-1;
 		if (jet_n>njet_bin[bin_size]) njet = bin_size-1;
 		int nbjet = hist_low_nbjet->FindBin(bjet_n)-1;
@@ -209,8 +237,8 @@ void GetBaseLineEvents(string sampleID, string outputName, string pathToNtuples,
 		int ht = hist_low_ht->FindBin(HT)-1;
 		if (HT>ht_bin[bin_size]) ht = bin_size-1;
 
+		/*
 		totalWeight = 1.;
-
 
 		if (fmod(i,1e5)==0) std::cout << i << " process MC info." << std::endl;
 
@@ -254,44 +282,48 @@ void GetBaseLineEvents(string sampleID, string outputName, string pathToNtuples,
 			if (sampleID.find("361418")!=std::string::npos) totalWeight = totalWeight*1.1;
 			if (sampleID.find("361419")!=std::string::npos) totalWeight = totalWeight*1.1;
 
-			//TLorentzVector lep0_truth4vec;
-			//lep0_truthPt = lep_truthPt->at(0);
-			//lep0_truthEta = lep_truthEta->at(0);
-			//lep0_truthPhi = lep_truthPhi->at(0);
-			//lep0_truth4vec.SetPtEtaPhiM(lep_truthPt->at(0),lep_truthEta->at(0),lep_truthPhi->at(0),0);
-			//TLorentzVector lep1_truth4vec;
-			//lep1_truthPt = lep_truthPt->at(1);
-			//lep1_truthEta = lep_truthEta->at(1);
-			//lep1_truthPhi = lep_truthPhi->at(1);
-			//lep1_truth4vec.SetPtEtaPhiM(lep_truthPt->at(1),lep_truthEta->at(1),lep_truthPhi->at(1),0);
-			//TLorentzVector dilep_truth4vec;
-			//dilep_truth4vec = lep0_truth4vec + lep1_truth4vec;
-			//Z_truthPt = dilep_truth4vec.Pt();
-			//Z_truthPt_dilep = dilep_truth4vec.Pt();
-			//Z_truthEta = dilep_truth4vec.Eta();
-			//Z_truthPhi = dilep_truth4vec.Phi();
-			//lep0_truthGammaPt = lep_truthGammaPt->at(0);
-			//lep1_truthGammaPt = lep_truthGammaPt->at(1);
-			//if (ch=="ee") Z_truthPt = truth_ZpT/1e3;  // for Sherpa ee channel, Z truth pT includes vertex photon radiation
+			TLorentzVector lep0_truth4vec;
+			lep0_truthPt = lep_truthPt->at(0);
+			lep0_truthEta = lep_truthEta->at(0);
+			lep0_truthPhi = lep_truthPhi->at(0);
+			lep0_truth4vec.SetPtEtaPhiM(lep_truthPt->at(0),lep_truthEta->at(0),lep_truthPhi->at(0),0);
+			TLorentzVector lep1_truth4vec;
+			lep1_truthPt = lep_truthPt->at(1);
+			lep1_truthEta = lep_truthEta->at(1);
+			lep1_truthPhi = lep_truthPhi->at(1);
+			lep1_truth4vec.SetPtEtaPhiM(lep_truthPt->at(1),lep_truthEta->at(1),lep_truthPhi->at(1),0);
+			TLorentzVector dilep_truth4vec;
+			dilep_truth4vec = lep0_truth4vec + lep1_truth4vec;
+			Z_truthPt       = dilep_truth4vec.Pt();
+			Z_truthPt_dilep = dilep_truth4vec.Pt();
+			Z_truthEta = dilep_truth4vec.Eta();
+			Z_truthPhi = dilep_truth4vec.Phi();
+			lep0_truthGammaPt = lep_truthGammaPt->at(0);
+			lep1_truthGammaPt = lep_truthGammaPt->at(1);
+			if (ch=="ee") Z_truthPt = truth_ZpT/1e3;  // for Sherpa ee channel, Z truth pT includes vertex photon radiation
 			//if (ch=="ee") Z_truthPhi = truth_Zphi;  // for Sherpa ee channel, Z truth pT includes vertex photon radiation
 
 		}
 		totalWeight = totalWeight*event_interval;
-
+		*/
+		
 		//---------------------------------------------
 		// here we compute the MET parallel and perpendicular components
 		// and DR between photon and nearby jet
 		// and Oslo's MET_rel
 		//---------------------------------------------
+
+		TLorentzVector lep0vec;
+		TLorentzVector lep1vec;
+		
+		lep0vec.SetPtEtaPhiM(lep_pT->at(0),lep_eta->at(0),lep_phi->at(0),0);
+		lep1vec.SetPtEtaPhiM(lep_pT->at(1),lep_eta->at(1),lep_phi->at(1),0);
+
+		Z_eta = ( lep0vec + lep1vec ).Eta();
+		Z_phi = ( lep0vec + lep1vec ).Phi();
+		
 		if (fmod(i,1e5)==0) std::cout << i << " compute the MET parallel" << std::endl;
 
-		TLorentzVector lep0_4vec;
-		lep0_4vec.SetPtEtaPhiM(lep_pT->at(0),lep_eta->at(0),lep_phi->at(0),0);
-		TLorentzVector lep1_4vec;
-		lep1_4vec.SetPtEtaPhiM(lep_pT->at(1),lep_eta->at(1),lep_phi->at(1),0);
-		Z_pt = (lep0_4vec+lep1_4vec).Pt();
-		Z_eta = (lep0_4vec+lep1_4vec).Eta();
-		Z_phi = (lep0_4vec+lep1_4vec).Phi();
 		METt = MET*TMath::Sin(MET_phi-Z_phi);
 		METl = MET*TMath::Cos(MET_phi-Z_phi);
 		TLorentzVector met_4vec;
@@ -299,6 +331,10 @@ void GetBaseLineEvents(string sampleID, string outputName, string pathToNtuples,
 		TLorentzVector z_4vec;
 		z_4vec.SetPtEtaPhiM(Z_pt,Z_eta,Z_phi,0);
 		DPhi_METPhoton = fabs(met_4vec.DeltaPhi(z_4vec));
+		TLorentzVector lep0_4vec;
+		lep0_4vec.SetPtEtaPhiM(lep_pT->at(0),lep_eta->at(0),lep_phi->at(0),0);
+		TLorentzVector lep1_4vec;
+		lep1_4vec.SetPtEtaPhiM(lep_pT->at(1),lep_eta->at(1),lep_phi->at(1),0);
 		DPhi_2Lep = fabs(lep0_4vec.DeltaPhi(lep1_4vec));
 		DR_2Lep = lep0_4vec.DeltaR(lep1_4vec);
 		DPhi_METLepLeading = fabs(met_4vec.DeltaPhi(lep0_4vec));
@@ -314,7 +350,7 @@ void GetBaseLineEvents(string sampleID, string outputName, string pathToNtuples,
 		MinDR_PhotonJet = 1000.;
 		MinDPhi_PhotonJet = 1000.;
 		TLorentzVector jet_4vec;
-		for (int j=0;j<jet_pT->size();j++) {
+		for (unsigned int j=0;j<jet_pT->size();j++) {
 			jet_4vec.SetPtEtaPhiM(jet_pT->at(j),jet_eta->at(j),jet_phi->at(j),jet_m->at(j));
 			float DR_Lep0Jet = jet_4vec.DeltaR(lep0_4vec);
 			float DR_Lep1Jet = jet_4vec.DeltaR(lep1_4vec);
@@ -327,7 +363,7 @@ void GetBaseLineEvents(string sampleID, string outputName, string pathToNtuples,
 		}
 		float min_DPhi_MET_LepJet = 1000.;
 		float DPhi_MET_LepJet = 1000.;
-		for (int j=0;j<jet_pT->size();j++) {
+		for (unsigned int j=0;j<jet_pT->size();j++) {
 			jet_4vec.SetPtEtaPhiM(jet_pT->at(j),jet_eta->at(j),jet_phi->at(j),jet_m->at(j));
 			DPhi_MET_LepJet = jet_4vec.DeltaR(met_4vec);
 			if (min_DPhi_MET_LepJet>DPhi_MET_LepJet) min_DPhi_MET_LepJet = DPhi_MET_LepJet;
@@ -402,64 +438,64 @@ void GetBaseLineEvents(string sampleID, string outputName, string pathToNtuples,
 		//---------------------------------------------
 		// prompt jet truth matching
 		//---------------------------------------------
-		//if (fmod(i,1e5)==0) std::cout << i << " prompt jet truth matching" << std::endl;
-		//TLorentzVector truthJet_4vec;
-		//TLorentzVector recoJet_4vec;
-		//jet_isPrompt->clear();
-		//for (int j1=0;j1<jet_pT->size();j1++) {
-		//	jet_isPrompt->push_back(0);
-		//}
-		//if (doTruthJetMatch) {
-		//	if (!isData) {
-		//		for (int j0=0;j0<truthJet_pT->size();j0++) {
-		//			truthJet_4vec.SetPtEtaPhiM(truthJet_pT->at(j0),truthJet_eta->at(j0),truthJet_phi->at(j0),0);
-		//			float min_DR = 1000.;
-		//			int reco_this = 0;
-		//			for (int j1=0;j1<jet_pT->size();j1++) {
-		//				recoJet_4vec.SetPtEtaPhiM(jet_pT->at(j1),jet_eta->at(j1),jet_phi->at(j1),0);
-		//				float DR_this = truthJet_4vec.DeltaR(recoJet_4vec);
-		//				if (DR_this<min_DR) {
-		//					min_DR = DR_this;
-		//					reco_this = j1;
-		//				}
-		//			}
-		//			if (min_DR<0.3) jet_isPrompt->at(reco_this) = 1;
-		//		}
-		//	}
-		//}
-		//int njet_turth_prompt = 0;
-		//for (int j=0;j<jet_isPrompt->size();j++) {
-		//	if (jet_isPrompt->at(j)==1) njet_turth_prompt += 1;
-		//}
+		// if (fmod(i,1e5)==0) std::cout << i << " prompt jet truth matching" << std::endl;
+		// TLorentzVector truthJet_4vec;
+		// TLorentzVector recoJet_4vec;
+		// jet_isPrompt->clear();
+		// for (unsigned int j1=0;j1<jet_pT->size();j1++) {
+		// 	jet_isPrompt->push_back(0);
+		// }
+		// if (doTruthJetMatch) {
+		// 	if (!isData) {
+		// 		for (unsigned int j0=0;j0<truthJet_pT->size();j0++) {
+		// 			truthJet_4vec.SetPtEtaPhiM(truthJet_pT->at(j0),truthJet_eta->at(j0),truthJet_phi->at(j0),0);
+		// 			float min_DR = 1000.;
+		// 			int reco_this = 0;
+		// 			for (unsigned int j1=0;j1<jet_pT->size();j1++) {
+		// 				recoJet_4vec.SetPtEtaPhiM(jet_pT->at(j1),jet_eta->at(j1),jet_phi->at(j1),0);
+		// 				float DR_this = truthJet_4vec.DeltaR(recoJet_4vec);
+		// 				if (DR_this<min_DR) {
+		// 					min_DR = DR_this;
+		// 					reco_this = j1;
+		// 				}
+		// 			}
+		// 			if (min_DR<0.3) jet_isPrompt->at(reco_this) = 1;
+		// 		}
+		// 	}
+		// }
+		// int njet_turth_prompt = 0;
+		// for (unsigned int j=0;j<jet_isPrompt->size();j++) {
+		// 	if (jet_isPrompt->at(j)==1) njet_turth_prompt += 1;
+		// }
 
 		//---------------------------------------------
 		// apply Jigsaw rules to find ISR jets, without knowing the flavor of the objects
 		// this is for the compressed region
 		//---------------------------------------------
-		if (fmod(i,1e5)==0) std::cout << i << " compute jigsaw variables" << std::endl;
-		if (doJigsaw) {
-			GetJigsawVariables();
-		}
+		// if (fmod(i,1e5)==0) std::cout << i << " compute jigsaw variables" << std::endl;
+		// if (doJigsaw) {
+		// 	GetJigsawVariables();
+		// }
 
 		//---------------------------------------------
 		// Fill METl histograms for smearing, and mll histograms for mll modeling
 		// hist_dPt_Pt histogram, i.e. the Z truth-reco response function
 		// as well as the hist_2LPt_Pt histogram, which translates Z pT to dilepton sum pT
 		//---------------------------------------------
-		if (fmod(i,1e5)==0) std::cout << i << " Fill METl histograms" << std::endl;
-		float pt37_cut = 37.;
-		//if (!isData) {
-		//	if (Z_pt>pt37_cut && abs(MinDPhi_PhotonJet)>0.0) {
-		//		truthMETt = truthMET*TMath::Sin(truthMET_Phi-Z_truthPhi);
-		//		truthMETl = truthMET*TMath::Cos(truthMET_Phi-Z_truthPhi);
-		//		int pt_truth = hist_low_pt->FindBin(Z_truthPt)-1;
-		//		int dpt = hist_low_dpt->FindBin((Z_pt-Z_truthPt))-1;
-		//		int dpt_dilep = hist_low_dpt->FindBin((Z_pt-Z_truthPt_dilep))-1;
-		//		if (Z_truthPt>pt_bin[bin_size]) pt_truth = bin_size-1;
-		//		if (pt>=0) hist_METl_Pt[pt]->Fill(METl,totalWeight);
-		//		if (pt>=0) hist_METt_Pt[pt]->Fill(METt,totalWeight);
-		//	}
-		//}
+		// if (fmod(i,1e5)==0) std::cout << i << " Fill METl histograms" << std::endl;
+		// float pt37_cut = 37.;
+		// if (!isData) {
+		// 	if (Z_pt>pt37_cut && abs(MinDPhi_PhotonJet)>0.0) {
+		// 		truthMETt = truthMET*TMath::Sin(truthMET_Phi-Z_truthPhi);
+		// 		truthMETl = truthMET*TMath::Cos(truthMET_Phi-Z_truthPhi);
+		// 		int pt_truth = hist_low_pt->FindBin(Z_truthPt)-1;
+		// 		int dpt = hist_low_dpt->FindBin((Z_pt-Z_truthPt))-1;
+		// 		int dpt_dilep = hist_low_dpt->FindBin((Z_pt-Z_truthPt_dilep))-1;
+		// 		if (Z_truthPt>pt_bin[bin_size]) pt_truth = bin_size-1;
+		// 		if (pt>=0) hist_METl_Pt[pt]->Fill(METl,totalWeight);
+		// 		if (pt>=0) hist_METt_Pt[pt]->Fill(METt,totalWeight);
+		// 	}
+		// }
 
 
 		//BaselineTree.Fill();     
@@ -490,3 +526,92 @@ void GetBaseLineEvents(string sampleID, string outputName, string pathToNtuples,
 
 
 }
+
+
+
+
+
+
+	// inputTree->SetBranchStatus("*", 0);
+	// inputTree->SetBranchStatus("EventNumber"              ,1); 
+	// inputTree->SetBranchStatus("RunNumber"              ,1); 
+	// inputTree->SetBranchStatus("mu"              ,1); 
+	// inputTree->SetBranchStatus("met_Et"             ,1); 
+	// inputTree->SetBranchStatus("met_Phi"         ,1); 
+	// inputTree->SetBranchStatus("TST_Et"         ,1); 
+	// inputTree->SetBranchStatus("TST_Phi"         ,1); 
+	// //inputTree->SetBranchStatus("truthMET"             ,1); 
+	// //inputTree->SetBranchStatus("truthMET_Phi"         ,1); 
+	// //inputTree->SetBranchStatus("DPhi_METJetLeading"         ,1); 
+	// //inputTree->SetBranchStatus("DPhi_METJetSecond"          ,1); 
+	// inputTree->SetBranchStatus("Ht30"              ,1); 
+	// inputTree->SetBranchStatus("nBJet30_MV2c10_FixedCutBEff_77"          ,1); 
+	// //inputTree->SetBranchStatus("nLep_signal"           ,1); 
+	// inputTree->SetBranchStatus("lepPt"          ,1); 
+	// inputTree->SetBranchStatus("lepEta"         ,1); 
+	// inputTree->SetBranchStatus("lepPhi"         ,1); 
+	// inputTree->SetBranchStatus("nJet30"           ,1); 
+	// //inputTree->SetBranchStatus("jet_btag"          ,1); 
+	// inputTree->SetBranchStatus("jetM"          ,1); 
+	// inputTree->SetBranchStatus("jetPt"          ,1); 
+	// inputTree->SetBranchStatus("jetEta"         ,1); 
+	// inputTree->SetBranchStatus("jetPhi"         ,1); 
+	// //inputTree->SetBranchStatus("photon_passAmbi", 1); 
+
+	// inputTree->SetBranchAddress("EventNumber"              ,&EventNumber               );
+	// inputTree->SetBranchAddress("RunNumber"              ,&RunNumber               );
+	// inputTree->SetBranchAddress("mu"              ,&Mu               );
+	// inputTree->SetBranchAddress("met_Et"             ,&MET              );
+	// inputTree->SetBranchAddress("met_Phi"         ,&MET_phi          );
+	// inputTree->SetBranchAddress("TST_Et"         ,&MET_softTerm          );
+	// inputTree->SetBranchAddress("TST_Phi"         ,&MET_softPhi          );
+	// //inputTree->SetBranchAddress("truthMET"             ,&truthMET              );
+	// //inputTree->SetBranchAddress("truthMET_Phi"         ,&truthMET_Phi          );
+	// //inputTree->SetBranchAddress("DPhi_METJetLeading"         ,&DPhi_METJetLeading          );
+	// //inputTree->SetBranchAddress("DPhi_METJetSecond"          ,&DPhi_METJetSecond           );
+	// inputTree->SetBranchAddress("Ht30"              ,&HT               );
+	// inputTree->SetBranchAddress("nBJet30_MV2c10_FixedCutBEff_77"          ,&bjet_n            );
+	// //inputTree->SetBranchAddress("nLep_signal"           ,&lep_n            );
+	// //inputTree->SetBranchAddress("nLep_signal"           ,&nLep_signal            );
+	// //inputTree->SetBranchAddress("nLep_base"             ,&nLep_base            );
+	// inputTree->SetBranchAddress("lepPt"          ,&lep_pT           );
+	// inputTree->SetBranchAddress("lepEta"         ,&lep_eta          );
+	// inputTree->SetBranchAddress("lepPhi"         ,&lep_phi          );
+	// inputTree->SetBranchAddress("nJet30"           ,&jet_n            );
+	// //inputTree->SetBranchAddress("jet_btag"          ,&jet_btag           );
+	// inputTree->SetBranchAddress("jetM"          ,&jet_m           );
+	// inputTree->SetBranchAddress("jetPt"          ,&jet_pT           );
+	// inputTree->SetBranchAddress("jetEta"         ,&jet_eta          );
+	// inputTree->SetBranchAddress("jetPhi"         ,&jet_phi          );
+	// //inputTree->SetBranchAddress("photon_passAmbi", &photon_passAmbi);
+
+	// float sampleWeight;
+	// Float_t eventWeight;
+	// //std::vector<float>* truthPhoton_pT = new std::vector<float>(10);
+	// //std::vector<float>* truthPhoton_eta = new std::vector<float>(10);
+	// //std::vector<float>* truthPhoton_phi = new std::vector<float>(10);
+	// //std::vector<float>* photon_truthPt = new std::vector<float>(10);
+	// //std::vector<float>* photon_truthEta = new std::vector<float>(10);
+	// //std::vector<float>* photon_truthPhi = new std::vector<float>(10);
+	// if (isData!=1) {
+	//   inputTree->SetBranchStatus("sampleWeight",1);
+	//   inputTree->SetBranchStatus("eventWeight",1);
+	//   //inputTree->SetBranchStatus("truthPhoton_pT", 1);
+	//   //inputTree->SetBranchStatus("truthPhoton_eta", 1);
+	//   //inputTree->SetBranchStatus("truthPhoton_phi", 1);
+	//   //inputTree->SetBranchStatus("photon_truthPt", 1);
+	//   //inputTree->SetBranchStatus("photon_truthEta", 1);
+	//   //inputTree->SetBranchStatus("photon_truthPhi", 1);
+
+	//   inputTree->SetBranchAddress("sampleWeight",&sampleWeight);
+	//   inputTree->SetBranchAddress("eventWeight",&eventWeight);
+	//   //inputTree->SetBranchAddress("truthPhoton_pT", &truthPhoton_pT);
+	//   //inputTree->SetBranchAddress("truthPhoton_eta", &truthPhoton_eta);
+	//   //inputTree->SetBranchAddress("truthPhoton_phi", &truthPhoton_phi);
+	//   //inputTree->SetBranchAddress("photon_truthPt", &photon_truthPt);
+	//   //inputTree->SetBranchAddress("photon_truthEta", &photon_truthEta);
+	//   //inputTree->SetBranchAddress("photon_truthPhi", &photon_truthPhi);
+	// }
+
+
+	
