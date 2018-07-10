@@ -128,7 +128,7 @@ void GetDijetVariables(TLorentzVector z_4vec, TLorentzVector met_4vec) {
 		for (unsigned int j1=0;j1<jet_pT->size();j1++) {
 			jet1_4vec.SetPtEtaPhiM(jet_pT->at(j1),jet_eta->at(j1),jet_phi->at(j1),jet_m->at(j1));
 			if (min_dPhi>abs(jet1_4vec.DeltaPhi(zmet_4vec))) {
-				if (j1!=Wmin_j0) {
+			  if (j1!=(unsigned int) Wmin_j0) {
 					min_dPhi = abs(jet1_4vec.DeltaPhi(zmet_4vec));
 					Wmin_j1 = j1;
 				}
