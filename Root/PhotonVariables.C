@@ -1,7 +1,7 @@
 
 Long64_t EventNumber;
 Int_t RunNumber;
-float totalWeight = 0.;
+double totalWeight = 0.;
 int pt = 0; // pT bin for reweighting
 int smpt = 0; // pT bin for smearing
 int ht = 0;
