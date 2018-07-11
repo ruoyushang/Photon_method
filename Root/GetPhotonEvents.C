@@ -49,6 +49,12 @@ void getPhotonSmearingFunction(TString file, TString histname, TH1D* hist) {
 
 void GetPhotonEvents(string sampleID, string outputName, string pathToNtuples, int isData, string treeName = "tree_NoSys" ) {
 
+        float mylumi = 1.0;
+  
+	if     ( TString(outputName).Contains("mc16cd_2018") ) mylumi =  6461;
+	else if( TString(outputName).Contains("mc16cd")      ) mylumi = 44000;
+   	else if( TString(outputName).Contains("mc16a")       ) mylumi = 36100;
+
 	//---------------------------------------------
 	// open file, get Tree and EventCountHist
 	//---------------------------------------------
@@ -69,6 +75,7 @@ void GetPhotonEvents(string sampleID, string outputName, string pathToNtuples, i
 	cout << "Output type            : " << outputName      << endl;
 	cout << "Output path            : " << outputPath      << endl;
 	cout << "updated event weights" << endl;
+	cout << "using luminosity       : " << mylumi          << endl;
 	
 	//-----------------------------
 	// access existing branches
@@ -101,6 +108,7 @@ void GetPhotonEvents(string sampleID, string outputName, string pathToNtuples, i
 	float trigPrescale_HLT_g120_loose;
 	float trigPrescale_HLT_g140_loose;
 	Float_t Mu;
+	Int_t   nVtx;
 	float MET;
 	float MET_phi;
 	float MET_softTerm;
@@ -134,7 +142,8 @@ void GetPhotonEvents(string sampleID, string outputName, string pathToNtuples, i
 	T->SetBranchStatus("*", 0);
 	T->SetBranchStatus("EventNumber"              ,1); 
 	T->SetBranchStatus("RunNumber"              ,1); 
-	T->SetBranchStatus("mu"              ,1); 
+	T->SetBranchStatus("mu"              ,1);
+	T->SetBranchStatus("nVtx"            ,1); 
 	T->SetBranchStatus("met_Et"             ,1); 
 	T->SetBranchStatus("met_Phi"         ,1); 
 	T->SetBranchStatus("TST_Et"         ,1); 
@@ -188,6 +197,7 @@ void GetPhotonEvents(string sampleID, string outputName, string pathToNtuples, i
 	T->SetBranchAddress("EventNumber"              ,&EventNumber               );
 	T->SetBranchAddress("RunNumber"              ,&RunNumber               );
 	T->SetBranchAddress("mu"              ,&Mu               );
+	T->SetBranchAddress("nVtx"            ,&nVtx               );
 	T->SetBranchAddress("met_Et"             ,&MET              );
 	T->SetBranchAddress("met_Phi"         ,&MET_phi          );
 	T->SetBranchAddress("TST_Et"         ,&MET_softTerm          );
@@ -321,6 +331,7 @@ void GetPhotonEvents(string sampleID, string outputName, string pathToNtuples, i
 	BaselineTree.Branch("njet",&njet,"njet/I");
 	BaselineTree.Branch("nbjet",&nbjet,"nbjet/I");
 	BaselineTree.Branch("Mu",&Mu,"Mu/F");
+	BaselineTree.Branch("nVtx",&nVtx,"nVtx/I");
 	BaselineTree.Branch("MET_raw",&MET,"MET_raw/F"); 
 	BaselineTree.Branch("METl_raw",&METl,"METl_raw/F");
 	BaselineTree.Branch("METt_raw",&METt,"METt_raw/F");
@@ -526,7 +537,7 @@ void GetPhotonEvents(string sampleID, string outputName, string pathToNtuples, i
 		// hist_dPt_Pt histogram, i.e. the photon truth-reco response function
 		if (isData!=1) {
 
-              		totalWeight = lumi * genWeight * eventWeight * jvtWeight * bTagWeight * pileupWeight;
+              		totalWeight = mylumi * genWeight * eventWeight * jvtWeight * bTagWeight * pileupWeight;
 			if( TString(sampleID).Contains("Vg") ) totalWeight = -1.0 * totalWeight;
 		  
 			// totalWeight = (sampleWeight*eventWeight)/_nGenEvents;
