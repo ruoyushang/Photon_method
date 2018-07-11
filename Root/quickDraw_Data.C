@@ -483,7 +483,15 @@ void quickDraw_Data( string period = "data15-16" , string channel  = "ee" , stri
   hg->SetLineColor(4);
   hg->SetLineWidth(1);
   hg->SetLineStyle(2);
-  
+
+  hz->Add(htt);
+  hz->Add(hvv);
+  hz->Add(ho);
+
+  hz->SetLineColor(2);
+  hz->SetLineWidth(1);
+  hz->SetLineStyle(7);
+
   THStack *mcstack = new THStack("mcstack","mcstack");
   mcstack->Add(ho);
   mcstack->Add(htt);
@@ -499,6 +507,7 @@ void quickDraw_Data( string period = "data15-16" , string channel  = "ee" , stri
   if( !DF ){
     leg->AddEntry(hg_rw,"Z+jets (from #gamma+jets, reweighted)","f");
     leg->AddEntry(hg,"Z+jets (from #gamma+jets, raw)","f");
+    leg->AddEntry(hz,"Z+jets (from MC)","f");
   }
   leg->AddEntry(hvv,"VV","f");
   leg->AddEntry(htt,"t#bar{t}+tW","f");
