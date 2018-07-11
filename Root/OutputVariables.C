@@ -272,6 +272,7 @@ void AddBranches(TTree* BaselineTree, bool isData) {
 	BaselineTree->Branch("jet_m","std::vector<float>",&jet_m);
 	//BaselineTree->Branch("jet_btag","std::vector<float>",&jet_btag);
 	BaselineTree->Branch("Mu",&Mu,"Mu/F");
+	BaselineTree->Branch("nVtx",&nVtx,"nVtx/I");
 	BaselineTree->Branch("mll",&mll,"mll/F");
 	//BaselineTree->Branch("MT2Top",&MT2Top,"MT2Top/Float_t");
 	//BaselineTree->Branch("MT2W",&MT2W,"MT2W/Float_t");
