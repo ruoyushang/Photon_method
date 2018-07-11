@@ -45,9 +45,9 @@ vector<string> noEventWeight;
 
 
 int RebinHistogram(TH1D* hist, int rebin) {
-	double negative_yield = 0.;
-	double positive_yield = 0.;
-	double core_yield = 0.;
+	float negative_yield = 0.;
+	float positive_yield = 0.;
+	float core_yield = 0.;
 	int remainder = 0;
 	if (rebin==0) {
 		rebin = 1;
@@ -101,8 +101,13 @@ void getPhotonSmearingFunction2(TString file, TString histname, TH1D* hist, int 
 	}
 	fData->Close();
 }
-void GetPhotonSmearing(string ch, int isData, string year, int smearing_method) {
+void GetPhotonSmearing(string label, string ch, int isData, string period, int smearing_method) {
 
+        cout << "channel         " << ch              << endl;
+	cout << "period          " << period          << endl;
+	cout << "isData?         " << isData          << endl;
+	cout << "smearing path   " << smearingPath    << endl;
+	cout << "smearing method " << smearing_method << endl;
 
 	//-----------------------------
 	// prepare lep pT functions, to convert photon pT to dilepton sum pT
@@ -110,7 +115,7 @@ void GetPhotonSmearing(string ch, int isData, string year, int smearing_method) 
 	
 	std::cout << "Prepare Mll histograms..." << std::endl;
 
-	GetMllHistogram(ch);
+	GetMllHistogram(ch,period);
 	//for (int bin=0;bin<dpt_bin_size;bin++) {
 	//	int rebin = RebinHistogram(hist_Mll_dPt[bin],0);
 	//}
@@ -131,6 +136,9 @@ void GetPhotonSmearing(string ch, int isData, string year, int smearing_method) 
 	if (smearing_method == 2) photon_tag = "_DataSmear";
 	if (smearing_method == 3) photon_tag = "_TruthSmear";
 
+	cout << "smearing_method    " << smearing_method << endl;
+	cout << "photon_tag         " << photon_tag      << endl;
+	
 	TSpectrum pfinder;
 	TH1D* g_resp[bin_size];
 	TH1D* z_resp[bin_size];
@@ -140,7 +148,7 @@ void GetPhotonSmearing(string ch, int isData, string year, int smearing_method) 
 	TH1D* smear_fft_amp[bin_size];
 	TH1D* smear_final[bin_size];
 	TH1D* smear_final_phi[bin_size];
-	double shift[bin_size];
+	float shift[bin_size];
 	TH1D* g_metl_smear[bin_size];
 	TH1D* g_metl_smear_2j[bin_size];
 	for (int bin=0;bin<bin_size;bin++) {
@@ -151,7 +159,7 @@ void GetPhotonSmearing(string ch, int isData, string year, int smearing_method) 
 	}
 
 
-	GetSmearingHistogram(ch,lumi, photon_tag, smearing_method);
+	GetSmearingHistogram(ch,lumi, photon_tag,period,smearing_method);
 
 	if (smearing_method >= 0) {  // if you want to use the deconvolution method to smear photon events. To enable this method, set "bool useDeconvolution = true" in BasicSetting.C
 		for (int bin=0;bin<bin_size;bin++) {
@@ -161,23 +169,23 @@ void GetPhotonSmearing(string ch, int isData, string year, int smearing_method) 
 			rebin = RebinHistogram(g_metl[bin],rebin);
 			rebin = RebinHistogram(g_metl_smear[bin],rebin);
 			rebin = RebinHistogram(g_metl_smear_2j[bin],rebin);
-			double gmetl_mean = g_metl[bin]->GetMean();
-			double gmetl_rms = g_metl[bin]->GetRMS();
-			double zmetl_mean = z_metl[bin]->GetMean();
-			double zmetl_rms = z_metl[bin]->GetRMS();
+			float gmetl_mean = g_metl[bin]->GetMean();
+			float gmetl_rms = g_metl[bin]->GetRMS();
+			float zmetl_mean = z_metl[bin]->GetMean();
+			float zmetl_rms = z_metl[bin]->GetRMS();
 			std::cout << "--------------------------------------------------------" << std::endl;
 			std::cout << "bin " << bin << ", rebin " << rebin << std::endl;
 			std::cout << "gmetl_mean " << gmetl_mean << ", gmetl_rms " << gmetl_rms << std::endl;
 			std::cout << "zmetl_mean " << zmetl_mean << ", zmetl_rms " << zmetl_rms << std::endl;
 			const int newbin = 40000/rebin;
-			Double_t *smear = new Double_t[2*((newbin+1)/2+1)];
-			Double_t *fft_re = new Double_t[newbin];
-			Double_t *fft_im = new Double_t[newbin];
-			Double_t *z_smear_in = new Double_t[newbin];
-			Double_t *g_smear_in = new Double_t[newbin];
-			Double_t *j_resp_in = new Double_t[newbin];
-			Double_t *z_resp_in = new Double_t[newbin];
-			Double_t *g_resp_in = new Double_t[newbin];
+			Float_t *smear = new Float_t[2*((newbin+1)/2+1)];
+			Float_t *fft_re = new Float_t[newbin];
+			Float_t *fft_im = new Float_t[newbin];
+			Float_t *z_smear_in = new Float_t[newbin];
+			Float_t *g_smear_in = new Float_t[newbin];
+			Float_t *j_resp_in = new Float_t[newbin];
+			Float_t *z_resp_in = new Float_t[newbin];
+			Float_t *g_resp_in = new Float_t[newbin];
 			g_resp[bin] = new TH1D(TString("g_resp_")+TString::Itoa(bin,10),"",newbin,-30000,10000);
 			z_resp[bin] = new TH1D(TString("z_resp_")+TString::Itoa(bin,10),"",newbin,-30000,10000);
 			smear_raw[bin] = new TH1D(TString("smear_raw_")+TString::Itoa(bin,10),"",newbin,-30000,10000);
@@ -186,9 +194,11 @@ void GetPhotonSmearing(string ch, int isData, string year, int smearing_method) 
 			smear_fft_amp[bin] = new TH1D(TString("smear_fft_amp_")+TString::Itoa(bin,10),"",newbin,-30000,10000);
 			for (int i=0;i<newbin;i++) {
 				if (smearing_method == 3) {
-					z_smear_in[i] = max(z_dpt[bin]->GetBinContent(i+1),0.);
-					if (i<newbin/2) g_smear_in[i] = max(g_dpt[bin]->GetBinContent(i+1+newbin/2),0.);
-					else g_smear_in[i] = 0.;
+				  cout << "smearing_method 3 not yet implemented, quitting!" << endl;
+				  exit(0);
+					// z_smear_in[i] = max(z_dpt[bin]->GetBinContent(i+1),0.);
+					// if (i<newbin/2) g_smear_in[i] = max(g_dpt[bin]->GetBinContent(i+1+newbin/2),0.);
+					// else g_smear_in[i] = 0.;
 				}
 				else {
 					z_smear_in[i] = max(z_metl[bin]->GetBinContent(i+1),0.);
@@ -209,31 +219,34 @@ void GetPhotonSmearing(string ch, int isData, string year, int smearing_method) 
 				z_resp[bin]->SetBinContent(i+1,z_resp_in[i]);
 				smear[i] = z_smear_in[i];
 			}
-			rebin = RebinHistogram(z_dpt[bin],0);
-			rebin = RebinHistogram(g_dpt[bin],rebin);
-			double gdpt_mean = g_dpt[bin]->GetMean();
-			double gdpt_rms = g_dpt[bin]->GetRMS();
-			double zdpt_mean = z_dpt[bin]->GetMean();
-			double zdpt_rms = z_dpt[bin]->GetRMS();
-			double smear_mean = smear_raw[bin]->GetMean();
-			double smear_rms = smear_raw[bin]->GetRMS();
-			std::cout << "gdpt_mean " << gdpt_mean << ", gdpt_rms " << gdpt_rms << std::endl;
-			std::cout << "zdpt_mean " << zdpt_mean << ", zdpt_rms " << zdpt_rms << std::endl;
+			// rebin = RebinHistogram(z_dpt[bin],0);
+			// rebin = RebinHistogram(g_dpt[bin],rebin);
+			// float gdpt_mean = g_dpt[bin]->GetMean();
+			// float gdpt_rms = g_dpt[bin]->GetRMS();
+			// float zdpt_mean = z_dpt[bin]->GetMean();
+			// float zdpt_rms = z_dpt[bin]->GetRMS();
+			float smear_mean = smear_raw[bin]->GetMean();
+			float smear_rms = smear_raw[bin]->GetRMS();
+			//std::cout << "gdpt_mean " << gdpt_mean << ", gdpt_rms " << gdpt_rms << std::endl;
+			//std::cout << "zdpt_mean " << zdpt_mean << ", zdpt_rms " << zdpt_rms << std::endl;
 			std::cout << "smear_mean " << smear_mean << ", smear_rms " << smear_rms << std::endl;
 			for (int i=0;i<newbin;i++) {
 				if (gmetl_rms/zmetl_rms > 1.0) {
 					smear_raw[bin]->SetBinContent(i+1,0.);
 					smear[i] = 0.;
 				}
-				double smear_cut = 6.;
+				float smear_cut = 6.;
 				if (ch=="mm" && sm_pt_bin[bin]>=0) smear_cut = 7.;
 				if (abs(smear_raw[bin]->GetBinCenter(i+1)-smear_mean)/smear_rms>smear_cut) {
 					smear_raw[bin]->SetBinContent(i+1,0.);
 					smear[i] = 0.;
 				}
 			}
-			if (smearing_method == 3) shift[bin] = -g_dpt[bin]->GetMean();
-			else shift[bin] = -g_metl[bin]->GetMean();
+			// smearing_method 3 isn't implemented
+			//if (smearing_method == 3) shift[bin] = -g_dpt[bin]->GetMean();
+			//else shift[bin] = -g_metl[bin]->GetMean();
+
+			shift[bin] = -g_metl[bin]->GetMean();
 		}
 	}
 	for (int bin=0;bin<bin_size;bin++) {
@@ -251,14 +264,39 @@ void GetPhotonSmearing(string ch, int isData, string year, int smearing_method) 
 
 	TH1::SetDefaultSumw2();
 
-	string  filename;
-	if (isData==1) filename = TString(TString(smearingPath)+"gdata/JETM4_" + year + ".root"); 
-	if (isData==0) filename = TString(TString(smearingPath)+"gmc/gmc_raw.root"); 
-	TFile*  inputFile      = TFile::Open(filename.c_str());
-	TTree*  T              = (TTree*)inputFile->Get("BaselineTree");
+	string  infilename;
+	//if (isData==1) infilename = TString(TString(smearingPath)+"gdata/gdata_raw.root"); 
+	//if (isData==0) infilename = TString(TString(smearingPath)+"gmc/gmc_raw.root"); 
 
+	if (isData==1){
+	  infilename = outputPath + "gdata/" + label + ".root";
+	  //cout << __FILE__ << " " << __LINE__ << endl;
+	}
+	if (isData==0){
+	  infilename = "../OutputNtuples/Vg/Vgall.root";
+	  //cout << "Not yet set up to run on MC, exiting!" << endl;
+	  exit(0);
+	}
+	
+	//cout << endl;
+	//cout << __FILE__ << " " << __LINE__ << endl;
+	//cout << "Opening input photon+jets file : " << infilename << endl;
+
+
+	//--- old method: open TFile, get TChain
+	//TFile*  inputFile      = TFile::Open(infilename.c_str());
+	//TTree*  T              = (TTree*)inputFile->Get("BaselineTree");
+
+	//--- new method: make TChain, add files
+	//string Vgfilename = "../OutputNtuples/Vg/Vgall.root";
+	TChain* T = new TChain("BaselineTree");
+
+	T->Add( infilename.c_str() );
+	//T->Add( Vgfilename.c_str() );
+	
 	cout << endl;
-	cout << "Opening file           : " << filename        << endl;
+	cout << "Opening file           : " << infilename        << endl;
+	//cout << "Subtracting Vg file    : " << Vgfilename        << endl;
 	cout << "Events in ntuple       : " << T->GetEntries() << endl;
 
 	//---------------------------------------------
@@ -267,13 +305,18 @@ void GetPhotonSmearing(string ch, int isData, string year, int smearing_method) 
 
 	TH1::SetDefaultSumw2();
 
-	if (isData==1) filename = TString(TString(outputPath)+"gdata/gdata_"+TString(ch)+TString(photon_tag)+".root"); 
-	if (isData==0) filename = TString(TString(outputPath)+"gmc/gmc_"+TString(ch)+TString(photon_tag)+".root"); 
-	TFile*  f              = new TFile(filename.c_str(),"recreate");          
+	string outfilename;
+	if (isData==1) outfilename = TString(TString(outputPath)+"gdata/" + label + "_"+TString(ch)+TString(photon_tag)+".root"); 
+	if (isData==0){
+	  //outfilename = TString(TString(outputPath)+"gmc/gmc_"+TString(ch)+TString(photon_tag)+".root"); 
+	  cout << "Not set up to run on MC, exiting!" << endl;
+	  exit(0);
+	}
+	TFile*  f              = new TFile(outfilename.c_str(),"recreate");          
 	TTree* BaselineTree = new TTree("BaselineTree","baseline tree");
 
 	cout << endl;
-	cout << "Create file           : " << filename        << endl;
+	cout << "Create file           : " << outfilename        << endl;
 
 
 	//-----------------------------
@@ -289,9 +332,9 @@ void GetPhotonSmearing(string ch, int isData, string year, int smearing_method) 
 	T->SetBranchAddress("HT"              ,&HT               );
 	T->SetBranchAddress("jet_n"           ,&jet_n            );
 	T->SetBranchAddress("bjet_n"           ,&bjet_n            );
-	if (isData!=1) T->SetBranchAddress("truthGamma_pt", &truthGamma_pt);
-	if (isData!=1) T->SetBranchAddress("truthGamma_phi", &truthGamma_phi);
-	if (isData!=1) T->SetBranchAddress("truthGamma_eta", &truthGamma_eta);
+	// if (isData!=1) T->SetBranchAddress("truthGamma_pt", &truthGamma_pt);
+	// if (isData!=1) T->SetBranchAddress("truthGamma_phi", &truthGamma_phi);
+	// if (isData!=1) T->SetBranchAddress("truthGamma_eta", &truthGamma_eta);
 	T->SetBranchAddress("gamma_pt", &gamma_pt);
 	T->SetBranchAddress("gamma_eta", &gamma_eta);
 	T->SetBranchAddress("gamma_phi", &gamma_phi);
@@ -311,8 +354,8 @@ void GetPhotonSmearing(string ch, int isData, string year, int smearing_method) 
 	//-----------------------------
 	// add new branches
 	//-----------------------------
-
-	TBranch *b_totalWeight = BaselineTree->Branch("totalWeight",&totalWeight,"totalWeight/F");
+	
+	TBranch *b_totalWeight = BaselineTree->Branch("totalWeight",&totalWeight,"totalWeight/D");
 	TBranch *b_HT = BaselineTree->Branch("HT",&HT,"HT/F");
 	TBranch *b_jet_n = BaselineTree->Branch("jet_n",&jet_n,"jet_n/I");
 	TBranch *b_bjet_n = BaselineTree->Branch("bjet_n",&bjet_n,"bjet_n/I");
@@ -322,9 +365,9 @@ void GetPhotonSmearing(string ch, int isData, string year, int smearing_method) 
 	TBranch *b_gamma_pt_smear = BaselineTree->Branch("Z_pt",&gamma_pt_smear,"Z_pt/F");
 	TBranch *b_gamma_phi_smear = BaselineTree->Branch("Z_phi",&gamma_phi_smear,"Z_phi/F");
 	TBranch *b_gamma_eta_smear = BaselineTree->Branch("Z_eta",&gamma_eta,"Z_eta/F");
-	TBranch *b_truthGamma_pt = BaselineTree->Branch("Z_truthPt",&truthGamma_pt,"Z_truthPt/F");
-	TBranch *b_truthGamma_eta = BaselineTree->Branch("Z_truthEta",&truthGamma_eta,"Z_truthEta/F");
-	TBranch *b_truthGamma_phi = BaselineTree->Branch("Z_truthPhi",&truthGamma_phi,"Z_truthPhi/F");
+	// TBranch *b_truthGamma_pt = BaselineTree->Branch("Z_truthPt",&truthGamma_pt,"Z_truthPt/F");
+	// TBranch *b_truthGamma_eta = BaselineTree->Branch("Z_truthEta",&truthGamma_eta,"Z_truthEta/F");
+	// TBranch *b_truthGamma_phi = BaselineTree->Branch("Z_truthPhi",&truthGamma_phi,"Z_truthPhi/F");
 	TBranch *b_MET_smear = BaselineTree->Branch("MET",&MET_smear,"MET/F");
 	TBranch *b_METl_smear = BaselineTree->Branch("METl",&METl_smear,"METl/F");
 	TBranch *b_METt_smear = BaselineTree->Branch("METt",&METt_smear,"METt/F");
@@ -358,7 +401,7 @@ void GetPhotonSmearing(string ch, int isData, string year, int smearing_method) 
 	TBranch *b_jet_eta = BaselineTree->Branch("jet_eta","std::vector<float>",&jet_eta);
 	TBranch *b_jet_m = BaselineTree->Branch("jet_m","std::vector<float>",&jet_m);
 
-	TBranch *b_MT2W = BaselineTree->Branch("MT2W",&MT2W,"MT2W/Float_t");
+	TBranch *b_MT2W = BaselineTree->Branch("MT2W",&MT2W,"MT2W/F");
 	TBranch *b_DR_2Lep = BaselineTree->Branch("DR_2Lep",&DR_2Lep,"DR_2Lep/F");
 
 	TH1D* hist_low_njet = new TH1D("hist_low_njet","",bin_size,njet_bin);
@@ -453,6 +496,8 @@ void GetPhotonSmearing(string ch, int isData, string year, int smearing_method) 
 		if (fmod(i,1e5)==0) std::cout << i << " events processed." << std::endl;
 		T->GetEntry(i);
 
+		if( jet_n == 0 ) continue;
+
 		// use the smearing function to smear MET and pT in photon events
 		float photon_smear = 0;
 		float photon_smear_phi = 0;
@@ -468,7 +513,6 @@ void GetPhotonSmearing(string ch, int isData, string year, int smearing_method) 
 				smear_shift = 0;
 			}
 		}
-		//std::cout << i << " events smeared." << std::endl;
 
 		gamma_pt_smear = gamma_pt-photon_smear; // sign of photon_smear is important!!!
 		gamma_phi_smear = gamma_phi-photon_smear_phi; // sign of photon_smear is important!!!
@@ -484,30 +528,51 @@ void GetPhotonSmearing(string ch, int isData, string year, int smearing_method) 
 		met_smear = hist_low_met->FindBin(MET_smear)-1;
 		if (met_smear>met_bin[bin_size]) met_smear = bin_size-1;
 
-		//std::cout << i << " events MET smeared." << std::endl;
-
 		// recompute DPhi after smearing
 		float METtx = METt*TMath::Cos(gamma_phi_smear+TMath::Pi()/2.);
 		float METty = METt*TMath::Sin(gamma_phi_smear+TMath::Pi()/2.);
 		float METlx_smear = METl_smear*TMath::Cos(gamma_phi_smear);
 		float METly_smear = METl_smear*TMath::Sin(gamma_phi_smear);
+
 		TLorentzVector met_4vec_smear;
 		met_4vec_smear.SetXYZM(METtx+METlx_smear,METty+METly_smear,0,0);
 		MET_phi_smear = met_4vec_smear.Phi();
+
 		TLorentzVector jet0_4vec;
 		if (jet_n<1) jet0_4vec.SetPtEtaPhiM(0,0,0,0);
 		else jet0_4vec.SetPtEtaPhiM(jet_pT->at(0),jet_eta->at(0),jet_phi->at(0),jet_m->at(0));
+
+		/*
+		cout << __LINE__ << endl;
+		cout << "jet_n " << jet_n << endl;
+		
+		//TLorentzVector jet1_4vec;
+		//if (jet_n<2)jet1_4vec.SetPtEtaPhiM(0,0,0,0);
+		//else jet1_4vec.SetPtEtaPhiM(jet_pT->at(1),jet_eta->at(1),jet_phi->at(1),jet_m->at(1));
+
 		TLorentzVector jet1_4vec;
-		if (jet_n<2) jet1_4vec.SetPtEtaPhiM(0,0,0,0);
-		else jet1_4vec.SetPtEtaPhiM(jet_pT->at(1),jet_eta->at(1),jet_phi->at(1),jet_m->at(1));
+		cout << __LINE__ << endl;
+		if (jet_n<2){
+		  cout << __LINE__ << endl;
+		  jet1_4vec.SetPtEtaPhiM(0,0,0,0);
+		  cout << __LINE__ << endl;
+		}
+		else{
+		  cout << __LINE__ << endl;
+		  jet1_4vec.SetPtEtaPhiM(jet_pT->at(1),jet_eta->at(1),jet_phi->at(1),jet_m->at(1));
+		  cout << __LINE__ << endl;
+		}
+		
+		cout << __LINE__ << endl;
 		DPhi_METJetLeading_smear = fabs(met_4vec_smear.DeltaPhi(jet0_4vec));
 		DPhi_METJetSecond_smear = fabs(met_4vec_smear.DeltaPhi(jet1_4vec));
-		DPhi_METPhoton_smear = fabs(TMath::ATan2(METt,METl_smear));
+		*/
+		DPhi_METJetLeading_smear = -999;
+		DPhi_METJetSecond_smear  = -999;
 
+		DPhi_METPhoton_smear = fabs(TMath::ATan2(METt,METl_smear));
 		dphi_smear = hist_low_dphi->FindBin(DPhi_METPhoton_smear)-1;
 		if (dphi_smear>dphi_bin[bin_size]) dphi_smear = bin_size-1;
-
-		//std::cout << i << " events DPhi smeared." << std::endl;
 
 		if (gamma_pt>50. && jet_n==1) g_metl_smear[smpt]->Fill(METl_smear,totalWeight);
 		if (gamma_pt>50. && jet_n>=2) g_metl_smear_2j[smpt]->Fill(METl_smear,totalWeight);
@@ -542,7 +607,6 @@ void GetPhotonSmearing(string ch, int isData, string year, int smearing_method) 
 			ntry += 1;
 			GetIndividualLeptonInfo(z_4vec);
 		}
-		//std::cout << i << " events dilepton created." << std::endl;
 
 		TLorentzVector lep0_4vec;
 		TLorentzVector lep1_4vec;
