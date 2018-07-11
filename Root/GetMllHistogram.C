@@ -3,6 +3,9 @@ TH1D* hist_Mll_dPt[bin_size][dpt_bin_size];
 TH1D* hist_low_dpt = new TH1D("hist_low_dpt","",dpt_bin_size,dpt_bin);
 TH1D* hist_sm_pt = new TH1D("hist_sm_pt","",bin_size,sm_pt_bin);
 
+int channel;
+float Z_ptmll;
+
 void GetMllHistogram(string ch,string period) {
 
         string mcperiod = "";
@@ -55,7 +58,7 @@ void GetMllHistogram(string ch,string period) {
 
 	tZ->SetBranchAddress("jet_n" ,&jet_n);
 	tZ->SetBranchAddress("bjet_n" ,&bjet_n);
-	tZ->SetBranchAddress("Z_pt" ,&Z_pt);
+	tZ->SetBranchAddress("Z_pt" ,&Z_ptmll);
 	//tZ->SetBranchAddress("Z_truthPt" ,&Z_truthPt);
 	tZ->SetBranchAddress("mll" ,&mll);
 	tZ->SetBranchAddress("lep_pT" ,&lep_pT           );
@@ -63,15 +66,15 @@ void GetMllHistogram(string ch,string period) {
 	for (int entry=0;entry<tZ->GetEntries();entry++) {
 		tZ->GetEntry(entry);
 
-		//if( TString(ch).EqualTo("ee") && channel != 1 ) continue; // ee
-		//if( TString(ch).EqualTo("mm") && channel != 0 ) continue; // ee
+		if( TString(ch).EqualTo("ee") && channel != 1 ) continue; // ee
+		if( TString(ch).EqualTo("mm") && channel != 0 ) continue; // ee
 		//if (jet_n==0) continue;
 		if (jet_n<2) continue;
 		//if (Z_pt<37.) continue;
 		if (lep_pT->at(0)<leading_lep_pt_cut) continue;
 		if (lep_pT->at(1)<second_lep_pt_cut) continue;
 		//int pt = hist_low_pt->FindBin(Z_pt)-1;
-		int pt = hist_sm_pt->FindBin(Z_pt)-1;
+		int pt = hist_sm_pt->FindBin(Z_ptmll)-1;
 		//int dpt = hist_low_dpt->FindBin((Z_pt-Z_truthPt))-1;
 		int dpt = hist_low_dpt->FindBin(METl)-1;
 		if (dpt>=0 && pt>=0) hist_Mll_dPt[pt][dpt]->Fill(mll,totalWeight);
