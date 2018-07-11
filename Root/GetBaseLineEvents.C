@@ -120,13 +120,13 @@ void GetBaseLineEvents(string sampleID, string outputName, string pathToNtuples,
 	AddBranches(BaselineTree, isData);
 
 	Float_t MT2_max= 0;
-	TBranch *b_MT2_max = BaselineTree->Branch("MT2_max",&MT2_max,"MT2_max/Float_t");
+	TBranch *b_MT2_max = BaselineTree->Branch("MT2_max",&MT2_max,"MT2_max/F");
 	Float_t boost_phi= 0;
-	TBranch *b_boost_phi = BaselineTree->Branch("boost_phi",&boost_phi,"boost_phi/Float_t");
+	TBranch *b_boost_phi = BaselineTree->Branch("boost_phi",&boost_phi,"boost_phi/F");
 	Float_t boost_eta= 0;
-	TBranch *b_boost_eta = BaselineTree->Branch("boost_eta",&boost_eta,"boost_eta/Float_t");
+	TBranch *b_boost_eta = BaselineTree->Branch("boost_eta",&boost_eta,"boost_eta/F");
 	Float_t boost_pt= 0;
-	TBranch *b_boost_pt = BaselineTree->Branch("boost_pt",&boost_pt,"boost_pt/Float_t");
+	TBranch *b_boost_pt = BaselineTree->Branch("boost_pt",&boost_pt,"boost_pt/F");
 	//Float_t MT2_truth= 0;
 	//TBranch *b_MT2_truth = BaselineTree->Branch("MT2_truth",&MT2_truth,"MT2_truth/Float_t");
 	
