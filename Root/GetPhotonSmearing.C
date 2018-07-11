@@ -181,11 +181,11 @@ void GetPhotonSmearing(string label, string ch, int isData, string period, int s
 			Float_t *smear = new Float_t[2*((newbin+1)/2+1)];
 			Float_t *fft_re = new Float_t[newbin];
 			Float_t *fft_im = new Float_t[newbin];
-			Float_t *z_smear_in = new Float_t[newbin];
-			Float_t *g_smear_in = new Float_t[newbin];
-			Float_t *j_resp_in = new Float_t[newbin];
-			Float_t *z_resp_in = new Float_t[newbin];
-			Float_t *g_resp_in = new Float_t[newbin];
+			Double_t *z_smear_in = new Double_t[newbin];
+			Double_t *g_smear_in = new Double_t[newbin];
+			Double_t *j_resp_in = new Double_t[newbin];
+			Double_t *z_resp_in = new Double_t[newbin];
+			Double_t *g_resp_in = new Double_t[newbin];
 			g_resp[bin] = new TH1D(TString("g_resp_")+TString::Itoa(bin,10),"",newbin,-30000,10000);
 			z_resp[bin] = new TH1D(TString("z_resp_")+TString::Itoa(bin,10),"",newbin,-30000,10000);
 			smear_raw[bin] = new TH1D(TString("smear_raw_")+TString::Itoa(bin,10),"",newbin,-30000,10000);
