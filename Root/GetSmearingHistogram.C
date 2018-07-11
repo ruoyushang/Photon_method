@@ -34,6 +34,9 @@ float HTF = 0.;
 // 4 : R21 MC smearing
 // 5 : R21 data smearing
 
+int gchannel;
+int gZ_pt;
+
 void GetSmearingHistogram(string ch, float lumi, string photon_tag,string period, int smearing_method) {
 
   cout << "GetSmearingHistogram : smearing_method " << smearing_method << endl;
@@ -70,17 +73,17 @@ void GetSmearingHistogram(string ch, float lumi, string photon_tag,string period
 		tZ->SetBranchAddress("totalWeight" ,&totalWeightF);
 		tZ->SetBranchAddress("jet_n" ,&jet_n);
 		tZ->SetBranchAddress("bjet_n" ,&bjet_n);
-		tZ->SetBranchAddress("Z_pt" ,&Z_pt);
+		tZ->SetBranchAddress("Z_pt" ,&gZ_pt);
 		//tZ->SetBranchAddress("HT" ,&HT);
 		tZ->SetBranchAddress("mll" ,&mll);
-		tZ->SetBranchAddress("METl" ,&METlF);
-		tZ->SetBranchAddress("channel" ,&channel);
+		tZ->SetBranchAddress("METl" ,&METl);
+		tZ->SetBranchAddress("channel" ,&gchannel);
 		for (int entry=0;entry<tZ->GetEntries();entry++) {
 			tZ->GetEntry(entry);
-			if( TString(ch).EqualTo("ee") && channel != 1 ) continue; // ee
-			if( TString(ch).EqualTo("mm") && channel != 0 ) continue; // ee
-			if (Z_pt<50.) continue;
-			int pt = hist_low_pt->FindBin(Z_pt)-1;
+			if( TString(ch).EqualTo("ee") && gchannel != 1 ) continue; // ee
+			if( TString(ch).EqualTo("mm") && gchannel != 0 ) continue; // ee
+			if (gZ_pt<50.) continue;
+			int pt = hist_low_pt->FindBin(gZ_pt)-1;
 			if (jet_n!=1) continue;
 			if (bjet_n!=0) continue;
 			z_metl[pt]->Fill(METlF,totalWeightF);
@@ -116,17 +119,17 @@ void GetSmearingHistogram(string ch, float lumi, string photon_tag,string period
 		ttt->SetBranchAddress("totalWeight" ,&totalWeightF);
 		ttt->SetBranchAddress("jet_n" ,&jet_n);
 		ttt->SetBranchAddress("bjet_n" ,&bjet_n);
-		ttt->SetBranchAddress("Z_pt" ,&Z_pt);
+		ttt->SetBranchAddress("Z_pt" ,&gZ_pt);
 		//ttt->SetBranchAddress("HT" ,&HT);
 		ttt->SetBranchAddress("mll" ,&mll);
 		ttt->SetBranchAddress("METl" ,&METlF);
-		ttt->SetBranchAddress("channel" ,&channel);
+		ttt->SetBranchAddress("channel" ,&gchannel);
 		for (int entry=0;entry<ttt->GetEntries();entry++) {
 			ttt->GetEntry(entry);
-			if( TString(ch).EqualTo("ee") && channel != 1 ) continue; // ee
-			if( TString(ch).EqualTo("mm") && channel != 0 ) continue; // ee			
-			if (Z_pt<50.) continue;
-			int pt = hist_low_pt->FindBin(Z_pt)-1;
+			if( TString(ch).EqualTo("ee") && gchannel != 1 ) continue; // ee
+			if( TString(ch).EqualTo("mm") && gchannel != 0 ) continue; // ee			
+			if (gZ_pt<50.) continue;
+			int pt = hist_low_pt->FindBin(gZ_pt)-1;
 			if (jet_n!=1) continue;
 			if (bjet_n!=0) continue;
 			z_metl[pt]->Fill(METlF,-1.*lumi*totalWeightF);
@@ -157,17 +160,17 @@ void GetSmearingHistogram(string ch, float lumi, string photon_tag,string period
 		tvv->SetBranchAddress("totalWeight" ,&totalWeightF);
 		tvv->SetBranchAddress("jet_n" ,&jet_n);
 		tvv->SetBranchAddress("bjet_n" ,&bjet_n);
-		tvv->SetBranchAddress("Z_pt" ,&Z_pt);
+		tvv->SetBranchAddress("Z_pt" ,&gZ_pt);
 		//tvv->SetBranchAddress("HT" ,&HT);
 		tvv->SetBranchAddress("mll" ,&mll);
 		tvv->SetBranchAddress("METl" ,&METlF);
-		tvv->SetBranchAddress("channel" ,&channel);
+		tvv->SetBranchAddress("channel" ,&gchannel);
 		for (int entry=0;entry<tvv->GetEntries();entry++) {
 			tvv->GetEntry(entry);
-			if( TString(ch).EqualTo("ee") && channel != 1 ) continue; // ee
-			if( TString(ch).EqualTo("mm") && channel != 0 ) continue; // ee
-			if (Z_pt<50.) continue;
-			int pt = hist_low_pt->FindBin(Z_pt)-1;
+			if( TString(ch).EqualTo("ee") && gchannel != 1 ) continue; // ee
+			if( TString(ch).EqualTo("mm") && gchannel != 0 ) continue; // ee
+			if (gZ_pt<50.) continue;
+			int pt = hist_low_pt->FindBin(gZ_pt)-1;
 			if (jet_n!=1) continue;
 			if (bjet_n!=0) continue;
 			z_metl[pt]->Fill(METlF,-1.*lumi*totalWeightF);
@@ -335,11 +338,12 @@ void GetSmearingHistogram(string ch, float lumi, string photon_tag,string period
 		tZ->SetBranchAddress("METl" ,&METl);
 		tZ->SetBranchAddress("RunNumber" ,&RunNumber);
 		tZ->SetBranchAddress("EventNumber" ,&EventNumber);
+		tZ->SetBranchAddress("channel" ,&gchannel);
 		for (int entry=0;entry<tZ->GetEntries();entry++) {
 			tZ->GetEntry(entry);
 
-			if( TString(ch).EqualTo("ee") && channel != 1 ) continue; // ee
-			if( TString(ch).EqualTo("mm") && channel != 0 ) continue; // ee			
+			if( TString(ch).EqualTo("ee") && gchannel != 1 ) continue; // ee
+			if( TString(ch).EqualTo("mm") && gchannel != 0 ) continue; // ee			
 
 			if (Z_ptD<50.) continue;
 			int pt = hist_low_pt->FindBin(Z_ptD)-1;
@@ -410,14 +414,14 @@ void GetSmearingHistogram(string ch, float lumi, string photon_tag,string period
 		tZ->SetBranchAddress("totalWeight" ,&totalWeight);
 		tZ->SetBranchAddress("jet_n" ,&jet_n);
 		tZ->SetBranchAddress("bjet_n" ,&bjet_n);
-		tZ->SetBranchAddress("Z_pt" ,&Z_pt);
+		tZ->SetBranchAddress("Z_pt" ,&gZ_pt);
 		tZ->SetBranchAddress("HT" ,&HT);
 		tZ->SetBranchAddress("mll" ,&mll);
 		tZ->SetBranchAddress("METl" ,&METl);
 		for (int entry=0;entry<tZ->GetEntries();entry++) {
 			tZ->GetEntry(entry);
-			if (Z_pt<50.) continue;
-			int pt = hist_low_pt->FindBin(Z_pt)-1;
+			if (gZ_pt<50.) continue;
+			int pt = hist_low_pt->FindBin(gZ_pt)-1;
 			if (jet_n!=1) continue;
 			if (bjet_n!=0) continue;
 			z_metl[pt]->Fill(METl,totalWeight);
