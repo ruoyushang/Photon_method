@@ -30,36 +30,73 @@
 #include "TGraphAsymmErrors.h"
 
 #include "BasicSetting.C"
-#include "GetReweightingHistogram.C"
-#include "GetReweightingHistogram_SF.C"
+//--- REMOVE FOR NOW
+//#include "GetReweightingHistogram.C"
+//#include "GetReweightingHistogram_SF.C"
+#include "GetSimpleReweightingHistograms.C"
 
 using namespace std;
 
 vector<string> noSampleWeight;
 vector<string> noEventWeight;
 
-void GetPhotonReweighting(string ch, int isData, string year) {
+void GetPhotonReweighting(string label, string ch, int isData, string year, int smearing_method) {
+
+        string periodlabel = "";
+        if     ( TString(label).Contains("Data15-16") ) periodlabel = "data15-16";
+	else if( TString(label).Contains("Data17")    ) periodlabel = "data17";
+	else if( TString(label).Contains("Data18")    ) periodlabel = "data18";
+
+        if     ( TString(label).Contains("data15-16") ) periodlabel = "data15-16";
+	else if( TString(label).Contains("data17")    ) periodlabel = "data17";
+	else if( TString(label).Contains("data18")    ) periodlabel = "data18";
 
 	if (smearing_method == 0) photon_tag = "_NoSmear";
 	if (smearing_method == 1) photon_tag = "_McSmear";
 	if (smearing_method == 2) photon_tag = "_DataSmear";
 	if (smearing_method == 3) photon_tag = "_TruthSmear";
 
+	/*
+  	string reweighting_filename = "rootfiles/GetSimpleReweightingHistograms_" + periodlabel + "_" + ch + photon_tag + ".root";
+
+	cout << "label            " << label << endl;
+	cout << "channel          " << ch << endl;
+	cout << "isData           " << isData << endl;
+	cout << "year             " << year << endl;
+	cout << "smearing method  " << smearing_method << endl;
+	cout << "reweighting file " << reweighting_filename << endl;
+	
 	// retrieve the histograms for pT, Njets, HT-reweighting and on-Z rescaling
 	std::cout << "Prepare reweighting histograms..." << std::endl;
 	//if (isData) GetReweightingHistogram_SF(ch, isData,lumi, photon_tag);
 	//else GetReweightingHistogram(ch, isData,lumi, photon_tag);
-	GetReweightingHistogram(ch, isData,lumi, photon_tag);
 
+	//--- REMOVE FOR NOW
+	//GetReweightingHistogram(ch, isData,lumi, photon_tag);
+	 
+	TFile* reweighting_file = TFile::Open(reweighting_filename.c_str());
+	TH1F*  hreweight        = (TH1F*) reweighting_file->Get("hratio");
+	cout << "Got reweighting histogram hratio with integral " << hreweight->Integral() << endl;
+	*/
+	
+	TH1F* hreweight = GetSimpleReweightingHistograms( label , periodlabel , ch , photon_tag );
+	cout << "Got reweighting histogram hratio with integral " << hreweight->Integral() << endl;
+		
 	//---------------------------------------------
 	// open file, get Tree and EventCountHist
 	//---------------------------------------------
 
+	cout << "Getting photon data" << endl;
+	
 	TH1::SetDefaultSumw2();
 
 	string  filename;
-	if (isData==1) filename = TString(TString(outputPath)+"gdata/gdata_"+TString(ch)+TString(photon_tag)+".root"); 
-	if (isData==0) filename = TString(TString(outputPath)+"gmc/gmc_"+TString(ch)+TString(photon_tag)+".root"); 
+	if (isData==1) filename = TString(TString(outputPath) + "gdata/" + label + "_" +TString(ch) + TString(photon_tag) + ".root"); 
+	if (isData==0){
+	  filename = TString(TString(outputPath)+"gmc/gmc_"+TString(ch)+TString(photon_tag)+".root"); 
+	  cout << "Not set up for MC, exiting!" << endl;
+	  exit(0);
+	}
 	TFile*  f              = new TFile(filename.c_str(),"update");          
 	TTree*  outputTree              = (TTree*)f->Get("BaselineTree");
 
@@ -73,7 +110,7 @@ void GetPhotonReweighting(string ch, int isData, string year) {
 	// access existing branches
 	//-----------------------------
 
-	float totalWeight = 0.;
+	double totalWeight = 0.;
 	int pt = 0;
 	int ptsm = 0;
 	int metsm = 0;
@@ -104,9 +141,22 @@ void GetPhotonReweighting(string ch, int isData, string year) {
 	outputTree->SetBranchAddress("lep_pT"          ,&lep_pT           );
 	if (isData!=1) outputTree->SetBranchAddress("gamma_dR", &gamma_dR);
 
+	// Error in <TTree::SetBranchAddress>: unknown branch -> pt
+	// Error in <TTree::SetBranchAddress>: unknown branch -> ht
+	// Error in <TTree::SetBranchAddress>: unknown branch -> njet	  
+	// Error in <TTree::SetBranchAddress>: unknown branch -> pt_smear
+	// Error in <TTree::SetBranchAddress>: unknown branch -> met_smear
+	// Error in <TTree::SetBranchAddress>: unknown branch -> nbjet
+
 	//-----------------------------
 	// add new branches
 	//-----------------------------
+
+	Float_t ptreweight = 0;
+	TBranch *b_ptreweight = outputTree->Branch("ptreweight2",&ptreweight,"ptreweight2/F");
+	
+	//--- REMOVE FOR NOW
+	/* 
 
 	float pt37_bveto_corr_met = 0;
 	float pt37_bveto_corr_lpt = 0;
@@ -124,6 +174,7 @@ void GetPhotonReweighting(string ch, int isData, string year) {
 	float htrw_err_bveto = 0;
 	float njetrw_err_bveto = 0;
 	float nbjetrw_err_bveto = 0;
+
 	//TBranch *b_pt37_bveto_corr_met = outputTree->Branch("pt37_bveto_corr_met",&pt37_bveto_corr_met,"pt37_bveto_corr_met/F");
 	TBranch *b_pt37_bveto_corr_lpt = outputTree->Branch("pt37_bveto_corr_lpt",&pt37_bveto_corr_lpt,"pt37_bveto_corr_lpt/F");
 	TBranch *b_ptrw_bveto = outputTree->Branch("ptrw_bveto",&ptrw_bveto,"ptrw_bveto/F");
@@ -140,7 +191,8 @@ void GetPhotonReweighting(string ch, int isData, string year) {
 	//TBranch *b_htrw_err_bveto = outputTree->Branch("htrw_err_bveto",&htrw_err_bveto,"htrw_err_bveto/F");
 	//TBranch *b_njetrw_err_bveto = outputTree->Branch("njetrw_err_bveto",&njetrw_err_bveto,"njetrw_err_bveto/F");
 	//TBranch *b_nbjetrw_err_bveto = outputTree->Branch("nbjetrw_err_bveto",&nbjetrw_err_bveto,"nbjetrw_err_bveto/F");
-
+	*/
+	
 	float pt37_2j30_corr_met = 0;
 	float pt37_2j30_corr_lpt = 0;
 	float ptrw_2j30 = 0;
@@ -157,6 +209,8 @@ void GetPhotonReweighting(string ch, int isData, string year) {
 	float htrw_err_2j30 = 0;
 	float njetrw_err_2j30 = 0;
 	float nbjetrw_err_2j30 = 0;
+	//--- REMOVE FOR NOW
+	/* 
 	//TBranch *b_pt37_2j30_corr_met = outputTree->Branch("pt37_2j30_corr_met",&pt37_2j30_corr_met,"pt37_2j30_corr_met/F");
 	TBranch *b_pt37_2j30_corr_lpt = outputTree->Branch("pt37_2j30_corr_lpt",&pt37_2j30_corr_lpt,"pt37_2j30_corr_lpt/F");
 	TBranch *b_ptrw_2j30 = outputTree->Branch("ptrw_2j30",&ptrw_2j30,"ptrw_2j30/F");
@@ -173,7 +227,8 @@ void GetPhotonReweighting(string ch, int isData, string year) {
 	//TBranch *b_htrw_err_2j30 = outputTree->Branch("htrw_err_2j30",&htrw_err_2j30,"htrw_err_2j30/F");
 	//TBranch *b_njetrw_err_2j30 = outputTree->Branch("njetrw_err_2j30",&njetrw_err_2j30,"njetrw_err_2j30/F");
 	//TBranch *b_nbjetrw_err_2j30 = outputTree->Branch("nbjetrw_err_2j30",&nbjetrw_err_2j30,"nbjetrw_err_2j30/F");
-
+	*/
+	
 	float pt37_ht200_corr_met = 0;
 	float pt37_ht200_corr_lpt = 0;
 	float ptrw_ht200 = 0;
@@ -191,6 +246,8 @@ void GetPhotonReweighting(string ch, int isData, string year) {
 	float njetrw_err_ht200 = 0;
 	float nbjetrw_err_ht200 = 0;
 	//TBranch *b_pt37_ht200_corr_met = outputTree->Branch("pt37_ht200_corr_met",&pt37_ht200_corr_met,"pt37_ht200_corr_met/F");
+	//--- REMOVE FOR NOW
+	/* 
 	TBranch *b_pt37_ht200_corr_lpt = outputTree->Branch("pt37_ht200_corr_lpt",&pt37_ht200_corr_lpt,"pt37_ht200_corr_lpt/F");
 	TBranch *b_ptrw_ht200 = outputTree->Branch("ptrw_ht200",&ptrw_ht200,"ptrw_ht200/F");
 	TBranch *b_ptsmrw_ht200 = outputTree->Branch("ptsmrw_ht200",&ptsmrw_ht200,"ptsmrw_ht200/F");
@@ -206,7 +263,8 @@ void GetPhotonReweighting(string ch, int isData, string year) {
 	//TBranch *b_htrw_err_ht200 = outputTree->Branch("htrw_err_ht200",&htrw_err_ht200,"htrw_err_ht200/F");
 	//TBranch *b_njetrw_err_ht200 = outputTree->Branch("njetrw_err_ht200",&njetrw_err_ht200,"njetrw_err_ht200/F");
 	//TBranch *b_nbjetrw_err_ht200 = outputTree->Branch("nbjetrw_err_ht200",&nbjetrw_err_ht200,"nbjetrw_err_ht200/F");
-
+	*/
+	
 	float pt37_ht400_corr_met = 0;
 	float pt37_ht400_corr_lpt = 0;
 	float ptrw_ht400 = 0;
@@ -224,6 +282,8 @@ void GetPhotonReweighting(string ch, int isData, string year) {
 	float njetrw_err_ht400 = 0;
 	float nbjetrw_err_ht400 = 0;
 	//TBranch *b_pt37_ht400_corr_met = outputTree->Branch("pt37_ht400_corr_met",&pt37_ht400_corr_met,"pt37_ht400_corr_met/F");
+	//--- REMOVE FOR NOW
+	/* 
 	TBranch *b_pt37_ht400_corr_lpt = outputTree->Branch("pt37_ht400_corr_lpt",&pt37_ht400_corr_lpt,"pt37_ht400_corr_lpt/F");
 	TBranch *b_ptrw_ht400 = outputTree->Branch("ptrw_ht400",&ptrw_ht400,"ptrw_ht400/F");
 	TBranch *b_ptsmrw_ht400 = outputTree->Branch("ptsmrw_ht400",&ptsmrw_ht400,"ptsmrw_ht400/F");
@@ -239,7 +299,8 @@ void GetPhotonReweighting(string ch, int isData, string year) {
 	//TBranch *b_htrw_err_ht400 = outputTree->Branch("htrw_err_ht400",&htrw_err_ht400,"htrw_err_ht400/F");
 	//TBranch *b_njetrw_err_ht400 = outputTree->Branch("njetrw_err_ht400",&njetrw_err_ht400,"njetrw_err_ht400/F");
 	//TBranch *b_nbjetrw_err_ht400 = outputTree->Branch("nbjetrw_err_ht400",&nbjetrw_err_ht400,"nbjetrw_err_ht400/F");
-
+	*/
+	
 	float pt37_ht1200_corr_met = 0;
 	float pt37_ht1200_corr_lpt = 0;
 	float ptrw_ht1200 = 0;
@@ -257,6 +318,8 @@ void GetPhotonReweighting(string ch, int isData, string year) {
 	float njetrw_err_ht1200 = 0;
 	float nbjetrw_err_ht1200 = 0;
 	//TBranch *b_pt37_ht1200_corr_met = outputTree->Branch("pt37_ht1200_corr_met",&pt37_ht1200_corr_met,"pt37_ht1200_corr_met/F");
+	//--- REMOVE FOR NOW
+	/* 
 	TBranch *b_pt37_ht1200_corr_lpt = outputTree->Branch("pt37_ht1200_corr_lpt",&pt37_ht1200_corr_lpt,"pt37_ht1200_corr_lpt/F");
 	TBranch *b_ptrw_ht1200 = outputTree->Branch("ptrw_ht1200",&ptrw_ht1200,"ptrw_ht1200/F");
 	TBranch *b_ptsmrw_ht1200 = outputTree->Branch("ptsmrw_ht1200",&ptsmrw_ht1200,"ptsmrw_ht1200/F");
@@ -272,7 +335,8 @@ void GetPhotonReweighting(string ch, int isData, string year) {
 	//TBranch *b_htrw_err_ht1200 = outputTree->Branch("htrw_err_ht1200",&htrw_err_ht1200,"htrw_err_ht1200/F");
 	//TBranch *b_njetrw_err_ht1200 = outputTree->Branch("njetrw_err_ht1200",&njetrw_err_ht1200,"njetrw_err_ht1200/F");
 	//TBranch *b_nbjetrw_err_ht1200 = outputTree->Branch("nbjetrw_err_ht1200",&nbjetrw_err_ht1200,"nbjetrw_err_ht1200/F");
-
+	*/
+	
 	float pt37_srhigh_corr_met = 0;
 	float ptrw_srhigh = 0;
 	float ptsmrw_srhigh = 0;
@@ -288,6 +352,8 @@ void GetPhotonReweighting(string ch, int isData, string year) {
 	float htrw_err_srhigh = 0;
 	float njetrw_err_srhigh = 0;
 	float nbjetrw_err_srhigh = 0;
+	//--- REMOVE FOR NOW
+	/* 
 	//TBranch *b_pt37_srhigh_corr_met = outputTree->Branch("pt37_srhigh_corr_met",&pt37_srhigh_corr_met,"pt37_srhigh_corr_met/F");
 	TBranch *b_ptrw_srhigh = outputTree->Branch("ptrw_srhigh",&ptrw_srhigh,"ptrw_srhigh/F");
 	TBranch *b_ptsmrw_srhigh = outputTree->Branch("ptsmrw_srhigh",&ptsmrw_srhigh,"ptsmrw_srhigh/F");
@@ -303,10 +369,13 @@ void GetPhotonReweighting(string ch, int isData, string year) {
 	//TBranch *b_htrw_err_srhigh = outputTree->Branch("htrw_err_srhigh",&htrw_err_srhigh,"htrw_err_srhigh/F");
 	//TBranch *b_njetrw_err_srhigh = outputTree->Branch("njetrw_err_srhigh",&njetrw_err_srhigh,"njetrw_err_srhigh/F");
 	//TBranch *b_nbjetrw_err_srhigh = outputTree->Branch("nbjetrw_err_srhigh",&nbjetrw_err_srhigh,"nbjetrw_err_srhigh/F");
-
+	*/
+	
 	//-----------------------------
 	// build TGraph reweighting factors
 	//-----------------------------
+	//--- REMOVE FOR NOW
+	/* 
 
 	TGraph * gr_37_bveto_met_correction = new TGraph(hist_37_bveto_met_correction);
 	TGraph * gr_37_bveto_lpt_correction = new TGraph(hist_37_bveto_lpt_correction);
@@ -354,7 +423,7 @@ void GetPhotonReweighting(string ch, int isData, string year) {
 	TGraph * gr_srhigh_etrw_correction = new TGraph(hist_srhigh_etrw_correction);
 	TGraph * gr_srhigh_etsmrw_correction = new TGraph(hist_srhigh_etsmrw_correction);
 	TGraph * gr_srhigh_htrw_correction = new TGraph(hist_srhigh_htrw_correction);
-
+	*/
 	//-----------------------------
 	// loop over events
 	//-----------------------------
@@ -366,6 +435,23 @@ void GetPhotonReweighting(string ch, int isData, string year) {
 		if (fmod(i,1e5)==0) std::cout << i << " events processed." << std::endl;
 		outputTree->GetEntry(i);
 
+		float gamma_pt_truncated = gamma_pt;
+		if( gamma_pt_truncated < 40   ) gamma_pt_truncated = 41;
+		if( gamma_pt_truncated > 1000 ) gamma_pt_truncated = 999;
+
+		int ptbin = hreweight->FindBin( gamma_pt_truncated );
+		
+		ptreweight = hreweight->GetBinContent(ptbin);
+
+		//ptreweight = hreweight->Eval(gamma_pt_truncated);
+
+		//cout << "gamma_pt gamma_pt_truncated ptbin ptreweight " << gamma_pt << " " << gamma_pt_truncated << " " << ptbin << " " << ptreweight << endl;
+
+		b_ptreweight->Fill();
+		
+		//--- REMOVE FOR NOW
+		/* 
+		
 		// assess the reweighting factor according to the pT/smeared pT/Njets/HT value
 		float gamma_et_smear = pow(gamma_pt_smear*gamma_pt_smear+mll*mll,0.5);
 		//float gamma_et_smear = gamma_pt_smear;
@@ -570,10 +656,13 @@ void GetPhotonReweighting(string ch, int isData, string year) {
 		//b_htrw_err_srhigh->Fill();     
 		//b_njetrw_err_srhigh->Fill();     
 		//b_nbjetrw_err_srhigh->Fill();     
-
+		*/
 	}
 
 	outputTree->Write();
+
+	//--- REMOVE FOR NOW
+	/*
 	hist_bveto_ptrw_correction->Write();
 	hist_ht200_ptrw_correction->Write();
 	hist_ht400_ptrw_correction->Write();
@@ -582,7 +671,8 @@ void GetPhotonReweighting(string ch, int isData, string year) {
 	gr_ht200_ptrw_correction->Write();
 	gr_ht400_ptrw_correction->Write();
 	gr_ht1200_ptrw_correction->Write();
-
+	*/
+	
 	std::cout << "done." << std::endl;
 	delete f;
 
