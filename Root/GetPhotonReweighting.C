@@ -153,7 +153,7 @@ void GetPhotonReweighting(string label, string ch, int isData, string year, int 
 	//-----------------------------
 
 	Float_t ptreweight = 0;
-	TBranch *b_ptreweight = outputTree->Branch("ptreweight2",&ptreweight,"ptreweight2/F");
+	TBranch *b_ptreweight = outputTree->Branch("ptreweight",&ptreweight,"ptreweight/F");
 	
 	//--- REMOVE FOR NOW
 	/* 
