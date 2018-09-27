@@ -6,10 +6,14 @@
 //-----------------------------------------------------------------------------------------------
 
 //double lumi = 3200.;
-double lumi = 36100.;
+//double lumi = 36100.;
 
-std::string outputPath = "../OutputNtuples_v1.2/";
-std::string smearingPath = "../OutputNtuples_v1.2/";
+double lumi_data1516 = 36200.;
+double lumi_data17   = 43800.;
+double lumi_data18   = (36200/43800)*36200;
+
+std::string outputPath = "../OutputNtuples/v1.3_v00/";
+std::string smearingPath = "../OutputNtuples/v1.3_v00/";
 //std::string outputPath = "/eos/atlas/user/r/rshang/OutputNtuples/";
 //std::string smearingPath = "/eos/atlas/user/r/rshang/OutputNtuples/";
 //std::string smearingPath = "/eos/atlas/atlascerngroupdisk/phys-susy/strong2L/v02-04/Ruo/PhotonMethodOutput/OutputNtuples_EWK2L/";
