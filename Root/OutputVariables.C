@@ -340,6 +340,7 @@ void AddBranches(TTree* BaselineTree, bool isData) {
 	BaselineTree->Branch("DPhi_WminZ",&DPhi_WminZ,"DPhi_WminZ/F");
 	BaselineTree->Branch("EventNumber",&EventNumber,"EventNumber/I");
 	BaselineTree->Branch("RunNumber",&RunNumber,"RunNumber/I");
+	BaselineTree->Branch("RandomRunNumber",&RandomRunNumber,"RandomRunNumber/I");
 	BaselineTree->Branch("totalWeight",&totalWeight,"totalWeight/D");
 	if (!isData) {
 		// BaselineTree->Branch("Z_truthPt",&Z_truthPt,"Z_truthPt/F");
