@@ -50,9 +50,9 @@ TH1F* GetSimpleReweightingHistograms( string label , string period = "data15-16"
 
   //--- set up MC period
   string mcperiod = "";
-  if( TString(period).EqualTo("data15-16") ) mcperiod = "ZMC16a/";
-  if( TString(period).EqualTo("data17")    ) mcperiod = "ZMC16cd/";
-  if( TString(period).EqualTo("data18")    ) mcperiod = "ZMC16cd/";
+  if( TString(period).EqualTo("data15-16") ) mcperiod = "zmc16a/";
+  if( TString(period).EqualTo("data17")    ) mcperiod = "zmc16cd/";
+  if( TString(period).EqualTo("data18")    ) mcperiod = "zmc16cd/";
 
   //--- set up photon data period
   string gperiod = "";
@@ -69,7 +69,7 @@ TH1F* GetSimpleReweightingHistograms( string label , string period = "data15-16"
   // string photon_filename = pathg + "JETM4_" + gdatalabel + "_" + channel + "_" + smearing_mode + ".root";
 
   // set up filenames
-  string data_filename   = smearingPath + "Zdata/" + period + "_merged_processed.root";
+  string data_filename   = smearingPath + "zdata/" + period + "_merged_processed.root";
   string tt_filename     = smearingPath + mcperiod + "ttbar_merged_processed.root";
   string vv_filename     = smearingPath + mcperiod + "diboson_merged_processed.root";
   string zjets_filename  = smearingPath + mcperiod + "Zjets_merged_processed.root";
@@ -119,9 +119,9 @@ TH1F* GetSimpleReweightingHistograms( string label , string period = "data15-16"
   TCut weight("totalWeight");
   TCut lumi("1.0");
 
-  if( TString(period).EqualTo("data15-16") ) lumi = TCut("36100");
-  if( TString(period).EqualTo("data17")    ) lumi = TCut("44100");
-  if( TString(period).EqualTo("data18")    ) lumi = TCut("6461");
+  if( TString(period).EqualTo("data15-16") ) lumi = TCut("36200");
+  if( TString(period).EqualTo("data17")    ) lumi = TCut("43800");
+  if( TString(period).EqualTo("data18")    ) lumi = TCut("(36200/43800)*36200");
      
   cout << "Z selection          " << Zselection.GetTitle() << endl;
   cout << "g selection          " << gselection.GetTitle() << endl;
@@ -138,11 +138,17 @@ TH1F* GetSimpleReweightingHistograms( string label , string period = "data15-16"
   TH1F* hz     = new TH1F("hz"     ,"",nptbins,ptbins);
   TH1F* histoG = new TH1F("histoG" ,"",nptbins,ptbins);    
 
+  TCut RunRange("");
+  if( TString(period).EqualTo("data17")    ){
+    RunRange = TCut("RandomRunNumber < 348000");  
+    cout << "Data17! adding cut " << RunRange.GetTitle() << endl;
+  }
+
   // fill histograms
   chdata-> Draw("min(Z_pt,999)>>hdata"  ,Zselection       ,"goff");
-  chtt->   Draw("min(Z_pt,999)>>htt"    ,Zselection*weight*lumi,"goff");
-  chvv->   Draw("min(Z_pt,999)>>hvv"    ,Zselection*weight*lumi,"goff");
-  chzjets->Draw("min(Z_pt,999)>>hz"     ,Zselection*weight*lumi,"goff");
+  chtt->   Draw("min(Z_pt,999)>>htt"    ,Zselection*RunRange*weight*lumi,"goff");
+  chvv->   Draw("min(Z_pt,999)>>hvv"    ,Zselection*RunRange*weight*lumi,"goff");
+  chzjets->Draw("min(Z_pt,999)>>hz"     ,Zselection*RunRange*weight*lumi,"goff");
   chg    ->Draw("min(Z_pt,999)>>histoG" ,gselection*weight,"goff");
 
   cout << "data integral        " << hdata->Integral()   << endl;
