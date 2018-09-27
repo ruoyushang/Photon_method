@@ -103,11 +103,17 @@ void getPhotonSmearingFunction2(TString file, TString histname, TH1D* hist, int 
 }
 void GetPhotonSmearing(string label, string ch, int isData, string period, int smearing_method) {
 
+        float lumi = 0.0;
+	if     ( TString(period).EqualTo("data15-16") ) lumi = lumi_data1516;
+	else if( TString(period).EqualTo("data17")    ) lumi = lumi_data17;
+	else if( TString(period).EqualTo("data18")    ) lumi = lumi_data18;
+
         cout << "channel         " << ch              << endl;
 	cout << "period          " << period          << endl;
 	cout << "isData?         " << isData          << endl;
 	cout << "smearing path   " << smearingPath    << endl;
 	cout << "smearing method " << smearing_method << endl;
+	cout << "lumi?           " << lumi            << endl;
 
 	//-----------------------------
 	// prepare lep pT functions, to convert photon pT to dilepton sum pT
