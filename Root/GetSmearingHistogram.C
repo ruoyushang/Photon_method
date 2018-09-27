@@ -22,7 +22,7 @@ TH1D* hist_low_pt = new TH1D("hist_low_pt","",bin_size,sm_pt_bin);
 //float mll = 0.;
 //float METl = 0.;
 
-float totalWeightF = 0.;
+//Zfloat totalWeightF = 0.;
 float METlF = 0.;
 float HTF = 0.;
 
@@ -35,7 +35,7 @@ float HTF = 0.;
 // 5 : R21 data smearing
 
 int gchannel;
-int gZ_pt;
+Float_t gZ_pt;
 
 void GetSmearingHistogram(string ch, float lumi, string photon_tag,string period, int smearing_method) {
 
@@ -57,7 +57,7 @@ void GetSmearingHistogram(string ch, float lumi, string photon_tag,string period
 		//TFile fZ( TString(smearingPath)+"data/data_"+TString(ch)+".root" );
 
 		//--- smearing with R21 samples
-		string datafilename = smearingPath + "Zdata/" + period + "_merged_processed.root";
+		string datafilename = smearingPath + "zdata/" + period + "_merged_processed.root";
 		cout << "Opening data smearing file   : " << datafilename << endl;
 		TFile fZ( datafilename.c_str() );
 
@@ -70,7 +70,7 @@ void GetSmearingHistogram(string ch, float lumi, string photon_tag,string period
 		//tZ->SetBranchStatus("HT", 1);
 		tZ->SetBranchStatus("mll", 1);
 		tZ->SetBranchStatus("METl", 1);
-		tZ->SetBranchAddress("totalWeight" ,&totalWeightF);
+		tZ->SetBranchAddress("totalWeight" ,&totalWeight);
 		tZ->SetBranchAddress("jet_n" ,&jet_n);
 		tZ->SetBranchAddress("bjet_n" ,&bjet_n);
 		tZ->SetBranchAddress("Z_pt" ,&gZ_pt);
@@ -86,9 +86,9 @@ void GetSmearingHistogram(string ch, float lumi, string photon_tag,string period
 			int pt = hist_low_pt->FindBin(gZ_pt)-1;
 			if (jet_n!=1) continue;
 			if (bjet_n!=0) continue;
-			z_metl[pt]->Fill(METlF,totalWeightF);
+			z_metl[pt]->Fill(METlF,totalWeight);
 			if (mll<90 || mll>92) continue;
-			z_jetmetl[pt]->Fill(METlF,totalWeightF);
+			z_jetmetl[pt]->Fill(METlF,totalWeight);
 		}
 
 		//tZ->Close()
@@ -100,10 +100,13 @@ void GetSmearingHistogram(string ch, float lumi, string photon_tag,string period
 
 		//--- smearing R21 samples
 		string mcperiod = "";
-		if( TString(period).EqualTo("data15-16") ) mcperiod = "ZMC16a/";
-		if( TString(period).EqualTo("data17")    ) mcperiod = "ZMC16cd/";
+		if( TString(period).EqualTo("data15-16") ) mcperiod = "zmc16a/";
+		if( TString(period).EqualTo("data17")    ) mcperiod = "zmc16cd/";
+		if( TString(period).EqualTo("data18")    ) mcperiod = "zmc16cd/";
 
-		string ttfilename = smearingPath + mcperiod + "ttbar_merged_processed.root";
+		string ttfilename = smearingPath + mcperiod + "ttbar_410472_dilep_processed.root";
+		if( TString(mcperiod).EqualTo("mc16cd") ) ttfilename = smearingPath + mcperiod + "ttbar_dilep_processed.root";
+
 		cout << "Opening tt smearing file   : " << ttfilename << endl;
 		TFile ftt( ttfilename.c_str() );
 
@@ -116,7 +119,7 @@ void GetSmearingHistogram(string ch, float lumi, string photon_tag,string period
 		//ttt->SetBranchStatus("HT", 1);
 		ttt->SetBranchStatus("mll", 1);
 		ttt->SetBranchStatus("METl", 1);
-		ttt->SetBranchAddress("totalWeight" ,&totalWeightF);
+		ttt->SetBranchAddress("totalWeight" ,&totalWeight);
 		ttt->SetBranchAddress("jet_n" ,&jet_n);
 		ttt->SetBranchAddress("bjet_n" ,&bjet_n);
 		ttt->SetBranchAddress("Z_pt" ,&gZ_pt);
@@ -124,17 +127,19 @@ void GetSmearingHistogram(string ch, float lumi, string photon_tag,string period
 		ttt->SetBranchAddress("mll" ,&mll);
 		ttt->SetBranchAddress("METl" ,&METlF);
 		ttt->SetBranchAddress("channel" ,&gchannel);
+		ttt->SetBranchAddress("RandomRunNumber" ,&RandomRunNumber);
 		for (int entry=0;entry<ttt->GetEntries();entry++) {
 			ttt->GetEntry(entry);
-			if( TString(ch).EqualTo("ee") && gchannel != 1 ) continue; // ee
+			if( TString(period).EqualTo("data17") && RandomRunNumber > 348000 ) continue; 
+	if( TString(ch).EqualTo("ee") && gchannel != 1 ) continue; // ee
 			if( TString(ch).EqualTo("mm") && gchannel != 0 ) continue; // ee			
 			if (gZ_pt<50.) continue;
 			int pt = hist_low_pt->FindBin(gZ_pt)-1;
 			if (jet_n!=1) continue;
 			if (bjet_n!=0) continue;
-			z_metl[pt]->Fill(METlF,-1.*lumi*totalWeightF);
+			z_metl[pt]->Fill(METlF,-1.*lumi*totalWeight);
 			if (mll<90 || mll>92) continue;
-			z_jetmetl[pt]->Fill(METlF,-1.*lumi*totalWeightF);
+			z_jetmetl[pt]->Fill(METlF,-1.*lumi*totalWeight);
 		}
 		//ttt->Close();
 		ftt.Close();
@@ -144,6 +149,11 @@ void GetSmearingHistogram(string ch, float lumi, string photon_tag,string period
 		//TFile fvv( TString(smearingPath)+"vv/vv"+TString(ch)+".root" );
 
 		// smearing with R21 samples
+		string mcperiod = "";
+		if( TString(period).EqualTo("data15-16") ) mcperiod = "zmc16a/";
+		if( TString(period).EqualTo("data17")    ) mcperiod = "zmc16cd/";
+		if( TString(period).EqualTo("data18")    ) mcperiod = "zmc16cd/";
+
 		string vvfilename = smearingPath + mcperiod + "diboson_merged_processed.root";
 		cout << "Opening VV smearing file   : " << vvfilename << endl;
 		TFile fvv( vvfilename.c_str() );
@@ -157,7 +167,7 @@ void GetSmearingHistogram(string ch, float lumi, string photon_tag,string period
 		//tvv->SetBranchStatus("HT", 1);
 		tvv->SetBranchStatus("mll", 1);
 		tvv->SetBranchStatus("METl", 1);
-		tvv->SetBranchAddress("totalWeight" ,&totalWeightF);
+		tvv->SetBranchAddress("totalWeight" ,&totalWeight);
 		tvv->SetBranchAddress("jet_n" ,&jet_n);
 		tvv->SetBranchAddress("bjet_n" ,&bjet_n);
 		tvv->SetBranchAddress("Z_pt" ,&gZ_pt);
@@ -165,17 +175,19 @@ void GetSmearingHistogram(string ch, float lumi, string photon_tag,string period
 		tvv->SetBranchAddress("mll" ,&mll);
 		tvv->SetBranchAddress("METl" ,&METlF);
 		tvv->SetBranchAddress("channel" ,&gchannel);
+		tvv->SetBranchAddress("RandomRunNumber" ,&RandomRunNumber);
 		for (int entry=0;entry<tvv->GetEntries();entry++) {
 			tvv->GetEntry(entry);
+			if( TString(period).EqualTo("data17") && RandomRunNumber > 348000 ) continue; 
 			if( TString(ch).EqualTo("ee") && gchannel != 1 ) continue; // ee
 			if( TString(ch).EqualTo("mm") && gchannel != 0 ) continue; // ee
 			if (gZ_pt<50.) continue;
 			int pt = hist_low_pt->FindBin(gZ_pt)-1;
 			if (jet_n!=1) continue;
 			if (bjet_n!=0) continue;
-			z_metl[pt]->Fill(METlF,-1.*lumi*totalWeightF);
+			z_metl[pt]->Fill(METlF,-1.*lumi*totalWeight);
 			if (mll<90 || mll>92) continue;
-			z_jetmetl[pt]->Fill(METlF,-1.*lumi*totalWeightF);
+			z_jetmetl[pt]->Fill(METlF,-1.*lumi*totalWeight);
 		}
 		//tvv->Close();
 		fvv.Close();
@@ -187,7 +199,7 @@ void GetSmearingHistogram(string ch, float lumi, string photon_tag,string period
 		if( TString(period).EqualTo("data15-16") ) gperiod = "Data15-16";
 		if( TString(period).EqualTo("data17")    ) gperiod = "Data17";
 
-		string gfilename = smearingPath + "gdata/" + "JETM4_" + gperiod + ".root";
+		string gfilename = smearingPath + "gdata/" + period + "_merged_processed.root";
 		cout << "Opening photon smearing file   : " << gfilename << endl;
 		TFile fPhoton( gfilename.c_str() );
 
@@ -310,7 +322,12 @@ void GetSmearingHistogram(string ch, float lumi, string photon_tag,string period
 	  
 		std::cout << "Get smearing function from R21 MC." << std::endl;
 
-		string Zfilename = smearingPath + "ZMC16a/Zjets_merged_processed.root";
+		string mcperiod = "";
+		if( TString(period).EqualTo("data15-16") ) mcperiod = "zmc16a/";
+		if( TString(period).EqualTo("data17")    ) mcperiod = "zmc16cd/";
+		if( TString(period).EqualTo("data18")    ) mcperiod = "zmc16cd/";
+
+		string Zfilename = smearingPath + mcperiod + "Zjets_merged_processed.root";
 		
 		cout << "Opening Z+jets MC smearing file           : " << Zfilename << endl;
 		
@@ -323,25 +340,26 @@ void GetSmearingHistogram(string ch, float lumi, string photon_tag,string period
 		tZ->SetBranchStatus("bjet_n", 1);
 		tZ->SetBranchStatus("Z_pt", 1);
 		//tZ->SetBranchStatus("Z_truthPt", 1);
-		tZ->SetBranchStatus("HT", 1);
+		//tZ->SetBranchStatus("HT", 1);
 		tZ->SetBranchStatus("mll", 1);
 		tZ->SetBranchStatus("METl", 1);
 		tZ->SetBranchStatus("RunNumber", 1);
-		tZ->SetBranchStatus("EventNumber", 1);
+		//tZ->SetBranchStatus("EventNumber", 1);
 		tZ->SetBranchAddress("totalWeight" ,&totalWeight);
 		tZ->SetBranchAddress("jet_n" ,&jet_n);
 		tZ->SetBranchAddress("bjet_n" ,&bjet_n);
 		tZ->SetBranchAddress("Z_pt" ,&Z_ptD);
 		//tZ->SetBranchAddress("Z_truthPt" ,&Z_truthPt);
-		tZ->SetBranchAddress("HT" ,&HT);
+		//tZ->SetBranchAddress("HT" ,&HT);
 		tZ->SetBranchAddress("mll" ,&mllD);
 		tZ->SetBranchAddress("METl" ,&METl);
 		tZ->SetBranchAddress("RunNumber" ,&RunNumber);
-		tZ->SetBranchAddress("EventNumber" ,&EventNumber);
+		//tZ->SetBranchAddress("EventNumber" ,&EventNumber);
 		tZ->SetBranchAddress("channel" ,&gchannel);
+		tZ->SetBranchAddress("RandomRunNumber" ,&RandomRunNumber);
 		for (int entry=0;entry<tZ->GetEntries();entry++) {
 			tZ->GetEntry(entry);
-
+			if( TString(period).EqualTo("data17") && RandomRunNumber > 348000 ) continue; 
 			if( TString(ch).EqualTo("ee") && gchannel != 1 ) continue; // ee
 			if( TString(ch).EqualTo("mm") && gchannel != 0 ) continue; // ee			
 
@@ -365,7 +383,12 @@ void GetSmearingHistogram(string ch, float lumi, string photon_tag,string period
 		}
 		fZ.Close();
 
-		string gmcfilename = smearingPath + "gmc/SinglePhoton211_merged_processed.root";
+		string mcperiod = "";
+		if( TString(period).EqualTo("data15-16") ) mcperiod = "gmc16a/";
+		if( TString(period).EqualTo("data17")    ) mcperiod = "gmc16cd/";
+		if( TString(period).EqualTo("data18")    ) mcperiod = "gmc16cd/";
+
+		string gmcfilename = smearingPath + mcperiod + "SinglePhoton222_merged_processed.root";
 
 		cout << "Opening photon MC smearing file " << gmcfilename << endl;
 		
@@ -378,7 +401,7 @@ void GetSmearingHistogram(string ch, float lumi, string photon_tag,string period
 		tPhoton->SetBranchStatus("bjet_n", 1);
 		tPhoton->SetBranchStatus("gamma_pt", 1);
 		//tPhoton->SetBranchStatus("truthGamma_pt", 1);
-		tPhoton->SetBranchStatus("HT", 1);
+		//tPhoton->SetBranchStatus("HT", 1);
 		tPhoton->SetBranchStatus("METl_raw", 1);
 		tPhoton->SetBranchAddress("totalWeight" ,&totalWeight);
 		tPhoton->SetBranchAddress("jet_n" ,&jet_n);
@@ -387,8 +410,10 @@ void GetSmearingHistogram(string ch, float lumi, string photon_tag,string period
 		//tPhoton->SetBranchAddress("truthGamma_pt" ,&truthGamma_pt);
 		tPhoton->SetBranchAddress("HT" ,&HT);
 		tPhoton->SetBranchAddress("METl_raw" ,&METl);
+		tPhoton->SetBranchAddress("RandomRunNumber" ,&RandomRunNumber);
 		for (int entry=0;entry<tPhoton->GetEntries();entry++) {
 			tPhoton->GetEntry(entry);
+			if( TString(period).EqualTo("data17") && RandomRunNumber > 348000 ) continue; 
 			if (gamma_pt<50.) continue;
 			int pt = hist_low_pt->FindBin(gamma_pt)-1;
 			if (jet_n==0) continue;
