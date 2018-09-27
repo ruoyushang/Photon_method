@@ -80,14 +80,14 @@ void GetBaseLineEvents(string sampleID, string outputName, string pathToNtuples,
 	TFile*  inputFile      = TFile::Open(filename.c_str());
 	Float_t _nGenEvents = 1.;
 	if (!isData) {
-	        //TH1D*   EventCountHist = (TH1D*) inputFile->Get("EventCountHist");
-		//_nGenEvents    = EventCountHist->GetBinContent(2);
-		//hist_EventCount->SetBinContent(1,EventCountHist->GetBinContent(1));
+	  //TH1D*   EventCountHist = (TH1D*) inputFile->Get("EventCountHist");
+	  //_nGenEvents    = EventCountHist->GetBinContent(2);
+	  //hist_EventCount->SetBinContent(1,EventCountHist->GetBinContent(1));
 
-		cout << "Setting _nGenEvents = 1 for now NEED TO FIX" << endl;
-		_nGenEvents    = 1.0;
-		hist_EventCount->SetBinContent(1,1.0);
-}
+	  cout << "Setting _nGenEvents = 1 for now NEED TO FIX" << endl;
+	  _nGenEvents    = 1.0;
+	  hist_EventCount->SetBinContent(1,1.0);
+	}
 	TTree*  inputTree              = (TTree*)inputFile->Get( treename.c_str() );
 
 	cout << endl;
@@ -170,7 +170,7 @@ void GetBaseLineEvents(string sampleID, string outputName, string pathToNtuples,
 		//if (!isData) totalWeight = (sampleWeight*eventWeight*lep_weight->at(0)*lep_weight->at(1)*emtrigweight*eetrigweight*mmtrigweight)/_nGenEvents;
 		//if (!isData) totalWeight = (sampleWeight*eventWeight*lep_weight->at(0)*lep_weight->at(1)*trig_sf)/_nGenEvents;
 		//if (!isData) totalWeight = (sampleWeight*eventWeight)/_nGenEvents;
-		if (!isData) totalWeight = genWeight * eventWeight * leptonWeight * jvtWeight * bTagWeight * pileupWeight * FFWeight;
+		if (!isData) totalWeight = genWeight * eventWeight * leptonWeight * jvtWeight * bTagWeight * pileupWeight;
 
 		//--- determine channel
 		channel = -1;
