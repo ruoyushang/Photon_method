@@ -49,15 +49,15 @@ void quickDraw_Data( string period = "data15-16" , string channel  = "ee" , stri
   string mcdir      = "";
   string gdatalabel = "";
   if     ( TString(period).Contains("data15-16") ){
-    mcdir    = "ZMC16a/";
+    mcdir    = "zmc16a/";
     gdatalabel = "Data15-16";
   }
   else if( TString(period).Contains("data17")    ){
-    mcdir    = "ZMC16cd/";
+    mcdir    = "zmc16cd/";
     gdatalabel = "Data17";
   }
   else if( TString(period).Contains("data18")    ){
-    mcdir    = "ZMC16cd/";
+    mcdir    = "zmc16cd/";
     gdatalabel = "Data18";
   }
 
@@ -74,18 +74,19 @@ void quickDraw_Data( string period = "data15-16" , string channel  = "ee" , stri
   // string vg_filename    = "../OutputNtuples/Vg/Vgall.root";
 
   // for v1.2
-  string outPath = "../OutputNtuples_v1.2/";
+  string outPath = "../OutputNtuples/v1.3_v00/";
 
   string VgString = "";
   if( VgSubtracted ) VgString = "_VgSubtracted";
   
-  string Zfilename      = outPath + "Zdata/" + period     + "_merged_processed.root";
-  string tt_filename    = outPath + mcdir + "ttbar_singleTop_merged_processed.root";
+  string Zfilename      = outPath + "zdata/" + period     + "_merged_processed.root";
+  string tt_filename    = outPath + mcdir + "ttbar_410472_dilep_processed.root";
+  //string tt_filename    = outPath + mcdir + "ttbar_merged_processed.root";
   string vv_filename    = outPath + mcdir + "diboson_merged_processed.root";
   string z_filename     = outPath + mcdir + "Zjets_merged_processed.root";
-  string o_filename     = outPath + mcdir + "triboson_higgs_topOther_merged_processed.root";
-  string gfilename      = outPath + "gdata/" + period + VgString + "_" + channel + "_" + smearing_mode + ".root";
-  string vg_filename    = outPath + "gmc/Vgamma_merged_processed.root";
+  //string o_filename     = outPath + mcdir + "triboson_higgs_topOther_merged_processed.root";
+  string gfilename      = outPath + "gdata/" + period + "_merged_processed" + VgString + "_" + channel + "_" + smearing_mode + ".root";
+  //string vg_filename    = outPath + "gmc/Vgamma_merged_processed.root";
   
   cout << "period               " << period        << endl;
   cout << "channel              " << channel       << endl;
@@ -94,8 +95,8 @@ void quickDraw_Data( string period = "data15-16" , string channel  = "ee" , stri
   cout << "tt filename          " << tt_filename   << endl;
   cout << "vv filename          " << vv_filename   << endl;
   cout << "Z+jets filename      " << z_filename    << endl;
-  cout << "other filename       " << o_filename    << endl;
-  cout << "Vg filename          " << vg_filename   << endl;
+  //cout << "other filename       " << o_filename    << endl;
+  //cout << "Vg filename          " << vg_filename   << endl;
   cout << "g filename           " << gfilename     << endl;
   cout << "DF?                  " << DF            << endl;
   
@@ -115,22 +116,22 @@ void quickDraw_Data( string period = "data15-16" , string channel  = "ee" , stri
   TChain* chz = new TChain("BaselineTree");
   chz->Add( z_filename.c_str() );
 
-  TChain* cho = new TChain("BaselineTree");
-  cho->Add( o_filename.c_str() );
+  //TChain* cho = new TChain("BaselineTree");
+  //cho->Add( o_filename.c_str() );
 
   TChain* chvv = new TChain("BaselineTree");
   chvv->Add( vv_filename.c_str() );
 
-  TChain* chvg = new TChain("BaselineTree");
-  chvg->Add( vg_filename.c_str() );
+  //TChain* chvg = new TChain("BaselineTree");
+  //chvg->Add( vg_filename.c_str() );
 
   cout << "g entries            " << gtree->GetEntries()  << endl;
   cout << "Z data entries       " << Ztree->GetEntries()  << endl;
   cout << "ttbar entries        " << chtt->GetEntries()   << endl;
   cout << "diboson entries      " << chvv->GetEntries()   << endl;
   cout << "Z+jets entries       " << chz->GetEntries()    << endl;
-  cout << "other entries        " << cho->GetEntries()    << endl;
-  cout << "Vg entries           " << chvg->GetEntries()   << endl;
+  //cout << "other entries        " << cho->GetEntries()    << endl;
+  //cout << "Vg entries           " << chvg->GetEntries()   << endl;
 
   //-----------------------------------------------
   // define selections
@@ -361,14 +362,14 @@ void quickDraw_Data( string period = "data15-16" , string channel  = "ee" , stri
   Ztree->Draw(Form("%s>>hZ",var.c_str())       , Zselection              , "goff");
   chtt-> Draw(Form("%s>>htt",var.c_str())      , Zselection*Zweight      , "goff");
   chz->  Draw(Form("%s>>hz",var.c_str())       , Zselection*Zweight      , "goff");
-  cho->  Draw(Form("%s>>ho",var.c_str())       , Zselection*Zweight      , "goff");
+  //cho->  Draw(Form("%s>>ho",var.c_str())       , Zselection*Zweight      , "goff");
   chvv-> Draw(Form("%s>>hvv",var.c_str())      , Zselection*Zweight      , "goff");
 
   if( !DF ){
     gtree->Draw(Form("%s>>hg",var.c_str())     , gselection*weight_g     , "goff");
     gtree->Draw(Form("%s>>hg_rw",var.c_str())  , gselection*weight_g_rw  , "goff");
   }
-  chvg-> Draw("MET_raw>>hvg"      , vgselection*weight_g*lumi1516     , "goff");
+  //chvg-> Draw("MET_raw>>hvg"      , vgselection*weight_g*lumi1516     , "goff");
   //chvg-> Draw("MET_raw>>hvg_rw"   , vgselection*weight_g_rw*lumi1516  , "goff");
   
   cout << "Z data integral      " << hZ->Integral()  << endl;
