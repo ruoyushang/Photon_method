@@ -1,4 +1,4 @@
-
+Int_t RandomRunNumber;
 Long64_t EventNumber;
 Int_t RunNumber;
 double totalWeight = 0.;
