@@ -1,6 +1,7 @@
 bool trigMatch_1L2LTrig;
 ULong64_t EventNumber;
 Int_t RunNumber;
+Int_t RandomRunNumber;
 Float_t Mu;
 Int_t nVtx;
 Float_t mll;
@@ -84,6 +85,7 @@ void GetBranches(TTree* inputTree, bool isData) {
 	inputTree->SetBranchStatus("EventNumber"            ,1);
 	inputTree->SetBranchStatus("trigMatch_1L2LTrig"     ,1);
 	inputTree->SetBranchStatus("RunNumber"              ,1);
+	inputTree->SetBranchStatus("RandomRunNumber"              ,1);
 	inputTree->SetBranchStatus("mu"                     ,1);
 	inputTree->SetBranchStatus("nVtx"                   ,1);
 	inputTree->SetBranchStatus("mll"                    ,1);
@@ -167,6 +169,7 @@ void GetBranches(TTree* inputTree, bool isData) {
 	inputTree->SetBranchAddress("trigMatch_1L2LTrig"    ,&trigMatch_1L2LTrig      );
 	inputTree->SetBranchAddress("EventNumber"           ,&EventNumber             );
 	inputTree->SetBranchAddress("RunNumber"             ,&RunNumber               );
+	inputTree->SetBranchAddress("RandomRunNumber"       ,&RandomRunNumber         );
 	inputTree->SetBranchAddress("mu"                    ,&Mu                      );
 	inputTree->SetBranchAddress("nVtx"                  ,&nVtx                    );
 	inputTree->SetBranchAddress("mll"                   ,&mll                     );
