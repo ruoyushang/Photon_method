@@ -83,6 +83,7 @@ void GetPhotonEvents(string sampleID, string outputName, string pathToNtuples, i
 		
 	ULong64_t EventNumber;
 	Int_t RunNumber;
+	Int_t RandomRunNumber;
 	int trigMatch_HLT_g15_loose_L1EM7;
 	int trigMatch_HLT_g25_loose_L1EM15;
 	int trigMatch_HLT_g35_loose_L1EM15;
@@ -142,6 +143,7 @@ void GetPhotonEvents(string sampleID, string outputName, string pathToNtuples, i
 	T->SetBranchStatus("*", 0);
 	T->SetBranchStatus("EventNumber"              ,1); 
 	T->SetBranchStatus("RunNumber"              ,1); 
+	T->SetBranchStatus("RandomRunNumber"              ,1); 
 	T->SetBranchStatus("mu"              ,1);
 	T->SetBranchStatus("nVtx"            ,1); 
 	T->SetBranchStatus("met_Et"             ,1); 
@@ -196,6 +198,7 @@ void GetPhotonEvents(string sampleID, string outputName, string pathToNtuples, i
 
 	T->SetBranchAddress("EventNumber"              ,&EventNumber               );
 	T->SetBranchAddress("RunNumber"              ,&RunNumber               );
+	T->SetBranchAddress("RandomRunNumber"              ,&RunNumber               );
 	T->SetBranchAddress("mu"              ,&Mu               );
 	T->SetBranchAddress("nVtx"            ,&nVtx               );
 	T->SetBranchAddress("met_Et"             ,&MET              );
@@ -362,6 +365,7 @@ void GetPhotonEvents(string sampleID, string outputName, string pathToNtuples, i
 	BaselineTree.Branch("jet_eta","std::vector<float>",&jet_eta);
 	BaselineTree.Branch("EventNumber",&EventNumber,"EventNumber/I");
 	BaselineTree.Branch("RunNumber",&RunNumber,"RunNumber/I");
+	BaselineTree.Branch("RandomRunNumber",&RandomRunNumber,"RandomRunNumber/I");
 	//BaselineTree.Branch("lep_n_raw",&lep_n,"lep_n_raw/Int_t");
 	BaselineTree.Branch("nLep_signal",&nLep_signal,"nLep_signal/I");
 	BaselineTree.Branch("nLep_base"  ,&nLep_base  ,"nLep_base/I");
