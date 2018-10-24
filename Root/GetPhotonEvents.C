@@ -51,9 +51,9 @@ void GetPhotonEvents(string sampleID, string outputName, string pathToNtuples, i
 
         float mylumi = 1.0;
   
-	if     ( TString(outputName).Contains("mc16cd_2018") ) mylumi =  6461;
-	else if( TString(outputName).Contains("mc16cd")      ) mylumi = 44000;
-   	else if( TString(outputName).Contains("mc16a")       ) mylumi = 36100;
+	if     ( TString(outputName).Contains("mc16e")       ) mylumi = 36200;
+	else if( TString(outputName).Contains("mc16cd")      ) mylumi = 43800;
+   	else if( TString(outputName).Contains("mc16a")       ) mylumi = 36200;
 
 	//---------------------------------------------
 	// open file, get Tree and EventCountHist

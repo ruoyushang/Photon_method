@@ -9,9 +9,9 @@ float Z_ptmll;
 void GetMllHistogram(string ch,string period) {
 
         string mcperiod = "";
-        if( TString(period).EqualTo("data15-16") ) mcperiod = "zmc16a";
-        if( TString(period).EqualTo("data17")    ) mcperiod = "zmc16cd";
-	if( TString(period).EqualTo("data18")    ) mcperiod = "zmc16cd";
+        if( TString(period).Contains("data15-16") ) mcperiod = "zmc16a";
+        if( TString(period).Contains("data17")    ) mcperiod = "zmc16cd";
+	if( TString(period).Contains("data18")    ) mcperiod = "zmc16cd";
 		
 	//double Z_truthPt_dilep = 0;
 	//for (int bin=0;bin<dpt_bin_size;bin++) {
@@ -74,7 +74,7 @@ void GetMllHistogram(string ch,string period) {
 		//if (Z_pt<37.) continue;
 		if (lep_pT->at(0)<leading_lep_pt_cut) continue;
 		if (lep_pT->at(1)<second_lep_pt_cut) continue;
-		if( TString(period).EqualTo("data17") && RandomRunNumber > 348000 )
+		if( TString(period).Contains("data17") && RandomRunNumber > 348000 )
 		//int pt = hist_low_pt->FindBin(Z_pt)-1;
 		int pt = hist_sm_pt->FindBin(Z_ptmll)-1;
 		//int dpt = hist_low_dpt->FindBin((Z_pt-Z_truthPt))-1;

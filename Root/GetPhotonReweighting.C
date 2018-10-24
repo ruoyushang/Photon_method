@@ -52,9 +52,11 @@ void GetPhotonReweighting(string label, string ch, int isData, string year, int 
 	else if( TString(label).Contains("data18")    ) periodlabel = "data18";
 
 	if (smearing_method == 0) photon_tag = "_NoSmear";
-	if (smearing_method == 1) photon_tag = "_McSmear";
-	if (smearing_method == 2) photon_tag = "_DataSmear";
+	if (smearing_method == 1) photon_tag = "_R20McSmear";
+	if (smearing_method == 2) photon_tag = "_R20DataSmear";
 	if (smearing_method == 3) photon_tag = "_TruthSmear";
+	if (smearing_method == 4) photon_tag = "_McSmear";
+	if (smearing_method == 5) photon_tag = "_DataSmear";
 
 	/*
   	string reweighting_filename = "rootfiles/GetSimpleReweightingHistograms_" + periodlabel + "_" + ch + photon_tag + ".root";
