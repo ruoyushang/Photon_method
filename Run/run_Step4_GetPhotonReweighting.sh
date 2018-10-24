@@ -6,24 +6,28 @@
 #int smearing_method = 3; // Truth smearing
 
 
-for period in data15-16 data17 data18
+#for period in data15-16 data17 data18
+
+#for period in data15-16 data15-16_Vgamma
+
+for period in data17 data17_Vgamma data18 data18_Vgamma
 do
     
-    echo "Reweighting" $period "ee channel NoSmear..."
-    rm -f logfiles/run_Step4_GetPhotonReweighting_JETM4_Data_${period}_ee.log
-    root -l -b -q '../Root/GetPhotonReweighting.C+("'${period}'_merged_processed","ee",1,"'${period}'",0)' > logfiles/run_Step4_GetPhotonReweighting_JETM4_Data_${period}_ee.log 2>&1 &
-    
-    echo "Reweighting" $period "mm channel NoSmear..."
-    rm -f logfiles/run_Step4_GetPhotonReweighting_JETM4_Data_${period}_mm_NoSmear.log
-    root -l -b -q '../Root/GetPhotonReweighting.C+("'${period}'_merged_processed","mm",1,"'${period}'",0)' > logfiles/run_Step4_GetPhotonReweighting_JETM4_Data_${period}_mm_NoSmear.log 2>&1 &
-    
-    echo "Reweighting" ${period} "mm channel McSmear..."
-    rm -f logfiles/run_Step4_GetPhotonReweighting_JETM4_Data_${period}_mm_McSmear.log
-    root -l -b -q '../Root/GetPhotonReweighting.C+("'${period}'_merged_processed","mm",1,"'${period}'",4)' > logfiles/run_Step4_GetPhotonReweighting_JETM4_Data_${period}_mm_McSmear.log 2>&1 &
-    
-    echo "Reweighting" ${period} "mm channel DataSmear..."
-    rm -f logfiles/run_Step4_GetPhotonReweighting_JETM4_Data_${period}_mm_DataSmear.log
-    root -l -b -q '../Root/GetPhotonReweighting.C+("'${period}'_merged_processed","mm",1,"'${period}'",5)' > logfiles/run_Step4_GetPhotonReweighting_JETM4_Data_${period}_mm_DataSmear.log 2>&1 &
+   echo "Reweighting" $period "ee channel NoSmear..."
+   rm -f logfiles/run_Step4_GetPhotonReweighting_JETM4_Data_${period}_ee.log
+   root -l -b -q '../Root/GetPhotonReweighting.C+("'${period}'_merged_processed","ee",1,"'${period}'",0)' > logfiles/run_Step4_GetPhotonReweighting_JETM4_Data_${period}_ee.log 2>&1 &
+   
+   echo "Reweighting" $period "mm channel NoSmear..."
+   rm -f logfiles/run_Step4_GetPhotonReweighting_JETM4_Data_${period}_mm_NoSmear.log
+   root -l -b -q '../Root/GetPhotonReweighting.C+("'${period}'_merged_processed","mm",1,"'${period}'",0)' > logfiles/run_Step4_GetPhotonReweighting_JETM4_Data_${period}_mm_NoSmear.log 2>&1 &
+   
+   echo "Reweighting" ${period} "mm channel McSmear..."
+   rm -f logfiles/run_Step4_GetPhotonReweighting_JETM4_Data_${period}_mm_McSmear.log
+   root -l -b -q '../Root/GetPhotonReweighting.C+("'${period}'_merged_processed","mm",1,"'${period}'",4)' > logfiles/run_Step4_GetPhotonReweighting_JETM4_Data_${period}_mm_McSmear.log 2>&1 &
+   
+    #echo "Reweighting" ${period} "mm channel DataSmear..."
+    #rm -f logfiles/run_Step4_GetPhotonReweighting_JETM4_Data_${period}_mm_DataSmear.log
+    #root -l -b -q '../Root/GetPhotonReweighting.C+("'${period}'_merged_processed","mm",1,"'${period}'",5)' > logfiles/run_Step4_GetPhotonReweighting_JETM4_Data_${period}_mm_DataSmear.log 2>&1 &
     
 done
 
