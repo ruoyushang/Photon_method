@@ -104,9 +104,9 @@ void getPhotonSmearingFunction2(TString file, TString histname, TH1D* hist, int 
 void GetPhotonSmearing(string label, string ch, int isData, string period, int smearing_method) {
 
         float lumi = 0.0;
-	if     ( TString(period).EqualTo("data15-16") ) lumi = lumi_data1516;
-	else if( TString(period).EqualTo("data17")    ) lumi = lumi_data17;
-	else if( TString(period).EqualTo("data18")    ) lumi = lumi_data18;
+	if     ( TString(period).Contains("data15-16") ) lumi = lumi_data1516;
+	else if( TString(period).Contains("data17")    ) lumi = lumi_data17;
+	else if( TString(period).Contains("data18")    ) lumi = lumi_data18;
 
         cout << "channel         " << ch              << endl;
 	cout << "period          " << period          << endl;
@@ -138,9 +138,11 @@ void GetPhotonSmearing(string label, string ch, int isData, string period, int s
 	std::cout << "Prepare smearing histograms..." << std::endl;
 
 	if (smearing_method == 0) photon_tag = "_NoSmear";
-	if (smearing_method == 1) photon_tag = "_McSmear";
-	if (smearing_method == 2) photon_tag = "_DataSmear";
+	if (smearing_method == 1) photon_tag = "_R20McSmear";
+	if (smearing_method == 2) photon_tag = "_R20DataSmear";
 	if (smearing_method == 3) photon_tag = "_TruthSmear";
+	if (smearing_method == 4) photon_tag = "_McSmear";
+	if (smearing_method == 5) photon_tag = "_DataSmear";
 
 	cout << "smearing_method    " << smearing_method << endl;
 	cout << "photon_tag         " << photon_tag      << endl;

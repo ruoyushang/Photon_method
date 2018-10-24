@@ -35,29 +35,24 @@ TH1F* GetSimpleReweightingHistograms( string label , string period = "data15-16"
   //--- set up labels
   string mcdir      = "";
   string gdatalabel = "";
-  if     ( TString(period).EqualTo("data15-16") ){
+  if     ( TString(period).Contains("data15-16") ){
     mcdir    = "MC16a/";
     gdatalabel = "data15-16";
   }
-  else if( TString(period).EqualTo("data17")    ){
+  else if( TString(period).Contains("data17")    ){
     mcdir    = "MC16cd/";
     gdatalabel = "data17";
   }
-  else if( TString(period).EqualTo("data18")    ){
+  else if( TString(period).Contains("data18")    ){
     mcdir    = "MC16cd_2018/";
     gdatalabel = "data18";
   }
 
   //--- set up MC period
   string mcperiod = "";
-  if( TString(period).EqualTo("data15-16") ) mcperiod = "zmc16a/";
-  if( TString(period).EqualTo("data17")    ) mcperiod = "zmc16cd/";
-  if( TString(period).EqualTo("data18")    ) mcperiod = "zmc16cd/";
-
-  //--- set up photon data period
-  string gperiod = "";
-  if( TString(period).EqualTo("data15-16") ) gperiod = "Data15-16";
-  if( TString(period).EqualTo("data17")    ) gperiod = "Data17";
+  if( TString(period).Contains("data15-16") ) mcperiod = "zmc16a/";
+  if( TString(period).Contains("data17")    ) mcperiod = "zmc16cd/";
+  if( TString(period).Contains("data18")    ) mcperiod = "zmc16cd/";
 		
   // set up filenames
   // string path2l         = "/eos/atlas/atlascerngroupdisk/phys-susy/2L2J-ANA-SUSY-2018-05/SusySkim2LJets/v1.1/";  
@@ -121,7 +116,8 @@ TH1F* GetSimpleReweightingHistograms( string label , string period = "data15-16"
 
   if( TString(period).EqualTo("data15-16") ) lumi = TCut("36200");
   if( TString(period).EqualTo("data17")    ) lumi = TCut("43800");
-  if( TString(period).EqualTo("data18")    ) lumi = TCut("(36200/43800)*36200");
+  //if( TString(period).EqualTo("data18")    ) lumi = TCut("(36200/43800)*36200");
+  if( TString(period).EqualTo("data18")    ) lumi = TCut("36200");
      
   cout << "Z selection          " << Zselection.GetTitle() << endl;
   cout << "g selection          " << gselection.GetTitle() << endl;
