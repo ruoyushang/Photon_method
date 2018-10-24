@@ -27,8 +27,9 @@
 
 using namespace std;
 
-void quickDraw_Data( string period = "data15-16" , string channel  = "ee" , string var = "met" , bool VgSubtracted = false , string smearing_mode = "NoSmear" , bool normalize = true ) {
-  
+void quickDraw_Data( string period = "data15-16" , string channel  = "ee" , string var = "met" , string smearing_mode = "NoSmear" , bool normalize = true ) {
+
+    
   if( TString(var).Contains("pt") ) normalize = false;
 
   bool DF = TString(channel).EqualTo("em");
@@ -47,18 +48,18 @@ void quickDraw_Data( string period = "data15-16" , string channel  = "ee" , stri
 
   // set up labels
   string mcdir      = "";
-  string gdatalabel = "";
+  string zdatalabel = "";
   if     ( TString(period).Contains("data15-16") ){
     mcdir    = "zmc16a/";
-    gdatalabel = "Data15-16";
+    zdatalabel = "data15-16";
   }
   else if( TString(period).Contains("data17")    ){
     mcdir    = "zmc16cd/";
-    gdatalabel = "Data17";
+    zdatalabel = "data17";
   }
   else if( TString(period).Contains("data18")    ){
     mcdir    = "zmc16cd/";
-    gdatalabel = "Data18";
+    zdatalabel = "data18";
   }
 
   // string path2l         = "/eos/atlas/atlascerngroupdisk/phys-susy/2L2J-ANA-SUSY-2018-05/SusySkim2LJets/v1.1/";  
@@ -76,16 +77,20 @@ void quickDraw_Data( string period = "data15-16" , string channel  = "ee" , stri
   // for v1.2
   string outPath = "../OutputNtuples/v1.3_v00/";
 
-  string VgString = "";
-  if( VgSubtracted ) VgString = "_VgSubtracted";
+
+  string filename = Form("plots/quickData_Data_%s_%s_%s_%s.root",period.c_str(),channel.c_str(),var.c_str(),smearing_mode.c_str());
+
+  TFile* outfile = TFile::Open( filename.c_str() , "RECREATE" );
+  outfile->cd();
   
-  string Zfilename      = outPath + "zdata/" + period     + "_merged_processed.root";
+  string Zfilename      = outPath + "zdata/" + zdatalabel     + "_merged_processed.root";
   string tt_filename    = outPath + mcdir + "ttbar_410472_dilep_processed.root";
+  if( TString(mcdir).Contains("mc16cd") ) tt_filename    = outPath + mcdir + "ttbar_dilep_merged_processed.root";
   //string tt_filename    = outPath + mcdir + "ttbar_merged_processed.root";
   string vv_filename    = outPath + mcdir + "diboson_merged_processed.root";
   string z_filename     = outPath + mcdir + "Zjets_merged_processed.root";
   //string o_filename     = outPath + mcdir + "triboson_higgs_topOther_merged_processed.root";
-  string gfilename      = outPath + "gdata/" + period + "_merged_processed" + VgString + "_" + channel + "_" + smearing_mode + ".root";
+  string gfilename      = outPath + "gdata/" + period + "_merged_processed" + "_" + channel + "_" + smearing_mode + ".root";
   //string vg_filename    = outPath + "gmc/Vgamma_merged_processed.root";
   
   cout << "period               " << period        << endl;
@@ -138,13 +143,17 @@ void quickDraw_Data( string period = "data15-16" , string channel  = "ee" , stri
   //-----------------------------------------------
 	
   //TCut Zselection("mll>81 && mll<101 && jet_n >= 2 && MET<200 && is_OS && lep_pT[0]>25.0 && lep_pT[1]>25.0 && bjet_n==0");
-  TCut Zselection("mll>81 && mll<101 && jet_n >= 2 && MET<200 && is_OS && lep_pT[0]>25.0 && lep_pT[1]>25.0");
+  //TCut Zselection("mll>81 && mll<101 && jet_n >= 2 && MET<200 && is_OS && lep_pT[0]>25.0 && lep_pT[1]>25.0");
+  TCut Zselection("jet_n >= 2 && MET<200 && is_OS && lep_pT[0]>25.0 && lep_pT[1]>25.0 && bjet_n==0 && Z_pt>50");
   TCut Zweight("totalWeight");
-  TCut lumi1516("36100");
-  TCut lumi17("44000");
+  TCut lumi1516("36200");
+  TCut lumi17("43800");
+  //TCut lumi18("(36200/43800)*36200");
+  TCut lumi18("36200");
   
   //TCut gselection("lep_pT[0]>25 && lep_pT[1]>25 && jet_n>=2  && bjet_n==0");
-  TCut gselection("lep_pT[0]>25 && lep_pT[1]>25 && jet_n>=2");
+  //TCut gselection("lep_pT[0]>25 && lep_pT[1]>25 && jet_n>=2 && bjet_n==0 && acos(cos(MET_phi-Z_phi))>0.2");
+  TCut gselection("lep_pT[0]>25 && lep_pT[1]>25 && jet_n>=2 && bjet_n==0 && Z_pt>50");
 
   //TCut vgselection("jet_n>=2  && bjet_n==0");
   TCut vgselection("jet_n>=2");
@@ -167,11 +176,12 @@ void quickDraw_Data( string period = "data15-16" , string channel  = "ee" , stri
     exit(0);
   }
 
-  if( TString(period).EqualTo("data15-16") ) Zweight *= lumi1516;
-  if( TString(period).EqualTo("data17")    ) Zweight *= lumi17;
+  if( TString(period).Contains("data15-16") ) Zweight *= lumi1516;
+  if( TString(period).Contains("data17")    ) Zweight *= lumi17;
+  if( TString(period).Contains("data18")    ) Zweight *= lumi18;
 
   TCut weight_g    = "totalWeight";
-  TCut weight_g_rw = "totalWeight*ptreweight2";
+  TCut weight_g_rw = "totalWeight*ptreweight";
 
   cout << "Z selection          " << Zselection.GetTitle()  << endl;  
   cout << "Z weight             " << Zweight.GetTitle()     << endl;
@@ -325,6 +335,20 @@ void quickDraw_Data( string period = "data15-16" , string channel  = "ee" , stri
     xmax  =  3.14;
   }
 
+  else if( TString(var).EqualTo("mu") ){
+    xtitle = "mu";
+    nbins =   50;
+    xmin  =    0;
+    xmax  =   50;
+  }
+
+  else if( TString(var).EqualTo("nVtx") ){
+    xtitle = "nVtx";
+    nbins =   50;
+    xmin  =    0;
+    xmax  =   50;
+  }
+
   else{
     cout << "Error! unrecognized variable, need to set binning, quitting! " << var << endl;
     exit(0);
@@ -358,12 +382,17 @@ void quickDraw_Data( string period = "data15-16" , string channel  = "ee" , stri
 
 
   
+  TCut RunRange("");
+  if( TString(period).EqualTo("data17") ){
+    RunRange = TCut("RandomRunNumber < 348000");  
+    cout << "Adding cut to MC: " << RunRange.GetTitle() << endl;
+  }
 
   Ztree->Draw(Form("%s>>hZ",var.c_str())       , Zselection              , "goff");
-  chtt-> Draw(Form("%s>>htt",var.c_str())      , Zselection*Zweight      , "goff");
-  chz->  Draw(Form("%s>>hz",var.c_str())       , Zselection*Zweight      , "goff");
+  chtt-> Draw(Form("%s>>htt",var.c_str())      , Zselection*RunRange*Zweight      , "goff");
+  chz->  Draw(Form("%s>>hz",var.c_str())       , Zselection*RunRange*Zweight      , "goff");
   //cho->  Draw(Form("%s>>ho",var.c_str())       , Zselection*Zweight      , "goff");
-  chvv-> Draw(Form("%s>>hvv",var.c_str())      , Zselection*Zweight      , "goff");
+  chvv-> Draw(Form("%s>>hvv",var.c_str())      , Zselection*RunRange*Zweight      , "goff");
 
   if( !DF ){
     gtree->Draw(Form("%s>>hg",var.c_str())     , gselection*weight_g     , "goff");
@@ -508,7 +537,7 @@ void quickDraw_Data( string period = "data15-16" , string channel  = "ee" , stri
   if( !DF ){
     leg->AddEntry(hg_rw,"Z+jets (from #gamma+jets, reweighted)","f");
     leg->AddEntry(hg,"Z+jets (from #gamma+jets, raw)","f");
-    leg->AddEntry(hz,"Z+jets (from MC)","f");
+    //leg->AddEntry(hz,"Z+jets (from MC)","f");
   }
   leg->AddEntry(hvv,"VV","f");
   leg->AddEntry(htt,"t#bar{t}+tW","f");
@@ -521,8 +550,9 @@ void quickDraw_Data( string period = "data15-16" , string channel  = "ee" , stri
   tex->SetNDC();
   tex->SetTextSize(0.03);
   tex->DrawLatex(0.6,0.65,"ATLAS Internal");
-  if(TString(period).Contains("data15-16") ) tex->DrawLatex(0.6,0.61,"36 fb^{-1} 2015-2016 data");
-  if(TString(period).Contains("data17")    ) tex->DrawLatex(0.6,0.61,"44 fb^{-1} 2017 data");
+  if(TString(period).Contains("data15-16") ) tex->DrawLatex(0.6,0.61,"36.2 fb^{-1} 2015-2016 data");
+  if(TString(period).Contains("data17")    ) tex->DrawLatex(0.6,0.61,"43.8 fb^{-1} 2017 data");
+  if(TString(period).Contains("data18")    ) tex->DrawLatex(0.6,0.61,"36.2 fb^{-1} 2018 data");
   if(TString(channel).Contains("ee")       ) tex->DrawLatex(0.6,0.57,"ee events");
   if(TString(channel).Contains("em")       ) tex->DrawLatex(0.6,0.57,"e#mu events");
   if(TString(channel).Contains("mm")       ) tex->DrawLatex(0.6,0.57,"#mu#mu events");
@@ -555,13 +585,17 @@ void quickDraw_Data( string period = "data15-16" , string channel  = "ee" , stri
   
   //can->Print(Form("plots/quickData_Data_%s_%s_%s_%s_VgSubtraction.pdf",period.c_str(),channel.c_str(),var.c_str(),smearing_mode.c_str()));
 
-  can->Print(Form("plots/quickData_Data_%s_%s_%s_%s%s.pdf",period.c_str(),channel.c_str(),var.c_str(),smearing_mode.c_str(),VgString.c_str()));
+  can->Print(Form("plots/quickData_Data_%s_%s_%s_%s.pdf",period.c_str(),channel.c_str(),var.c_str(),smearing_mode.c_str()));
+  can->Print(Form("plots/quickData_Data_%s_%s_%s_%s.png",period.c_str(),channel.c_str(),var.c_str(),smearing_mode.c_str()));
 
 
-  // TFile* outfile = TFile::Open( Form("plots/quickData_Data_%s_%s_%s_%s.root",period.c_str(),channel.c_str(),var.c_str(),smearing_mode.c_str()) , "RECREATE" );
-  // outfile->cd();
-  // hratio->Write();
-  // outfile->Close();
+  hratio->Write();
+  htt->Write();
+  hvv->Write();
+  hg->Write();
+  hg_rw->Write();
+  hZ->Write();
+  outfile->Close();
 
   
   
